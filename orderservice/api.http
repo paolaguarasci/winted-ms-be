@@ -1,0 +1,30 @@
+@baseurl = http://localhost:8002/api/v1/order
+
+###
+
+GET {{baseurl}}
+
+###
+GET {{baseurl}}/1
+
+###
+POST {{baseurl}}
+Content-Type: application/application/json
+
+{
+  "user_id": "1",
+  "product_id": "5"
+}
+
+####
+PUT {{baseurl}}/4
+Content-Type: application/application/json
+
+{
+  "id": 4,
+  "user_id": "5",
+  "product_id": "3"
+}
+
+###
+DELETE {{baseurl}}/1
