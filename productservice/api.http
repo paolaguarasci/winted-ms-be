@@ -1,0 +1,32 @@
+@baseurl = http://localhost:8003/api/v1/product
+
+###
+
+GET {{baseurl}}
+
+###
+GET {{baseurl}}/644ce0c1c0aaa7218821a394
+
+###
+POST {{baseurl}}
+Content-Type: application/json
+
+{
+  "name": "Levis Shirt",
+  "description": "Levis Shirt",
+  "price": 12
+}
+
+####
+PUT {{baseurl}}/644d35690b56f0720b01f1a9
+Content-Type: application/json
+
+{
+  "id": "644d35690b56f0720b01f1a9",
+  "name": "Levis Shirt",
+  "description": "Levis Shirt",
+  "price": 120
+}
+
+###
+DELETE {{baseurl}}/644d3422ecd7623e908c9566

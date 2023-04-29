@@ -24,8 +24,8 @@ public class Order {
   @JdbcTypeCode(SqlTypes.BIGINT)
   private Long id;
   
-  private String user_id;
-  private String product_id;
+  private String user;
+  private String product;
   
   @Override
   public boolean equals(Object o) {
