@@ -1,6 +1,6 @@
 package it.pingflood.winted.productservice.config;
 
-import it.pingflood.winted.productservice.model.Product;
+import it.pingflood.winted.productservice.data.Product;
 import it.pingflood.winted.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

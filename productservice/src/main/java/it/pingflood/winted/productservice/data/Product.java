@@ -1,4 +1,4 @@
-package it.pingflood.winted.productservice.model;
+package it.pingflood.winted.productservice.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
