@@ -1,0 +1,20 @@
+eureka:
+  client:
+  serviceUrl:
+    defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 0
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/winted-order-service
+    username: winted-order-service
+    password: winted-order-service
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
