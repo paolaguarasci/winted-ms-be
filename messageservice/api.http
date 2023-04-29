@@ -1,0 +1,27 @@
+@baseurl = http://localhost:8001/api/v1/message
+
+###
+
+GET {{baseurl}}
+
+###
+GET {{baseurl}}/aaa
+
+###
+POST {{baseurl}}
+Content-Type: application/application/json
+
+{
+  
+}
+
+####
+PUT {{baseurl}}/1
+Content-Type: application/application/json
+
+{
+
+}
+
+###
+DELETE {{baseurl}}/644d45b575bae055c10fc9c9
