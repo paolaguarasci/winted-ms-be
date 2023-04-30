@@ -1,0 +1,55 @@
+@baseurl = http://localhost:8004/api/v1/resource
+
+###
+
+GET {{baseurl}}/image/644ce0c1c0aaa7218821a394
+
+
+###
+POST {{baseurl}}/image
+Content-Type: multipart/form-data; boundary = ----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="productRelated"
+
+nome prodotto correlatoasasdasd
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="isFeatured"
+
+true
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample123.jpg"
+Content-Type: image/jpeg
+
+< ./sample.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+###
+
+# ####
+# PUT {{baseurl}}/644d35690b56f0720b01f1a9
+# Content-Type: application/json
+
+# {
+#   "id": "644d35690b56f0720b01f1a9",
+#   "name": "Levis Shirt",
+#   "description": "Levis Shirt",
+#   "price": 120
+# }
+
+# ###
+# DELETE {{baseurl}}/644d3422ecd7623e908c9566
+
+
+# ###
+# POST http://localhost:8080/api/v1/user/csv
+# Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW
+# Content-Disposition: form-data; name="file"; filename="test.csv"
+# Content-Type: text/csv
+
+# <@ ./src/main/resources/test.csv
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW--
