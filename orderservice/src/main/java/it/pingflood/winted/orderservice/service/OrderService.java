@@ -5,9 +5,10 @@ import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OrderService {
-  OrderResponse getOne(Long id);
+  OrderResponse getOne(UUID id);
   
   List<OrderResponse> getAll();
   
@@ -15,7 +16,7 @@ public interface OrderService {
   
   OrderResponse createOrder(OrderRequest orderRequest);
   
-  OrderResponse updateOrder(Long id, OrderPutRequest orderPutRequest);
+  OrderResponse updateOrder(UUID id, OrderPutRequest orderPutRequest);
   
-  void deleteOrder(Long id);
+  void deleteOrder(UUID id);
 }

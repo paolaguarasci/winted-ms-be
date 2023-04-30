@@ -11,7 +11,7 @@ import org.modelmapper.config.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -28,7 +28,7 @@ public class OrderServiceImpl implements OrderService {
   }
   
   @Override
-  public OrderResponse getOne(Long id) {
+  public OrderResponse getOne(UUID id) {
     return modelMapper.map(orderRepository.findById(id).orElseThrow(), OrderResponse.class);
   }
   
@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
     return orderRepository.findAll()
       .stream()
       .map(order -> modelMapper.map(order, OrderResponse.class))
-      .collect(Collectors.toList());
+      .toList();
   }
   
   @Override
@@ -45,11 +45,14 @@ public class OrderServiceImpl implements OrderService {
     return orderRepository.findAllByUser(userId)
       .stream()
       .map(order -> modelMapper.map(order, OrderResponse.class))
-      .collect(Collectors.toList());
+      .toList();
   }
   
   @Override
   public OrderResponse createOrder(OrderRequest orderRequest) {
+    if (orderRepository.findByUserAndProduct(orderRequest.getUser(), orderRequest.getProduct()).isPresent()) {
+      throw new IllegalArgumentException();
+    }
     return modelMapper.map(
       orderRepository.save(Order.builder()
         .user(orderRequest.getUser())
@@ -58,14 +61,17 @@ public class OrderServiceImpl implements OrderService {
   }
   
   @Override
-  public OrderResponse updateOrder(Long id, OrderPutRequest orderPutRequest) {
+  public OrderResponse updateOrder(UUID id, OrderPutRequest orderPutRequest) {
+    if (!id.equals(orderPutRequest.getId())) {
+      throw new IllegalArgumentException();
+    }
     Order oldOrder = orderRepository.findById(id).orElseThrow();
     oldOrder.setProduct(orderPutRequest.getProduct());
     return modelMapper.map(orderRepository.save(oldOrder), OrderResponse.class);
   }
   
   @Override
-  public void deleteOrder(Long id) {
+  public void deleteOrder(UUID id) {
     orderRepository.delete(orderRepository.findById(id).orElseThrow());
   }
   

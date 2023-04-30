@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/order")
@@ -30,7 +31,7 @@ public class OrderController {
   
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<OrderResponse> getOne(@PathVariable("id") Long id) {
+  public ResponseEntity<OrderResponse> getOne(@PathVariable("id") UUID id) {
     return ResponseEntity.of(Optional.of(orderService.getOne(id)));
   }
   
@@ -42,14 +43,14 @@ public class OrderController {
   
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<OrderResponse> updateOne(@PathVariable("id") Long id, OrderPutRequest orderRequest) {
+  public ResponseEntity<OrderResponse> updateOne(@PathVariable("id") UUID id, OrderPutRequest orderRequest) {
     return ResponseEntity.of(Optional.of(orderService.updateOrder(id, orderRequest)));
   }
   
   
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteOne(@PathVariable("id") Long id) {
+  public void deleteOne(@PathVariable("id") UUID id) {
     orderService.deleteOrder(id);
   }
 }

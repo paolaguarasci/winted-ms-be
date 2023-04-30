@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderPutRequest  implements Serializable {
-  private Long id;
+public class OrderPutRequest implements Serializable {
+  private UUID id;
   private String user;
   private String product;
 }

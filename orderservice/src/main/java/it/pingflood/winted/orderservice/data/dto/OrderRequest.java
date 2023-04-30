@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderRequest  implements Serializable {
+public class OrderRequest implements Serializable {
   private String user;
   private String product;
 }
