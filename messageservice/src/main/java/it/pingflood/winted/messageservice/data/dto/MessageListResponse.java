@@ -11,8 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MessageListDTO {
-  private String id;
-  private List<ParticipantDTO> participants;
-  private List<MessageDTO> messages;
+public class MessageListResponse {
+  List<MessageResponse> messageList;
 }

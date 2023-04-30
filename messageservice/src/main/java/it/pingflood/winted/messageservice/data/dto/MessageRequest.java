@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MessageDTO {
-  private String id;
+public class MessageRequest {
   private String from;
   private String to;
   private String content;
   private String answer;
+  private String timestamp;
 }
