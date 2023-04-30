@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -19,10 +20,10 @@ import java.util.Objects;
 public class Order {
   
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", nullable = false)
-  @JdbcTypeCode(SqlTypes.BIGINT)
-  private Long id;
+  @JdbcTypeCode(SqlTypes.VARCHAR)
+  private UUID id;
   
   private String user;
   private String product;
