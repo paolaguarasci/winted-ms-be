@@ -49,7 +49,7 @@ public class AWSServiceImpl implements AWSService {
   public String saveObj(byte[] file) {
     InputStream inputStream = new ByteArrayInputStream(file);
     ObjectMetadata objectMetadata = new ObjectMetadata();
-    String objectKey = UUID.randomUUID() + ".jpg";
+    String objectKey = UUID.randomUUID() + ".png";
     s3Client.putObject(new PutObjectRequest(this.awsConfig.getAwsBouquet(), objectKey, inputStream, objectMetadata));
     return objectKey;
   }

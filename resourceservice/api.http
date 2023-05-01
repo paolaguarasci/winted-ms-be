@@ -2,8 +2,8 @@
 
 ###
 
-GET {{baseurl}}/image/644ce0c1c0aaa7218821a394
-
+GET {{baseurl}}/image/ba35b681-0fa4-41bf-83be-1c69671f6ede
+Accept: image/png
 
 ###
 POST {{baseurl}}/image
@@ -18,10 +18,11 @@ Content-Disposition: form-data; name="isFeatured"
 
 true
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="sample123.jpg"
-Content-Type: image/jpeg
+Content-Disposition: form-data; name="file"; filename="sample123.png"
+Content-Type: image/png
 
-< ./sample.jpg
+< ./sample.png
+# < ./sample_small.png
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
