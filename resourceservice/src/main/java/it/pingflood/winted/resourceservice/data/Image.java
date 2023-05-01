@@ -15,8 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Image extends Resource {
-  String fileName;
-  String fileType;
+  
   
   @Enumerated(EnumType.STRING)
   FEATURED isFeatured = FEATURED.FALSE;

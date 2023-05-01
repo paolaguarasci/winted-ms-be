@@ -26,6 +26,10 @@ public class Resource {
   private UUID id;
   private String productRelated;
   
+  private String fileName;
+  private String fileType;
+  private String fileUrl;
+  
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

@@ -31,3 +31,13 @@ logging:
     org.springframework.web: "debug"
     org.hibernate: "warn"
     it.pingflood.winted: "debug"
+
+test: ciao
+
+app:
+  aws:
+    s3:
+      bouquetName: "winted-resource"
+    credential:
+      accessKey: 'AKIAVFWIQUJXGMLH5U5F'
+      secretKey: "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"
