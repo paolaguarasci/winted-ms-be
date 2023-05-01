@@ -21,21 +21,15 @@ public class ResourceController {
     this.resourceService = resourceService;
   }
   
-  
-  @GetMapping("/image/{id}")
+  @GetMapping(value = "/image/{id}", produces = {"image/*"})
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<ImageResponse> getImage(@PathVariable("id") UUID id) {
+  public ResponseEntity<byte[]> getImage(@PathVariable("id") UUID id) {
     return ResponseEntity.ok(resourceService.getOne(id));
   }
   
   @PostMapping(value = "/image", headers = ("content-type=multipart/form-data"))
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<ImageResponse> saveImage(ImageRequest imageRequest) {
-    
-    log.debug("UPLOAD IMAGE Type {}", imageRequest.getFile().getContentType());
-    log.debug("UPLOAD IMAGE Size {}", imageRequest.getFile().getSize());
-    log.debug("UPLOAD IMAGE Original File Name {}", imageRequest.getFile().getOriginalFilename());
-    
     return ResponseEntity.ok(resourceService.saveOne(imageRequest));
   }
 }

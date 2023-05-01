@@ -1,11 +1,13 @@
 package it.pingflood.winted.resourceservice.service;
 
+import com.amazonaws.services.s3.model.S3Object;
+
 public interface AWSService {
   String saveObj(byte[] file);
   
   String saveTxt(byte[] file);
   
-  void getObj();
+  S3Object getObj(String key);
   
   String getBaseUrl();
   

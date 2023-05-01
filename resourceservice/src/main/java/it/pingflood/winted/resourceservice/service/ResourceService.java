@@ -6,7 +6,7 @@ import it.pingflood.winted.resourceservice.data.dto.ImageResponse;
 import java.util.UUID;
 
 public interface ResourceService {
-  ImageResponse getOne(UUID id);
+  byte[] getOne(UUID id);
   
   ImageResponse saveOne(ImageRequest imageRequest);
 }

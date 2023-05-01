@@ -6,8 +6,10 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import it.pingflood.winted.resourceservice.config.AWSConfig;
 import it.pingflood.winted.resourceservice.service.AWSService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +42,7 @@ public class AWSServiceImpl implements AWSService {
   public String saveTxt(byte[] file) {
     String objectKey = UUID.randomUUID() + ".txt";
     s3Client.putObject(this.awsConfig.getAwsBouquet(), objectKey, Arrays.toString(file));
-    return this.getObjectUrl(objectKey);
+    return objectKey;
   }
   
   @Override
@@ -49,12 +51,12 @@ public class AWSServiceImpl implements AWSService {
     ObjectMetadata objectMetadata = new ObjectMetadata();
     String objectKey = UUID.randomUUID() + ".jpg";
     s3Client.putObject(new PutObjectRequest(this.awsConfig.getAwsBouquet(), objectKey, inputStream, objectMetadata));
-    return this.getObjectUrl(objectKey);
+    return objectKey;
   }
   
-  
   @Override
-  public void getObj() {
+  public S3Object getObj(String key) {
+    return s3Client.getObject(new GetObjectRequest(this.awsConfig.getAwsBouquet(), key));
   }
   
   @Override

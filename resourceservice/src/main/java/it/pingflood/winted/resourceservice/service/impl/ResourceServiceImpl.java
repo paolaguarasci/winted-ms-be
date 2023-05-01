@@ -1,5 +1,6 @@
 package it.pingflood.winted.resourceservice.service.impl;
 
+import com.amazonaws.services.s3.model.S3Object;
 import it.pingflood.winted.resourceservice.data.Image;
 import it.pingflood.winted.resourceservice.data.dto.ImageRequest;
 import it.pingflood.winted.resourceservice.data.dto.ImageResponse;
@@ -30,18 +31,22 @@ public class ResourceServiceImpl implements ResourceService {
       .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
   }
   
+  @SneakyThrows
   @Override
-  public ImageResponse getOne(UUID id) {
-    return modelMapper.map(imageRepository.findById(id).orElseThrow(), ImageResponse.class);
+  public byte[] getOne(UUID id) {
+    Image imgMeta = imageRepository.findById(id).orElseThrow();
+    S3Object s3Obj = awsService.getObj(imgMeta.getFileName());
+    return s3Obj.getObjectContent().readAllBytes();
   }
   
   @SneakyThrows
   @Override
   public ImageResponse saveOne(ImageRequest imageRequest) {
-    String url = awsService.saveObj(imageRequest.getFile().getBytes());
-    log.debug("Immagine caricata su {}", url);
+    String key = awsService.saveObj(imageRequest.getFile().getBytes());
+    log.debug("Immagine caricata su {}", awsService.getObjectUrl(key));
     Image img = modelMapper.map(imageRequest, Image.class);
-    img.setFileUrl(url);
+    img.setFileUrl(awsService.getObjectUrl(key));
+    img.setFileName(key);
     return modelMapper.map(imageRepository.save(img), ImageResponse.class);
   }
 }

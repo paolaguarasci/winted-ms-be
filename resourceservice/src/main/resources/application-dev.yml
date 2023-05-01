@@ -32,8 +32,6 @@ logging:
     org.hibernate: "warn"
     it.pingflood.winted: "debug"
 
-test: ciao
-
 app:
   aws:
     s3:
