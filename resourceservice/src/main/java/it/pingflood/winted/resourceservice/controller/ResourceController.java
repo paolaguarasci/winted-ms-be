@@ -30,6 +30,7 @@ public class ResourceController {
   @PostMapping(value = "/image", headers = ("content-type=multipart/form-data"))
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<ImageResponse> saveImage(ImageRequest imageRequest) {
+    log.debug("RICHIESTA SAVE IMG relativa al prodotto {}", imageRequest.getProductRelated());
     return ResponseEntity.ok(resourceService.saveOne(imageRequest));
   }
 }
