@@ -34,13 +34,22 @@ public class ProductController {
   public ResponseEntity<ProductResponse> getOne(@PathVariable("id") String id) {
     return ResponseEntity.of(Optional.of(productService.getOne(id)));
   }
+
+//  @PostMapping
+//  @ResponseStatus(HttpStatus.CREATED)
+//  public ResponseEntity<ProductResponse> createOne(@RequestBody ProductRequest productRequest) {
+//    log.debug("CONTROLLER - Richiesta nuovo prodotto {}", productRequest);
+//    return ResponseEntity.of(Optional.of(productService.createProduct(productRequest)));
+//  }
   
-  @PostMapping
+  
+  @PostMapping(consumes = {"multipart/form-data"})
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<ProductResponse> createOne(@RequestBody ProductRequest productRequest) {
+  public ResponseEntity<ProductResponse> saveImage(ProductRequest productRequest) {
     log.debug("CONTROLLER - Richiesta nuovo prodotto {}", productRequest);
     return ResponseEntity.of(Optional.of(productService.createProduct(productRequest)));
   }
+  
   
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)

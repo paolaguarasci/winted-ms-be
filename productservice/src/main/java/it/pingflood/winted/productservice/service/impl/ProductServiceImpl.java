@@ -11,17 +11,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @Transactional
 @Slf4j
 public class ProductServiceImpl implements ProductService {
   
+  public static final String EXTERNAL_UPLOAD_URL = "http://localhost:8004/api/v1/resource/image";
   private final ProductRepository productRepository;
   private final ModelMapper modelMapper;
   
@@ -41,19 +49,39 @@ public class ProductServiceImpl implements ProductService {
   
   @Override
   public List<ProductResponse> getAll() {
-    return productRepository.findAll().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
+    return productRepository.findAll().stream().map(product -> modelMapper.map(product, ProductResponse.class)).toList();
   }
   
+  @SneakyThrows
   @Override
   public ProductResponse createProduct(ProductRequest productRequest) {
-    Product newProduct = Product.builder().name(productRequest.getName()).description(productRequest.getDescription()).price(productRequest.getPrice()).build();
+    MultipartBodyBuilder builder = new MultipartBodyBuilder();
+    String headerFile = String.format("form-data; name=%s; filename=%s", "file", productRequest.getFile().getOriginalFilename());
+    builder.part("file", new ByteArrayResource(productRequest.getFile().getBytes()), MediaType.IMAGE_PNG).header("Content-Disposition", headerFile);
+    
+    MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
+    
+    Map<String, Object> resp;
+    
+    try {
+      resp = WebClient.builder().build().post()
+        .uri(EXTERNAL_UPLOAD_URL)
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .body(BodyInserters.fromMultipartData(multipartBody))
+        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(Map.class)).block();
+      
+      if (resp == null) throw new IllegalArgumentException("Errore nel caricamento delle immagini");
+      
+      
+    } catch (Exception ignored) {
+      throw new IllegalArgumentException("Errore nel salvataggio del prodotto.");
+    }
+    
+    
+    Product newProduct = Product.builder().name(productRequest.getName()).description(productRequest.getDescription()).resources(List.of(resp.get("id").toString())).price(productRequest.getPrice()).build();
     Product savedProduct = productRepository.save(newProduct);
-    
-    log.debug("SERVICE - Richiesta nuovo prodotto {}", productRequest);
-    log.debug("Salvo il nuovo prodotto {}", newProduct);
-    log.debug("Prodotto salvato {}", savedProduct);
-    
     return modelMapper.map(savedProduct, ProductResponse.class);
+    
   }
   
   @SneakyThrows

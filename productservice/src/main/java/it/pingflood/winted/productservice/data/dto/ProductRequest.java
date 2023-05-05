@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -15,4 +16,5 @@ public class ProductRequest {
   private String name;
   private String description;
   private BigDecimal price;
+  private MultipartFile file;
 }
