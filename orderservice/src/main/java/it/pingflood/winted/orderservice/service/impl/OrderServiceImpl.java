@@ -4,10 +4,12 @@ import it.pingflood.winted.orderservice.data.Order;
 import it.pingflood.winted.orderservice.data.dto.OrderPutRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
+import it.pingflood.winted.orderservice.event.NewOrderEvent;
 import it.pingflood.winted.orderservice.repository.OrderRepository;
 import it.pingflood.winted.orderservice.service.OrderService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +21,12 @@ public class OrderServiceImpl implements OrderService {
   private final OrderRepository orderRepository;
   private final ModelMapper modelMapper;
   
-  public OrderServiceImpl(OrderRepository orderRepository) {
+  private final KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate;
+  
+  
+  public OrderServiceImpl(OrderRepository orderRepository, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate) {
     this.orderRepository = orderRepository;
+    this.newOrderEventKafkaTemplate = newOrderEventKafkaTemplate;
     modelMapper = new ModelMapper();
     modelMapper.getConfiguration()
       .setFieldMatchingEnabled(true)
@@ -53,11 +59,15 @@ public class OrderServiceImpl implements OrderService {
     if (orderRepository.findByUserAndProduct(orderRequest.getUser(), orderRequest.getProduct()).isPresent()) {
       throw new IllegalArgumentException();
     }
-    return modelMapper.map(
+    
+    OrderResponse newOrderResponse = modelMapper.map(
       orderRepository.save(Order.builder()
         .user(orderRequest.getUser())
         .product(orderRequest.getProduct())
         .build()), OrderResponse.class);
+    
+    newOrderEventKafkaTemplate.send("NewOrder", "foo", new NewOrderEvent(newOrderResponse.getProduct(), newOrderResponse.getProduct(), ""));
+    return newOrderResponse;
   }
   
   @Override

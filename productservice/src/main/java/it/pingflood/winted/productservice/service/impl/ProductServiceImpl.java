@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
   
   private final KafkaTemplate<String, NewProductEvent> kafkaTemplate;
   
-  public ProductServiceImpl(ProductRepository productRepository, KafkaTemplate kafkaTemplate) {
+  public ProductServiceImpl(ProductRepository productRepository, KafkaTemplate<String, NewProductEvent> kafkaTemplate) {
     this.productRepository = productRepository;
     this.kafkaTemplate = kafkaTemplate;
     modelMapper = new ModelMapper();
