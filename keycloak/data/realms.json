@@ -385,7 +385,7 @@
   "otpPolicyLookAheadWindow" : 1,
   "otpPolicyPeriod" : 30,
   "otpPolicyCodeReusable" : false,
-  "otpSupportedApplications" : [ "totpAppMicrosoftAuthenticatorName", "totpAppFreeOTPName", "totpAppGoogleName" ],
+  "otpSupportedApplications" : [ "totpAppFreeOTPName", "totpAppMicrosoftAuthenticatorName", "totpAppGoogleName" ],
   "webAuthnPolicyRpEntityName" : "keycloak",
   "webAuthnPolicySignatureAlgorithms" : [ "ES256" ],
   "webAuthnPolicyRpId" : "",
@@ -429,6 +429,10 @@
     "federatedIdentities" : [ {
       "identityProvider" : "google",
       "userId" : "116987652121943503380",
+      "userName" : "paolaguarasci@gmail.com"
+    }, {
+      "identityProvider" : "facebook",
+      "userId" : "254366053672034",
       "userName" : "paolaguarasci@gmail.com"
     } ],
     "realmRoles" : [ "default-roles-winted" ],
@@ -1241,6 +1245,26 @@
       "userIp" : "false",
       "clientSecret" : "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",
       "clientId" : "535750182624-t8qov6o85ft87r73142bbl3gg50fgldk.apps.googleusercontent.com"
+    }
+  }, {
+    "alias" : "facebook",
+    "internalId" : "96fb4e29-9791-409e-a578-f42686e4f561",
+    "providerId" : "facebook",
+    "enabled" : true,
+    "updateProfileFirstLoginMode" : "on",
+    "trustEmail" : false,
+    "storeToken" : false,
+    "addReadTokenRoleOnCreate" : false,
+    "authenticateByDefault" : false,
+    "linkOnly" : false,
+    "firstBrokerLoginFlowAlias" : "first broker login",
+    "config" : {
+      "hideOnLoginPage" : "false",
+      "clientId" : "1591959781329829",
+      "acceptsPromptNoneForwardFromClient" : "false",
+      "disableUserInfo" : "false",
+      "syncMode" : "IMPORT",
+      "clientSecret" : "5b6cf6a623f9ad1becf97dc5d651dc09"
     }
   } ],
   "identityProviderMappers" : [ ],
@@ -2492,7 +2516,7 @@
   "otpPolicyLookAheadWindow" : 1,
   "otpPolicyPeriod" : 30,
   "otpPolicyCodeReusable" : false,
-  "otpSupportedApplications" : [ "totpAppMicrosoftAuthenticatorName", "totpAppFreeOTPName", "totpAppGoogleName" ],
+  "otpSupportedApplications" : [ "totpAppFreeOTPName", "totpAppMicrosoftAuthenticatorName", "totpAppGoogleName" ],
   "webAuthnPolicyRpEntityName" : "keycloak",
   "webAuthnPolicySignatureAlgorithms" : [ "ES256" ],
   "webAuthnPolicyRpId" : "",
