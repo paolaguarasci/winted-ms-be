@@ -15,8 +15,45 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+  cloud:
+    gateway:
+      routes:
+        - id: discovery-server
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka
+          filters:
+            - SetPath=/
+        - id: discovery-server-static
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/**
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/v1/product,/api/v1/product/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/order,/api/v1/order/**
+        - id: message-service
+          uri: lb://message-service
+          predicates:
+            - Path=/api/v1/message,/api/v1/message/**
+        - id: resource-service
+          uri: lb://resource-service
+          predicates:
+            - Path=/api/v1/resource,/api/v1/resource/**
 
 app:
   config:
     init:
       db: true
+
+eureka:
+  client:
+  serviceUrl:
+    defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8080

@@ -1,4 +1,4 @@
-@baseurl = http://localhost:8003/api/v1/product
+@baseurl = http://localhost:8080/api/v1/product
 
 ###
 
