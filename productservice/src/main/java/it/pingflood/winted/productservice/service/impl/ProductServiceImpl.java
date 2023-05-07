@@ -4,6 +4,7 @@ import it.pingflood.winted.productservice.data.Product;
 import it.pingflood.winted.productservice.data.dto.ProductPutRequest;
 import it.pingflood.winted.productservice.data.dto.ProductRequest;
 import it.pingflood.winted.productservice.data.dto.ProductResponse;
+import it.pingflood.winted.productservice.event.NewProductEvent;
 import it.pingflood.winted.productservice.repository.ProductRepository;
 import it.pingflood.winted.productservice.service.ProductService;
 import lombok.SneakyThrows;
@@ -15,6 +16,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
@@ -33,8 +35,11 @@ public class ProductServiceImpl implements ProductService {
   private final ProductRepository productRepository;
   private final ModelMapper modelMapper;
   
-  public ProductServiceImpl(ProductRepository productRepository) {
+  private final KafkaTemplate<String, NewProductEvent> kafkaTemplate;
+  
+  public ProductServiceImpl(ProductRepository productRepository, KafkaTemplate<String, NewProductEvent> kafkaTemplate) {
     this.productRepository = productRepository;
+    this.kafkaTemplate = kafkaTemplate;
     modelMapper = new ModelMapper();
     modelMapper.getConfiguration()
       .setFieldMatchingEnabled(true)
@@ -80,6 +85,7 @@ public class ProductServiceImpl implements ProductService {
     
     Product newProduct = Product.builder().name(productRequest.getName()).description(productRequest.getDescription()).resources(List.of(resp.get("id").toString())).price(productRequest.getPrice()).build();
     Product savedProduct = productRepository.save(newProduct);
+    kafkaTemplate.send("NewProduct", "foo", new NewProductEvent(savedProduct.getId()));
     return modelMapper.map(savedProduct, ProductResponse.class);
     
   }
