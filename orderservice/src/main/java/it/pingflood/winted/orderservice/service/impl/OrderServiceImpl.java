@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         .product(orderRequest.getProduct())
         .build()), OrderResponse.class);
     
-    newOrderEventKafkaTemplate.send("NewOrder", "foo", new NewOrderEvent(newOrderResponse.getProduct(), newOrderResponse.getProduct(), ""));
+    newOrderEventKafkaTemplate.send("NewOrder", "order-service", new NewOrderEvent(newOrderResponse.getProduct(), newOrderResponse.getProduct(), ""));
     return newOrderResponse;
   }
   

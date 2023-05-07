@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
     
     Product newProduct = Product.builder().name(productRequest.getName()).description(productRequest.getDescription()).resources(List.of(resp.get("id").toString())).price(productRequest.getPrice()).build();
     Product savedProduct = productRepository.save(newProduct);
-    kafkaTemplate.send("NewProduct", "foo", new NewProductEvent(savedProduct.getId()));
+    kafkaTemplate.send("NewProduct", "product-service", new NewProductEvent(savedProduct.getId()));
     return modelMapper.map(savedProduct, ProductResponse.class);
     
   }
