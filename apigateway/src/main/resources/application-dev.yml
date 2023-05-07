@@ -15,6 +15,7 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+
   cloud:
     gateway:
       routes:
@@ -44,7 +45,11 @@ spring:
           uri: lb://resource-service
           predicates:
             - Path=/api/v1/resource,/api/v1/resource/**
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8000/realms/winted
 app:
   config:
     init:
