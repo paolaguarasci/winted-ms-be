@@ -25,13 +25,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @Slf4j
 public class ProductServiceImpl implements ProductService {
   
-  public static final String EXTERNAL_UPLOAD_URL = "http://localhost:8004/api/v1/resource/image";
+  public static final String EXTERNAL_UPLOAD_URL = "http://localhost:8080/api/v1/resource/image";
   private final ProductRepository productRepository;
   private final ModelMapper modelMapper;
   
@@ -54,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
   
   @Override
   public List<ProductResponse> getAll() {
-    return productRepository.findAll().stream().map(product -> modelMapper.map(product, ProductResponse.class)).toList();
+    return productRepository.findAll().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
   }
   
   @SneakyThrows
