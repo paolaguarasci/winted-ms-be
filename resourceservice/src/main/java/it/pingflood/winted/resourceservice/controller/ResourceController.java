@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,8 +30,8 @@ public class ResourceController {
   
   @PostMapping(value = "/image", headers = ("content-type=multipart/form-data"))
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<ImageResponse> saveImage(ImageRequest imageRequest) {
+  public ResponseEntity<List<ImageResponse>> saveImages(ImageRequest imageRequest) {
     log.debug("RICHIESTA SAVE IMG relativa al prodotto {}", imageRequest.getProductRelated());
-    return ResponseEntity.ok(resourceService.saveOne(imageRequest));
+    return ResponseEntity.ok(resourceService.saveMultiple(imageRequest));
   }
 }

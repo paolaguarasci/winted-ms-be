@@ -20,9 +20,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,29 +64,40 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public ProductResponse createProduct(ProductRequest productRequest) {
     MultipartBodyBuilder builder = new MultipartBodyBuilder();
-    String headerFile = String.format("form-data; name=%s; filename=%s", "file", productRequest.getFile().getOriginalFilename());
-    builder.part("file", new ByteArrayResource(productRequest.getFile().getBytes()), MediaType.IMAGE_PNG).header("Content-Disposition", headerFile);
+    MultipartFile[] files = productRequest.getFiles();
+    for (MultipartFile file : files) {
+      String headerFile = String.format("form-data; name=%s; filename=%s", "files", file.getOriginalFilename());
+      builder.part("files", new ByteArrayResource(file.getBytes()), MediaType.IMAGE_PNG).header("Content-Disposition", headerFile);
+    }
     
     MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
     
-    Map<String, Object> resp;
+    List<Map<String, Object>> resp;
     
     try {
       resp = WebClient.builder().build().post()
         .uri(EXTERNAL_UPLOAD_URL)
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .body(BodyInserters.fromMultipartData(multipartBody))
-        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(Map.class)).block();
+        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(List.class)).block();
       
       if (resp == null) throw new IllegalArgumentException("Errore nel caricamento delle immagini");
       
+      System.out.println("================ RESPONSE =================== ");
+      System.out.println(resp);
       
     } catch (Exception ignored) {
       throw new IllegalArgumentException("Errore nel salvataggio del prodotto.");
     }
     
+    List<String> ids = new ArrayList<>();
     
-    Product newProduct = Product.builder().name(productRequest.getName()).description(productRequest.getDescription()).resources(List.of(resp.get("id").toString())).price(productRequest.getPrice()).build();
+    for (Map<String, Object> img : resp) {
+      ids.add(img.get("id").toString());
+    }
+    
+    
+    Product newProduct = Product.builder().name(productRequest.getName()).description(productRequest.getDescription()).resources(ids).price(productRequest.getPrice()).build();
     Product savedProduct = productRepository.save(newProduct);
     kafkaTemplate.send("NewProduct", "product-service", new NewProductEvent(savedProduct.getId()));
     return modelMapper.map(savedProduct, ProductResponse.class);

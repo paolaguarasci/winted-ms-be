@@ -13,5 +13,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageRequest {
   String productRelated;
   String isFeatured;
-  MultipartFile file;
+  MultipartFile[] files;
 }
