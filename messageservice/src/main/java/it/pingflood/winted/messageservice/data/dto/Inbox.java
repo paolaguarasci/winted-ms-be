@@ -11,8 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MessageListResponse {
-  String altroUtente;
-  String prodottoCorrelato;
-  List<MessageResponse> messaggi;
+public class Inbox {
+  List<AnteprimaInbox> anteprime;
+  // MessageListResponse conversazione;
 }

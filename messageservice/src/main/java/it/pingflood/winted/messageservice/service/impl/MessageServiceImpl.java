@@ -39,7 +39,7 @@ public class MessageServiceImpl implements MessageService {
   @Override
   public MessageListResponse getConversation(String u1, String u2) {
     List<Message> conversation = messageRepository.findAllByFromIsInAndToIsInOrderByTimestampDesc(List.of(u1, u2), List.of(u1, u2));
-    return MessageListResponse.builder().messageList(conversation.stream().map(message -> modelMapper.map(message, MessageResponse.class)).collect(Collectors.toList())).build();
+    return MessageListResponse.builder().messaggi(conversation.stream().map(message -> modelMapper.map(message, MessageResponse.class)).collect(Collectors.toList())).build();
   }
   
   @Override

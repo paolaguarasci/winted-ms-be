@@ -17,5 +17,10 @@ public class ProductResponse {
   private String name;
   private String description;
   private BigDecimal price;
+  private Integer preferred;
+  private String brand_id; // brand-id
+  private String category_id;
+  private String owner_id; // owner-id
+  private String featured;
   private List<String> resources;
 }

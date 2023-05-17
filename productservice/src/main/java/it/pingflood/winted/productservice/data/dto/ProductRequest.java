@@ -16,5 +16,7 @@ public class ProductRequest {
   private String name;
   private String description;
   private BigDecimal price;
+  private String brand_id;
+  private String category_id;
   private MultipartFile[] files;
 }

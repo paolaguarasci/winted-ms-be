@@ -96,8 +96,19 @@ public class ProductServiceImpl implements ProductService {
       ids.add(img.get("id").toString());
     }
     
+    // TODO Procurarselo in maniera corretta!
+    String loggedUserId = "6464d3155ded8d052d323c2a";
     
-    Product newProduct = Product.builder().name(productRequest.getName()).description(productRequest.getDescription()).resources(ids).price(productRequest.getPrice()).build();
+    Product newProduct = Product.builder()
+      .name(productRequest.getName())
+      .description(productRequest.getDescription())
+      .resources(ids)
+      .preferred(0)
+      .brand_id(productRequest.getBrand_id())
+      .category_id(productRequest.getCategory_id())
+      .owner_id(loggedUserId)
+      .price(productRequest.getPrice())
+      .build();
     Product savedProduct = productRepository.save(newProduct);
     kafkaTemplate.send("NewProduct", "product-service", new NewProductEvent(savedProduct.getId()));
     return modelMapper.map(savedProduct, ProductResponse.class);
@@ -123,5 +134,15 @@ public class ProductServiceImpl implements ProductService {
   public void deleteProduct(String id) {
     ObjectId objectId = new ObjectId(id);
     productRepository.delete(productRepository.findById(objectId.toString()).orElseThrow());
+  }
+  
+  @Override
+  public void addPreferred(String productId) {
+    productRepository.findById(productId).orElseThrow().addPreferred();
+  }
+  
+  @Override
+  public void removePreferred(String productId) {
+    productRepository.findById(productId).orElseThrow().removePreferred();
   }
 }

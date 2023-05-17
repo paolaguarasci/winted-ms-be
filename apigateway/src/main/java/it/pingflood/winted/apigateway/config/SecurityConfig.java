@@ -20,6 +20,8 @@ public class SecurityConfig {
         .permitAll()
         .pathMatchers("/api/v1/resource/**")
         .permitAll()
+        .pathMatchers("/api/v1/profile/**")
+        .permitAll()
         .anyExchange()
         .authenticated())
       .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt)

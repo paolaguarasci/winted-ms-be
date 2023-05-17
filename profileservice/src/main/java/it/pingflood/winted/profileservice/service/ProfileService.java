@@ -15,5 +15,17 @@ public interface ProfileService {
   
   ProfileResponse updateOne(String id, ProfileUpdateRequest profileUpdateRequest);
   
+  ProfileResponse addPreferred(String productId);
+  
+  ProfileResponse removePreferred(String productId);
+  
+  ProfileResponse addWardrobe(String productId);
+  
+  ProfileResponse removeWardrobe(String productId);
+  
+  ProfileResponse addDraft(String productId);
+  
+  ProfileResponse removeDraft(String productId);
+  
   void deleteOne(String id);
 }

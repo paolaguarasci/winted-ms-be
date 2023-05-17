@@ -24,7 +24,7 @@ public class MessageController {
     this.messageService = messageService;
   }
   
-  @GetMapping("/form/{username}")
+  @GetMapping("/from/{username}")
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<Map<String, List<MessageResponse>>> getAllConversationFromUsername(@PathVariable(value = "username") String username) {
     return ResponseEntity.of(Optional.of(messageService.getAllConversationFromUsername(username)));

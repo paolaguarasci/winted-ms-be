@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class ProfileCreateRequest {
   String username;
+  private String providerIdentityId;
 }

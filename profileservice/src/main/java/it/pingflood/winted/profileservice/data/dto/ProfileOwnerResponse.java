@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,5 +14,9 @@ import lombok.NoArgsConstructor;
 public class ProfileOwnerResponse {
   private String id;
   private String username;
+  private List<String> preferred;
+  private List<String> wardrobe;
+  private List<String> draft;
+  private Double reputation;
   private String providerIdentityId;
 }

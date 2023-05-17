@@ -37,6 +37,7 @@ public class ProfileController {
     return ResponseEntity.status(HttpStatus.CREATED).body(profileService.createOne(profileCreateRequest));
   }
   
+  
   @PutMapping("{id}")
   @ResponseStatus(HttpStatus.OK)
   ResponseEntity<ProfileResponse> handlePutOne(@PathVariable("id") String id, @RequestBody ProfileUpdateRequest profileUpdateRequest) {
@@ -49,4 +50,20 @@ public class ProfileController {
     profileService.deleteOne(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
+
+
+//  @GetMapping("{user_id}/preferred")
+//  @ResponseStatus(HttpStatus.OK)
+//  ResponseEntity<ProfileResponse> handleGetPreferred(@PathVariable("user_id") String userId, @RequestBody ProfileUpdateRequest profileUpdateRequest) {
+//    return ResponseEntity.status(HttpStatus.OK).body(profileService.getPreferred(userId));
+//  }
+  
+  
+  @PostMapping("{user_id}/preferred")
+  @ResponseStatus(HttpStatus.CREATED)
+  ResponseEntity<ProfileResponse> handleAddPreferred(@PathVariable("user_id") String userId, @RequestBody ProfileUpdateRequest profileUpdateRequest) {
+    return ResponseEntity.status(HttpStatus.OK).body(profileService.addPreferred(userId));
+  }
+  
+  
 }
