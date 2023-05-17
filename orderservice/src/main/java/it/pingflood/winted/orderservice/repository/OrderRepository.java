@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
   Optional<Order> findById(UUID id);
   
-  List<Order> findAllByUser(String user);
+  List<Order> findAllByBuyer(String buyer);
   
-  Optional<Order> findByUserAndProduct(String user, String product);
+  Optional<Order> findByBuyerAndProduct(String buyer, String product);
 }

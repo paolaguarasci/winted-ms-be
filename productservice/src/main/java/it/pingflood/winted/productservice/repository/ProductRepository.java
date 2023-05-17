@@ -10,4 +10,7 @@ import java.util.List;
 public interface ProductRepository extends MongoRepository<Product, String> {
   
   List<Product> findAllByName(String name);
+  
+  List<Product> findAllByOwner(String owner);
+  
 }

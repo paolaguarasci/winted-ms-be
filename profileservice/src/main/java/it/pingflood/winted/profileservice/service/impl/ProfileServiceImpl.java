@@ -1,9 +1,7 @@
 package it.pingflood.winted.profileservice.service.impl;
 
 import it.pingflood.winted.profileservice.data.Profile;
-import it.pingflood.winted.profileservice.data.dto.ProfileCreateRequest;
-import it.pingflood.winted.profileservice.data.dto.ProfileResponse;
-import it.pingflood.winted.profileservice.data.dto.ProfileUpdateRequest;
+import it.pingflood.winted.profileservice.data.dto.*;
 import it.pingflood.winted.profileservice.event.ProductEvent;
 import it.pingflood.winted.profileservice.repository.ProfileRepository;
 import it.pingflood.winted.profileservice.service.ProfileService;
@@ -32,8 +30,16 @@ public class ProfileServiceImpl implements ProfileService {
   }
   
   @Override
-  public ProfileResponse getOne(String id) {
+  public ProfileResponse getOneById(String id) {
     return modelMapper.map(profileRepository.findById(id).orElseThrow(), ProfileResponse.class);
+  }
+  
+  @Override
+  public ProfileResponse getOneByUsername(String username) {
+    if (profileRepository.findByUsername(username).isEmpty()) {
+      profileRepository.save(Profile.builder().username(username).build());
+    }
+    return modelMapper.map(profileRepository.findByUsername(username), ProfileResponse.class);
   }
   
   @Override
@@ -47,59 +53,66 @@ public class ProfileServiceImpl implements ProfileService {
   }
   
   @Override
-  public ProfileResponse addPreferred(String productId) {
-    String loggedUsername = "p1"; // TODO Procurarselo in modo consono
-    productEventKafkaTemplate.send("AddToPreferred", "profile-service", new ProductEvent(productId));
+  public ProfileResponse addPreferred(ProductPreferred product) {
+    String loggedUsername = "paola"; // TODO Procurarselo in modo consono
+    productEventKafkaTemplate.send("AddToPreferred", "profile-service", new ProductEvent(product.getProduct()));
     Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.addPreferred(productId);
+    loggedUser.addPreferred(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse removePreferred(String productId) {
-    String loggedUsername = "p1"; // TODO Procurarselo in modo consono
+  public ProfileResponse removePreferred(ProductPreferred product) {
+    String loggedUsername = "paola"; // TODO Procurarselo in modo consono
     Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.removePreferred(productId);
-    productEventKafkaTemplate.send("RemoteToPreferred", "profile-service", new ProductEvent(productId));
+    loggedUser.removePreferred(product.getProduct());
+    productEventKafkaTemplate.send("RemoteToPreferred", "profile-service", new ProductEvent(product.getProduct()));
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse addWardrobe(String productId) {
-    String loggedUsername = "p1"; // TODO Procurarselo in modo consono
+  public ProfileResponse addWardrobe(ProductWardrobe product) {
+    String loggedUsername = "paola"; // TODO Procurarselo in modo consono
     Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.addWardrobe(productId);
+    loggedUser.addWardrobe(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse removeWardrobe(String productId) {
-    String loggedUsername = "p1"; // TODO Procurarselo in modo consono
+  public ProfileResponse removeWardrobe(ProductWardrobe product) {
+    String loggedUsername = "paola"; // TODO Procurarselo in modo consono
     Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.removeWardrobe(productId);
+    loggedUser.removeWardrobe(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse addDraft(String productId) {
-    String loggedUsername = "p1"; // TODO Procurarselo in modo consono
+  public ProfileResponse addDraft(ProductDraft product) {
+    String loggedUsername = "paola"; // TODO Procurarselo in modo consono
     Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.addDraft(productId);
+    loggedUser.addDraft(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse removeDraft(String productId) {
-    String loggedUsername = "p1"; // TODO Procurarselo in modo consono
+  public ProfileResponse removeDraft(ProductDraft product) {
+    String loggedUsername = "paola"; // TODO Procurarselo in modo consono
     Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.removeDraft(productId);
+    loggedUser.removeDraft(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
+  }
+  
+  @Override
+  public List<String> getPreferred() {
+    String loggedUsername = "paola"; // TODO Procurarselo in modo consono
+    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
+    return loggedUser.getPreferred().stream().toList();
   }
   
   @Override

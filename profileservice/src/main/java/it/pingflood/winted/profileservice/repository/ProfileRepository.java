@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ProfileRepository extends MongoRepository<Profile, String> {
   Optional<Profile> findAllByUsername(String username);
+  
+  Optional<Object> findByUsername(String username);
 }

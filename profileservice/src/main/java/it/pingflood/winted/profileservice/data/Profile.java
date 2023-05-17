@@ -7,7 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Builder
 @AllArgsConstructor
@@ -19,13 +21,16 @@ public class Profile {
   @Indexed(unique = true)
   private String username;
   private String avatar;
-  private Set<String> preferred;
-  private Set<String> wardrobe;
-  private Set<String> draft;
+  private Set<String> preferred = new TreeSet<>();
+  private Set<String> wardrobe = new HashSet<>();
+  private Set<String> draft = new HashSet<>();
   private Double reputation;
   private String providerIdentityId;
   
   public void addPreferred(String productid) {
+    if (this.preferred == null) {
+      this.preferred = new TreeSet<>();
+    }
     preferred.add(productid);
   }
   

@@ -1,5 +1,6 @@
 package it.pingflood.winted.profileservice.controller;
 
+import it.pingflood.winted.profileservice.data.dto.ProductPreferred;
 import it.pingflood.winted.profileservice.data.dto.ProfileCreateRequest;
 import it.pingflood.winted.profileservice.data.dto.ProfileResponse;
 import it.pingflood.winted.profileservice.data.dto.ProfileUpdateRequest;
@@ -28,7 +29,13 @@ public class ProfileController {
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   ResponseEntity<ProfileResponse> handleGetOneAll(@PathVariable("id") String id) {
-    return ResponseEntity.ok(profileService.getOne(id));
+    return ResponseEntity.ok(profileService.getOneById(id));
+  }
+  
+  @GetMapping("/username/{username}")
+  @ResponseStatus(HttpStatus.OK)
+  ResponseEntity<ProfileResponse> handleGetOneByUsername(@PathVariable("username") String username) {
+    return ResponseEntity.ok(profileService.getOneByUsername(username));
   }
   
   @PostMapping
@@ -59,10 +66,26 @@ public class ProfileController {
 //  }
   
   
-  @PostMapping("{user_id}/preferred")
+  // Chiudere il metodo! Permessi solo all'utente loggato
+  @PostMapping("preferred")
   @ResponseStatus(HttpStatus.CREATED)
-  ResponseEntity<ProfileResponse> handleAddPreferred(@PathVariable("user_id") String userId, @RequestBody ProfileUpdateRequest profileUpdateRequest) {
-    return ResponseEntity.status(HttpStatus.OK).body(profileService.addPreferred(userId));
+  ResponseEntity<Void> handleAddPreferred(@RequestBody ProductPreferred productPreferred) {
+    profileService.addPreferred(productPreferred);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+  
+  @GetMapping("preferred")
+  @ResponseStatus(HttpStatus.OK)
+  ResponseEntity<List<String>> handleGetPreferred() {
+    return ResponseEntity.status(HttpStatus.OK).body(profileService.getPreferred());
+  }
+  
+  
+  @DeleteMapping("preferred/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  ResponseEntity<Void> handleDeleteFromPreferred(@PathVariable("id") String id) {
+    profileService.removePreferred(ProductPreferred.builder().product(id).build());
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
   
   

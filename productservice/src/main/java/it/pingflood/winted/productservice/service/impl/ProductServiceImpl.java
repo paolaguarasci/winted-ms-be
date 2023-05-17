@@ -104,9 +104,9 @@ public class ProductServiceImpl implements ProductService {
       .description(productRequest.getDescription())
       .resources(ids)
       .preferred(0)
-      .brand_id(productRequest.getBrand_id())
-      .category_id(productRequest.getCategory_id())
-      .owner_id(loggedUserId)
+      .brand(productRequest.getBrand())
+      .category(productRequest.getCategory())
+      .owner(loggedUserId)
       .price(productRequest.getPrice())
       .build();
     Product savedProduct = productRepository.save(newProduct);
@@ -144,5 +144,16 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public void removePreferred(String productId) {
     productRepository.findById(productId).orElseThrow().removePreferred();
+  }
+  
+  @Override
+  public List<ProductResponse> getAllByOwnerId(String ownerId) {
+    return productRepository.findAllByOwner(ownerId).stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
+  }
+  
+  @Override
+  public List<ProductResponse> getSameByProdId(String prodid) {
+    // TODO logica implementativa... la similitudine in base a cosa???
+    return productRepository.findAll().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
   }
 }

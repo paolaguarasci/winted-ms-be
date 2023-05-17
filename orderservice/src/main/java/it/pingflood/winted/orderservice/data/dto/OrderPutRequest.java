@@ -14,6 +14,6 @@ import java.util.UUID;
 @Data
 public class OrderPutRequest implements Serializable {
   private UUID id;
-  private String user;
+  private String buyer;
   private String product;
 }

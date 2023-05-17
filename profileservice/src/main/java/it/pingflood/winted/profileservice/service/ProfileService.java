@@ -1,31 +1,33 @@
 package it.pingflood.winted.profileservice.service;
 
-import it.pingflood.winted.profileservice.data.dto.ProfileCreateRequest;
-import it.pingflood.winted.profileservice.data.dto.ProfileResponse;
-import it.pingflood.winted.profileservice.data.dto.ProfileUpdateRequest;
+import it.pingflood.winted.profileservice.data.dto.*;
 
 import java.util.List;
 
 public interface ProfileService {
   List<ProfileResponse> getAll();
   
-  ProfileResponse getOne(String id);
+  ProfileResponse getOneById(String id);
+  
+  ProfileResponse getOneByUsername(String username);
   
   ProfileResponse createOne(ProfileCreateRequest profileCreateRequest);
   
   ProfileResponse updateOne(String id, ProfileUpdateRequest profileUpdateRequest);
   
-  ProfileResponse addPreferred(String productId);
+  ProfileResponse addPreferred(ProductPreferred product);
   
-  ProfileResponse removePreferred(String productId);
+  ProfileResponse removePreferred(ProductPreferred product);
   
-  ProfileResponse addWardrobe(String productId);
+  ProfileResponse addWardrobe(ProductWardrobe product);
   
-  ProfileResponse removeWardrobe(String productId);
+  ProfileResponse removeWardrobe(ProductWardrobe product);
   
-  ProfileResponse addDraft(String productId);
+  ProfileResponse addDraft(ProductDraft product);
   
-  ProfileResponse removeDraft(String productId);
+  ProfileResponse removeDraft(ProductDraft product);
+  
+  List<String> getPreferred();
   
   void deleteOne(String id);
 }

@@ -23,9 +23,9 @@ public class InitDB implements CommandLineRunner {
     if (orderRepository.count() < 1) {
       log.debug("Creazione ordini di esempio");
       
-      Order order1 = Order.builder().user("userid1").product("code1").build();
-      Order order2 = Order.builder().user("userid2").product("code2").build();
-      Order order3 = Order.builder().user("userid3").product("code3").build();
+      Order order1 = Order.builder().buyer("userid1").product("code1").build();
+      Order order2 = Order.builder().buyer("userid2").product("code2").build();
+      Order order3 = Order.builder().buyer("userid3").product("code3").build();
       
       orderRepository.saveAllAndFlush(List.of(order1, order2, order3));
       
