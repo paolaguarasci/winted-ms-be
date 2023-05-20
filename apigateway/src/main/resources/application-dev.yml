@@ -54,7 +54,10 @@ spring:
           predicates:
             - Path=/api/v1/payment,/api/v1/payment/**
             - Path=/api/v1/paymentmethod,/api/v1/paymentmethod/**
-
+        - id: address-service
+          uri: lb://address-service
+          predicates:
+            - Path=/api/v1/address,/api/v1/address/**
   security:
     oauth2:
       resourceserver:
