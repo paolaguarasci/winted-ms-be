@@ -27,6 +27,16 @@ public class Profile {
   private Double reputation;
   private String providerIdentityId;
   
+  private String position;
+  private String lastVisit;
+  
+  private Integer follower = 0;
+  private Integer seguiti = 0;
+  
+  private Boolean googleVerified = false;
+  private Boolean emailVerified = false;
+  private Boolean facebookVerified = false;
+  
   public void addPreferred(String productid) {
     if (this.preferred == null) {
       this.preferred = new TreeSet<>();
@@ -54,4 +64,16 @@ public class Profile {
     draft.remove(productid);
   }
   
+  
+  public void setGoogleVerified() {
+    this.googleVerified = true;
+  }
+  
+  public void setEmailVerified() {
+    this.emailVerified = true;
+  }
+  
+  public void setFacebookVerified() {
+    this.facebookVerified = true;
+  }
 }
