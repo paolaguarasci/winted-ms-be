@@ -2,7 +2,7 @@ package it.pingflood.winted.orderservice.service.impl;
 
 import it.pingflood.winted.orderservice.data.Order;
 import it.pingflood.winted.orderservice.data.OrderStatus;
-import it.pingflood.winted.orderservice.data.dto.OrderPutRequest;
+import it.pingflood.winted.orderservice.data.dto.OrderConfirmRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
 import it.pingflood.winted.orderservice.event.NewOrderEvent;
@@ -56,38 +56,40 @@ public class OrderServiceImpl implements OrderService {
   }
   
   @Override
-  public OrderResponse createOrder(OrderRequest orderRequest) {
-    String loggedUsername = "paola";
-    if (orderRepository.findByBuyerAndProduct(loggedUsername, orderRequest.getProduct()).isPresent()) {
-      throw new IllegalArgumentException();
+  public OrderResponse confirmOrder(OrderConfirmRequest orderConfirmRequest) {
+    Order order = orderRepository.findById(orderConfirmRequest.getId()).orElseThrow();
+    
+    // TODO SAGA ???
+    
+    try {
+      makePayment(order);
+      order.setStatus(OrderStatus.PAYED);
+      newOrderEventKafkaTemplate.send("NewOrder", "order-service", new NewOrderEvent(order.getProduct(), order.getProduct(), ""));
+    } catch (Exception e) {
+      // makeRefound(order);
+      order.setStatus(OrderStatus.PAYMENTERROR);
     }
     
-    OrderResponse newOrderResponse = modelMapper.map(
+    return modelMapper.map(order, OrderResponse.class);
+  }
+  
+  @Override
+  public OrderResponse createPreorder(OrderRequest orderRequest) {
+    String loggedUsername = "paola";
+    System.out.println("Prodotto " + orderRequest.getProduct());
+    if (orderRepository.findByBuyerAndProduct(loggedUsername, orderRequest.getProduct()).isPresent()) {
+      return modelMapper.map(orderRepository.findByBuyerAndProduct(loggedUsername, orderRequest.getProduct()), OrderResponse.class);
+    }
+    
+    return modelMapper.map(
       orderRepository.save(Order.builder()
         .buyer(loggedUsername)
         .product(orderRequest.getProduct())
         .status(OrderStatus.NEW)
         .build()), OrderResponse.class);
-    
-    
-    newOrderEventKafkaTemplate.send("NewOrder", "order-service", new NewOrderEvent(newOrderResponse.getProduct(), newOrderResponse.getProduct(), ""));
-    return newOrderResponse;
   }
   
-  @Override
-  public OrderResponse updateOrder(UUID id, OrderPutRequest orderPutRequest) {
-    if (!id.equals(orderPutRequest.getId())) {
-      throw new IllegalArgumentException();
-    }
-    Order oldOrder = orderRepository.findById(id).orElseThrow();
-    oldOrder.setProduct(orderPutRequest.getProduct());
-    return modelMapper.map(orderRepository.save(oldOrder), OrderResponse.class);
+  private void makePayment(Order order) {
+    // TODO interrogare il servizio PaymentService
   }
-  
-  @Override
-  public void deleteOrder(UUID id) {
-    orderRepository.delete(orderRepository.findById(id).orElseThrow());
-  }
-  
-  
 }

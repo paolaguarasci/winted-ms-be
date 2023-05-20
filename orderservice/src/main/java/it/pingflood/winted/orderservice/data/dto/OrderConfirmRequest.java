@@ -12,8 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderPutRequest implements Serializable {
+public class OrderConfirmRequest implements Serializable {
   private UUID id;
-  private String buyer;
-  private String product;
 }
