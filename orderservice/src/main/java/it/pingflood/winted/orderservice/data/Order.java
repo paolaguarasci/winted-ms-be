@@ -25,8 +25,10 @@ public class Order {
   @JdbcTypeCode(SqlTypes.VARCHAR)
   private UUID id;
   
-  private String user;
+  private String buyer;
   private String product;
+  private String owner;
+  private OrderStatus status;
   
   @Override
   public boolean equals(Object o) {

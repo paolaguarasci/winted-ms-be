@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MessageListResponse {
+public class AnteprimaInbox {
   String altroUtente;
+  String timeAgo;
+  String lastMessage;
   String prodottoCorrelato;
-  List<MessageResponse> messaggi;
+  String conversationId;
 }

@@ -1,6 +1,7 @@
 package it.pingflood.winted.orderservice.service.impl;
 
 import it.pingflood.winted.orderservice.data.Order;
+import it.pingflood.winted.orderservice.data.OrderStatus;
 import it.pingflood.winted.orderservice.data.dto.OrderPutRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
@@ -48,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
   
   @Override
   public List<OrderResponse> getAllByUser(String userId) {
-    return orderRepository.findAllByUser(userId)
+    return orderRepository.findAllByBuyer(userId)
       .stream()
       .map(order -> modelMapper.map(order, OrderResponse.class))
       .toList();
@@ -56,15 +57,18 @@ public class OrderServiceImpl implements OrderService {
   
   @Override
   public OrderResponse createOrder(OrderRequest orderRequest) {
-    if (orderRepository.findByUserAndProduct(orderRequest.getUser(), orderRequest.getProduct()).isPresent()) {
+    String loggedUsername = "paola";
+    if (orderRepository.findByBuyerAndProduct(loggedUsername, orderRequest.getProduct()).isPresent()) {
       throw new IllegalArgumentException();
     }
     
     OrderResponse newOrderResponse = modelMapper.map(
       orderRepository.save(Order.builder()
-        .user(orderRequest.getUser())
+        .buyer(loggedUsername)
         .product(orderRequest.getProduct())
+        .status(OrderStatus.NEW)
         .build()), OrderResponse.class);
+    
     
     newOrderEventKafkaTemplate.send("NewOrder", "order-service", new NewOrderEvent(newOrderResponse.getProduct(), newOrderResponse.getProduct(), ""));
     return newOrderResponse;

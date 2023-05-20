@@ -45,6 +45,10 @@ spring:
           uri: lb://resource-service
           predicates:
             - Path=/api/v1/resource,/api/v1/resource/**
+        - id: profile-service
+          uri: lb://profile-service
+          predicates:
+            - Path=/api/v1/profile,/api/v1/profile/**
   security:
     oauth2:
       resourceserver:

@@ -24,10 +24,24 @@ public class ProductController {
   
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<List<ProductResponse>> getAll() {
-    // FIXME Ha senso fare l'optional di una lista?
+  public ResponseEntity<List<ProductResponse>> getAll(@RequestParam(required = false) String owner, @RequestParam(required = false) String sameto) {
+    if (owner != null && !owner.isBlank()) {
+      return ResponseEntity.of(Optional.of(productService.getAllByOwnerId(owner)));
+    }
+    
+    if (sameto != null && !sameto.isBlank()) {
+      return ResponseEntity.of(Optional.of(productService.getSameByProdId(sameto)));
+    }
+    
     return ResponseEntity.of(Optional.of(productService.getAll()));
   }
+
+//  @GetMapping
+//  @ResponseStatus(HttpStatus.OK)
+//  public ResponseEntity<List<ProductResponse>> getAllSearch() {
+//    // FIXME Ha senso fare l'optional di una lista?
+//    return ResponseEntity.of(Optional.of(productService.getAll()));
+//  }
   
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)

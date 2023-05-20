@@ -1,5 +1,6 @@
 package it.pingflood.winted.messageservice.data.dto;
 
+import it.pingflood.winted.messageservice.data.MsgType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,6 @@ public class MessageResponse {
   private String content;
   private String answer;
   private String timestamp;
+  private String timeAgo;
+  private MsgType messageType;
 }

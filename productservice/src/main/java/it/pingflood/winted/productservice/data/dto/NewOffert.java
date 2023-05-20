@@ -1,4 +1,4 @@
-package it.pingflood.winted.profileservice.data.dto;
+package it.pingflood.winted.productservice.data.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ProfileCreateRequest {
-  String username;
-  private String providerIdentityId;
+public class NewOffert {
+  String product;
+  Float price;
 }

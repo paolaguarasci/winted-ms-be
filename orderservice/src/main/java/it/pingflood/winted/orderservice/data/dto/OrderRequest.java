@@ -12,6 +12,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 public class OrderRequest implements Serializable {
-  private String user;
+  //  private String user;
   private String product;
 }

@@ -19,4 +19,11 @@ public interface ProductService {
   
   void deleteProduct(String id);
   
+  void addPreferred(String productId);
+  
+  void removePreferred(String productId);
+  
+  List<ProductResponse> getAllByOwnerId(String ownerId);
+  
+  List<ProductResponse> getSameByProdId(String prodid);
 }

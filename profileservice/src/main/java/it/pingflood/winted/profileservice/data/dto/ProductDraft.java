@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ProfileCreateRequest {
-  String username;
-  private String providerIdentityId;
+public class ProductDraft {
+  String product;
 }
