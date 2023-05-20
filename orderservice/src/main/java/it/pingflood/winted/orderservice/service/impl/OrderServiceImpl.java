@@ -69,7 +69,6 @@ public class OrderServiceImpl implements OrderService {
       // makeRefound(order);
       order.setStatus(OrderStatus.PAYMENTERROR);
     }
-    
     return modelMapper.map(order, OrderResponse.class);
   }
   
@@ -84,12 +83,30 @@ public class OrderServiceImpl implements OrderService {
     return modelMapper.map(
       orderRepository.save(Order.builder()
         .buyer(loggedUsername)
+        .owner(getProductOwnerId(orderRequest.getProduct()))
         .product(orderRequest.getProduct())
         .status(OrderStatus.NEW)
+        .address(getAddressId(loggedUsername))
+        .paymentMethod(getPaymentMethod(loggedUsername))
         .build()), OrderResponse.class);
   }
   
   private void makePayment(Order order) {
     // TODO interrogare il servizio PaymentService
+  }
+  
+  private String getProductOwnerId(String productId) {
+    // TODO interrogare il servizio ProductService per ottenere l'owner del prodotto
+    return "owner12345";
+  }
+  
+  private String getAddressId(String username) {
+    // TODO interrogare il servizio AddressService
+    return "address12345";
+  }
+  
+  private String getPaymentMethod(String username) {
+    // TODO interrogare il servizio PaymentMethod
+    return "pyment12345";
   }
 }
