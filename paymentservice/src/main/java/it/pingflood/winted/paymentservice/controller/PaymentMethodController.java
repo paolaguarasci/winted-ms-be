@@ -5,10 +5,7 @@ import it.pingflood.winted.paymentservice.service.PaymentMethodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/paymentmethod")
@@ -21,5 +18,18 @@ public class PaymentMethodController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<PaymentMethodResponse> getAll() {
     return ResponseEntity.ok(paymentMethodService.getByLoggedUser());
+  }
+  
+  
+  @GetMapping("{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<PaymentMethodResponse> getOneById(@PathVariable String id) {
+    return ResponseEntity.ok(paymentMethodService.getById(id));
+  }
+  
+  @GetMapping("/username/{username}")
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<PaymentMethodResponse> getOneByUsername(@PathVariable String username) {
+    return ResponseEntity.ok(paymentMethodService.getByUsername(username));
   }
 }

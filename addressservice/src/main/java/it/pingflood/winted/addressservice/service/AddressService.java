@@ -6,4 +6,7 @@ public interface AddressService {
   
   AddressResponse getOneByUserLogged();
   
+  AddressResponse getOneById(String id);
+  
+  AddressResponse getOneByUsername(String username);
 }

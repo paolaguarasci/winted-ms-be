@@ -57,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
   
   @Override
   public List<ProductResponse> getAll() {
-    return productRepository.findAll().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
+    return productRepository.findAllByBoughtIsFalseAndDraftIsFalse().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
   }
   
   @SneakyThrows
@@ -104,6 +104,8 @@ public class ProductServiceImpl implements ProductService {
       .description(productRequest.getDescription())
       .resources(ids)
       .preferred(0)
+      .bought(false)
+      .draft(false) // TODO poi vediamo ???
       .brand(productRequest.getBrand())
       .category(productRequest.getCategory())
       .owner(loggedUserId)
@@ -152,8 +154,20 @@ public class ProductServiceImpl implements ProductService {
   }
   
   @Override
+  public List<ProductResponse> getAllPublicByOwnerId(String ownerId) {
+    return productRepository.findAllByBoughtIsFalseAndDraftIsFalseAndOwnerIs(ownerId).stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
+  }
+  
+  @Override
   public List<ProductResponse> getSameByProdId(String prodid) {
     // TODO logica implementativa... la similitudine in base a cosa???
-    return productRepository.findAll().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
+    return productRepository.findAllByBoughtIsFalseAndDraftIsFalse().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
+  }
+  
+  @Override
+  public ProductResponse makeBought(String productId) {
+    Product p = productRepository.findById(productId).orElseThrow();
+    p.setBought(true);
+    return modelMapper.map(productRepository.save(p), ProductResponse.class);
   }
 }

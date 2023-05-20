@@ -1,15 +1,22 @@
 package it.pingflood.winted.messageservice.handler;
 
+import it.pingflood.winted.messageservice.data.dto.MessageRequest;
 import it.pingflood.winted.messageservice.event.*;
+import it.pingflood.winted.messageservice.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class NotificationHandler {
+  
+  private final MessageService messageService;
+  
   @KafkaListener(id = "message-service1", topics = "NewProduct")
   public void handleNewTopic(NewProductEvent newProductEvent) {
     log.info("Nuovo prodotto caricato {}", newProductEvent.getProductId());
@@ -19,6 +26,16 @@ public class NotificationHandler {
   public void handleNewOrder(NewOrderEvent newOrderEvent) {
     log.info("L'utente {} ha comprato da {} il prodotto {}", newOrderEvent.getBuyerId(), newOrderEvent.getSellerId(),
       newOrderEvent.getProductId());
+    
+    messageService.saveMessage(
+      newOrderEvent.getBuyerId(),
+      newOrderEvent.getSellerId(),
+      MessageRequest.builder()
+        .to(newOrderEvent.getSellerId())
+        .from(newOrderEvent.getBuyerId())
+        .content("Ciao, Ho comprato il tuo prodotto!")
+        .timestamp(LocalDateTime.now().toString())
+        .build());
   }
   
   @KafkaListener(id = "message-service3", topics = "NewReplay")

@@ -1,4 +1,4 @@
-package it.pingflood.winted.productservice.data.dto;
+package it.pingflood.winted.orderservice.client.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,5 @@ public class ProductResponse {
   private String category;
   private String owner; // owner-id
   private String featured;
-  private String bought;
-  private String draft;
   private List<String> resources;
 }

@@ -39,7 +39,7 @@ public class OrderController {
   
   @PostMapping("/confirm")
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<OrderResponse> confirmOrder(OrderConfirmRequest orderConfirmRequest) {
+  public ResponseEntity<OrderResponse> confirmOrder(@RequestBody OrderConfirmRequest orderConfirmRequest) {
     return ResponseEntity.of(Optional.of(orderService.confirmOrder(orderConfirmRequest)));
   }
   

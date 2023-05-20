@@ -1,4 +1,4 @@
-package it.pingflood.winted.paymentservice.data.dto;
+package it.pingflood.winted.orderservice.client.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

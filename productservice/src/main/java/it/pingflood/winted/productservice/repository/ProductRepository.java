@@ -13,4 +13,8 @@ public interface ProductRepository extends MongoRepository<Product, String> {
   
   List<Product> findAllByOwner(String owner);
   
+  List<Product> findAllByBoughtIsFalseAndDraftIsFalse();
+  
+  List<Product> findAllByBoughtIsFalseAndDraftIsFalseAndOwnerIs(String owner);
+  
 }
