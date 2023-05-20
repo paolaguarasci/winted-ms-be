@@ -17,4 +17,7 @@ public class OrderResponse implements Serializable {
   private String buyer;
   private String product;
   private String status;
+  private String owner;
+  private String address;
+  private String paymentMethod;
 }

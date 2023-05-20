@@ -10,7 +10,7 @@ import java.util.Map;
 public interface MessageService {
   MessageListResponse getConversation(String u1, String u2);
   
-  MessageResponse saveMessage(String u1, String u2, MessageRequest messageResponse);
+  MessageResponse saveMessage(String u1, String u2, MessageRequest messageRequest);
   
   Map<String, List<MessageResponse>> getAllConversationFromUsername(String username);
   

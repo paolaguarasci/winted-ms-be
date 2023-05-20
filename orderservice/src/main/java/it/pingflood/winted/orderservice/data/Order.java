@@ -29,6 +29,8 @@ public class Order {
   private String product;
   private String owner;
   private OrderStatus status;
+  private String address;
+  private String paymentMethod;
   
   @Override
   public boolean equals(Object o) {

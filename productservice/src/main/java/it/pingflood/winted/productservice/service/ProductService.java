@@ -25,5 +25,9 @@ public interface ProductService {
   
   List<ProductResponse> getAllByOwnerId(String ownerId);
   
+  List<ProductResponse> getAllPublicByOwnerId(String ownerId);
+  
   List<ProductResponse> getSameByProdId(String prodid);
+  
+  ProductResponse makeBought(String productId);
 }

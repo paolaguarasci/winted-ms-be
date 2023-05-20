@@ -26,7 +26,7 @@ public class ProductController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<List<ProductResponse>> getAll(@RequestParam(required = false) String owner, @RequestParam(required = false) String sameto) {
     if (owner != null && !owner.isBlank()) {
-      return ResponseEntity.of(Optional.of(productService.getAllByOwnerId(owner)));
+      return ResponseEntity.of(Optional.of(productService.getAllPublicByOwnerId(owner)));
     }
     
     if (sameto != null && !sameto.isBlank()) {
@@ -71,6 +71,11 @@ public class ProductController {
     return ResponseEntity.of(Optional.of(productService.updateProduct(id, productRequest)));
   }
   
+  @PostMapping("/{id}/bought")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<ProductResponse> makeBought(@PathVariable String id) {
+    return ResponseEntity.of(Optional.of(productService.makeBought(id)));
+  }
   
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)

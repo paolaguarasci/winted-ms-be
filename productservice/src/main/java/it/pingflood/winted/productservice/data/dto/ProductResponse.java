@@ -22,5 +22,7 @@ public class ProductResponse {
   private String category;
   private String owner; // owner-id
   private String featured;
+  private String bought;
+  private String draft;
   private List<String> resources;
 }

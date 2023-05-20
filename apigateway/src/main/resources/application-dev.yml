@@ -49,6 +49,14 @@ spring:
           uri: lb://profile-service
           predicates:
             - Path=/api/v1/profile,/api/v1/profile/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payment,/api/v1/payment/**,/api/v1/paymentmethod,/api/v1/paymentmethod/**
+        - id: address-service
+          uri: lb://address-service
+          predicates:
+            - Path=/api/v1/address,/api/v1/address/**
   security:
     oauth2:
       resourceserver:

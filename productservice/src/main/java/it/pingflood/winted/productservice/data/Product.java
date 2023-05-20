@@ -28,6 +28,8 @@ public class Product {
   private String owner;
   private String featured; // resource[0]
   private List<String> resources = new ArrayList<>();
+  private boolean bought;
+  private boolean draft;
 //  private boolean isPublic = false;
   
   public void addResources(String idRes) {

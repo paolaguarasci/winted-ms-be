@@ -1,9 +1,10 @@
 package it.pingflood.winted.orderservice.controller;
 
-import it.pingflood.winted.orderservice.data.dto.OrderPutRequest;
+import it.pingflood.winted.orderservice.data.dto.OrderConfirmRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
 import it.pingflood.winted.orderservice.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/order")
+@Slf4j
 public class OrderController {
   
   private final OrderService orderService;
@@ -35,22 +37,16 @@ public class OrderController {
     return ResponseEntity.of(Optional.of(orderService.getOne(id)));
   }
   
-  @PostMapping
+  @PostMapping("/confirm")
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<OrderResponse> createOne(OrderRequest orderRequest) {
-    return ResponseEntity.of(Optional.of(orderService.createOrder(orderRequest)));
+  public ResponseEntity<OrderResponse> confirmOrder(@RequestBody OrderConfirmRequest orderConfirmRequest) {
+    return ResponseEntity.of(Optional.of(orderService.confirmOrder(orderConfirmRequest)));
   }
   
-  @PutMapping("/{id}")
-  @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<OrderResponse> updateOne(@PathVariable("id") UUID id, OrderPutRequest orderRequest) {
-    return ResponseEntity.of(Optional.of(orderService.updateOrder(id, orderRequest)));
-  }
-  
-  
-  @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteOne(@PathVariable("id") UUID id) {
-    orderService.deleteOrder(id);
+  @PostMapping("/checkout")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<OrderResponse> createPreorder(@RequestBody OrderRequest orderRequest) {
+    System.out.println(orderRequest);
+    return ResponseEntity.of(Optional.of(orderService.createPreorder(orderRequest)));
   }
 }

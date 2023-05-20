@@ -1,6 +1,6 @@
 package it.pingflood.winted.orderservice.service;
 
-import it.pingflood.winted.orderservice.data.dto.OrderPutRequest;
+import it.pingflood.winted.orderservice.data.dto.OrderConfirmRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
 
@@ -14,9 +14,8 @@ public interface OrderService {
   
   List<OrderResponse> getAllByUser(String userId);
   
-  OrderResponse createOrder(OrderRequest orderRequest);
+  OrderResponse confirmOrder(OrderConfirmRequest orderConfirmRequest);
   
-  OrderResponse updateOrder(UUID id, OrderPutRequest orderPutRequest);
+  OrderResponse createPreorder(OrderRequest orderRequest);
   
-  void deleteOrder(UUID id);
 }
