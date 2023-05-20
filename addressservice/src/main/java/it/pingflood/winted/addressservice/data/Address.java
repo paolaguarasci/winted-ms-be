@@ -1,5 +1,4 @@
-package it.pingflood.winted.paymentservice.data;
-
+package it.pingflood.winted.addressservice.data;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,17 +14,18 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "WINTED_PAYMENT_METHOD")
-public class PaymentMethod {
+@Table(name = "WINTED_ADDRESS")
+public class Address {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", nullable = false)
   @JdbcTypeCode(SqlTypes.VARCHAR)
   private UUID id;
   private String username;
-  private String gestore;
-  private String titolareCarta;
-  private String numeroCarta;
-  private String dataScadenza;
-  private String ccv;
+  private String nome;
+  private String cognome;
+  private String via;
+  private String citta;
+  private String numeroCivico;
+  private String cap;
 }

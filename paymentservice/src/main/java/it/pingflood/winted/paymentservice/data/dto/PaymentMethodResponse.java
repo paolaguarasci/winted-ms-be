@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PaymentMethodResponse {
+  private String id;
   private String last4Digit;
   private String gestore;
 }
