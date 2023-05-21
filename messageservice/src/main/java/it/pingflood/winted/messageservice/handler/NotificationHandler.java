@@ -48,17 +48,17 @@ public class NotificationHandler {
   @KafkaListener(id = "message-service2", topics = "NewOrder")
   public void handleNewOrder(@Payload GenericEvent genericEvent, @Headers Map headers) {
     NewOrderEvent newOrderEvent = objectMapper.readValue(genericEvent.getPayload(), NewOrderEvent.class);
-    
+    String systemUserId = "646a5b54e698ec5f4411aecb";
     ConversationResponse conversationResponse = conversationService.newConversation(ConversationRequest.builder()
       .user1(newOrderEvent.getBuyer())
-      .user2(newOrderEvent.getProduct())
+      .user2(newOrderEvent.getSeller())
       .prodottoCorrelato(newOrderEvent.getProduct())
       .build());
     
     conversationService.addMessageToConversation(conversationResponse.getId(),
       MessageRequest.builder()
         .to(newOrderEvent.getSeller())
-        .from("winted")
+        .from(systemUserId)
         .messageType(MsgType.SYSTEM.toString())
         .content("Il tuo oggetto e' stato comprato, scarica l'etichetta. Link etichetta")
         .timestamp(LocalDateTime.now().toString())
@@ -67,7 +67,7 @@ public class NotificationHandler {
     conversationService.addMessageToConversation(conversationResponse.getId(),
       MessageRequest.builder()
         .to(newOrderEvent.getBuyer())
-        .from("winted")
+        .from(systemUserId)
         .messageType(MsgType.SYSTEM.toString())
         .content("Attendi che il venditore invii il pacco")
         .timestamp(LocalDateTime.now().toString())
