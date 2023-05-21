@@ -14,7 +14,7 @@ import java.util.UUID;
 @Data
 public class AddressResponse implements Serializable {
   private UUID id;
-  private String username;
+  private String user;
   private String nome;
   private String cognome;
   private String via;

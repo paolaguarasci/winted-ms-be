@@ -16,6 +16,7 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,18 +43,18 @@ public class ConversationServiceImpl implements ConversationService {
   
   @Override
   public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser() {
-    String loggedUsername = "paola";
-    List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUsername, loggedUsername);
+    String loggedUserid = "6464d3155ded8d052d323c2a";
+    List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
     return conversazioni.stream().map(conversation -> {
-        String lastMessagePreview = "";
-        String timeAgo = "";
-        if (conversation.getMessages().size() > 0) {
-          Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
-          lastMessagePreview = lastMessage.getContent();
-          timeAgo = prettyTime.format(lastMessage.getTimestamp());
-        }
-        
-        String altroUtente = conversation.getUser1().equals(loggedUsername) ? conversation.getUser2() : conversation.getUser1();
+      String lastMessagePreview = "";
+      String timeAgo = "";
+      if (conversation.getMessages() != null && conversation.getMessages().size() > 0) {
+        Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
+        lastMessagePreview = lastMessage.getContent();
+        timeAgo = prettyTime.format(lastMessage.getTimestamp());
+      }
+      
+      String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
         
         return AnteprimaInbox.builder()
           .conversationId(conversation.getId())
@@ -68,12 +69,12 @@ public class ConversationServiceImpl implements ConversationService {
   
   @Override
   public ConversationResponse getOneById(String id) {
-    String loggedUsername = "paola";
+    String loggedUserid = "6464d3155ded8d052d323c2a";
     Conversation conv = conversationRepository.findById(id).orElseThrow();
     conv.getMessages().forEach(message -> message.setTimeAgo(prettyTime.format(message.getTimestamp())));
-    String altroUtente = conv.getUser1().equals(loggedUsername) ? conv.getUser2() : conv.getUser1();
+    String altroUtente = conv.getUser1().equals(loggedUserid) ? conv.getUser2() : conv.getUser1();
     ConversationResponse convResp = modelMapper.map(conv, ConversationResponse.class);
-    convResp.setLoggedUser(loggedUsername);
+    convResp.setLoggedUser(loggedUserid);
     convResp.setAltroUtente(altroUtente);
     return convResp;
   }
@@ -87,6 +88,7 @@ public class ConversationServiceImpl implements ConversationService {
   
   @Override
   public ConversationResponse newConversation(ConversationRequest conversationRequest) {
+    conversationRequest.setMessages(new ArrayList<>());
     return modelMapper.map(conversationRepository.save(modelMapper.map(conversationRequest, Conversation.class)), ConversationResponse.class);
   }
 }

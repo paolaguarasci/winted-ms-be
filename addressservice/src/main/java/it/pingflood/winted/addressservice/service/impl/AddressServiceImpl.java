@@ -22,8 +22,8 @@ public class AddressServiceImpl implements AddressService {
   
   @Override
   public AddressResponse getOneByUserLogged() {
-    String userLogged = "paola";
-    return modelMapper.map(addressRepository.findFirstByUsername(userLogged).orElseThrow(), AddressResponse.class);
+    String userLogged = "6464d3155ded8d052d323c2a";
+    return modelMapper.map(addressRepository.findFirstByUser(userLogged).orElseThrow(), AddressResponse.class);
   }
   
   @Override
@@ -31,8 +31,9 @@ public class AddressServiceImpl implements AddressService {
     return modelMapper.map(addressRepository.findById(Long.parseLong(id)).orElseThrow(), AddressResponse.class);
   }
   
+  
   @Override
-  public AddressResponse getOneByUsername(String username) {
-    return modelMapper.map(addressRepository.findFirstByUsername(username).orElseThrow(), AddressResponse.class);
+  public AddressResponse getOneByUserid(String userid) {
+    return modelMapper.map(addressRepository.findFirstByUser(userid).orElseThrow(), AddressResponse.class);
   }
 }

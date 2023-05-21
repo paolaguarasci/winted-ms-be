@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpecificationExecutor<Address> {
-  Optional<Address> findFirstByUsername(String username);
+  Optional<Address> findFirstByUser(String user);
 }

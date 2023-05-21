@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, UUID>, JpaSpecificationExecutor<PaymentMethod> {
   
-  Optional<PaymentMethod> findByUsername(String username);
+  Optional<PaymentMethod> findByUser(String userid);
   
 }

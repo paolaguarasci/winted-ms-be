@@ -17,7 +17,7 @@ public class InitDB implements CommandLineRunner {
   public void run(String... args) throws Exception {
     log.info("Init db");
     addressRepository.saveAndFlush(Address.builder()
-      .username("paola")
+      .user("6464d3155ded8d052d323c2a")
       .nome("Giovanna")
       .cognome("Rossi")
       .via("Via dei mille")

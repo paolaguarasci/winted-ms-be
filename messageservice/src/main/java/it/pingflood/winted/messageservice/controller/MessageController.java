@@ -2,7 +2,6 @@ package it.pingflood.winted.messageservice.controller;
 
 import it.pingflood.winted.messageservice.data.dto.AnteprimaInbox;
 import it.pingflood.winted.messageservice.data.dto.MessageListResponse;
-import it.pingflood.winted.messageservice.data.dto.MessageRequest;
 import it.pingflood.winted.messageservice.data.dto.MessageResponse;
 import it.pingflood.winted.messageservice.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,27 +31,27 @@ public class MessageController {
     return ResponseEntity.of(Optional.of(messageService.getAllConversationPreviewFromLoggedUser()));
   }
   
-  @GetMapping("/from/{username}")
+  @GetMapping("/from/{userid}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<Map<String, List<MessageResponse>>> getAllConversationFromUsername(@PathVariable(value = "username") String username) {
-    return ResponseEntity.of(Optional.of(messageService.getAllConversationFromUsername(username)));
+  public ResponseEntity<Map<String, List<MessageResponse>>> getAllConversationFromUsername(@PathVariable(value = "userid") String userid) {
+    return ResponseEntity.of(Optional.of(messageService.getAllConversationFromUser(userid)));
   }
   
-  @GetMapping("/to/{username}")
+  @GetMapping("/to/{userid}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<Map<String, List<MessageResponse>>> getAllConversationToUsername(@PathVariable(value = "username") String username) {
-    return ResponseEntity.of(Optional.of(messageService.getAllConversationToUsername(username)));
+  public ResponseEntity<Map<String, List<MessageResponse>>> getAllConversationToUsername(@PathVariable(value = "userid") String userid) {
+    return ResponseEntity.of(Optional.of(messageService.getAllConversationToUser(userid)));
   }
   
-  @GetMapping("/from/{username1}/to/{username2}")
+  @GetMapping("/from/{userid1}/to/{userid2}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<MessageListResponse> getConversation(@PathVariable(value = "username1") String username1, @PathVariable(value = "username1") String username2) {
-    return ResponseEntity.of(Optional.of(messageService.getConversation(username1, username2)));
+  public ResponseEntity<MessageListResponse> getConversation(@PathVariable(value = "userid1") String userid1, @PathVariable(value = "userid2") String userid2) {
+    return ResponseEntity.of(Optional.of(messageService.getConversation(userid1, userid2)));
   }
-  
-  @PostMapping()
-  @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<MessageResponse> saveMessage(@PathVariable(value = "username1") String username1, @PathVariable(value = "username1") String username2, @RequestBody MessageRequest messageRequest) {
-    return ResponseEntity.of(Optional.of(messageService.saveMessage(username1, username2, messageRequest)));
-  }
+//
+//  @PostMapping()
+//  @ResponseStatus(HttpStatus.CREATED)
+//  public ResponseEntity<MessageResponse> saveMessage(@PathVariable(value = "username1") String username1, @PathVariable(value = "username1") String username2, @RequestBody MessageRequest messageRequest) {
+//    return ResponseEntity.of(Optional.of(messageService.saveMessage(username1, username2, messageRequest)));
+//  }
 }

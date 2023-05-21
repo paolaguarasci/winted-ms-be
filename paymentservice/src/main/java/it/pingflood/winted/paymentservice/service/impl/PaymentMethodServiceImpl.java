@@ -22,13 +22,13 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
   
   @Override
   public PaymentMethodResponse getByLoggedUser() {
-    String loggedUsername = "paola";
-    return getObfuscate(paymentMethodRepository.findByUsername(loggedUsername).orElseThrow());
+    String loggedUserid = "6464d3155ded8d052d323c2a";
+    return getObfuscate(paymentMethodRepository.findByUser(loggedUserid).orElseThrow());
   }
   
   @Override
-  public PaymentMethodResponse getByUsername(String username) {
-    return getObfuscate(paymentMethodRepository.findByUsername(username).orElseThrow());
+  public PaymentMethodResponse getByUser(String userid) {
+    return getObfuscate(paymentMethodRepository.findByUser(userid).orElseThrow());
   }
   
   @Override

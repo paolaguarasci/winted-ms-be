@@ -61,8 +61,8 @@ public class MessageServiceImpl implements MessageService {
   }
   
   @Override
-  public Map<String, List<MessageResponse>> getAllConversationFromUsername(String username) {
-    List<Message> res = messageRepository.findAllByFromIsIgnoreCase(username);
+  public Map<String, List<MessageResponse>> getAllConversationFromUser(String userid) {
+    List<Message> res = messageRepository.findAllByFromIsIgnoreCase(userid);
     Map<String, List<Message>> listByTo = res.stream().collect(groupingBy(Message::getTo));
     
     Map<String, List<MessageResponse>> listToResponse = new HashMap<>();
@@ -76,8 +76,8 @@ public class MessageServiceImpl implements MessageService {
   }
   
   @Override
-  public Map<String, List<MessageResponse>> getAllConversationToUsername(String username) {
-    List<Message> res = messageRepository.findAllByToIsIgnoreCase(username);
+  public Map<String, List<MessageResponse>> getAllConversationToUser(String userid) {
+    List<Message> res = messageRepository.findAllByToIsIgnoreCase(userid);
     Map<String, List<Message>> listByTo = res.stream().collect(groupingBy(Message::getFrom));
     
     Map<String, List<MessageResponse>> listToResponse = new HashMap<>();
@@ -93,9 +93,9 @@ public class MessageServiceImpl implements MessageService {
   @Override
   public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser() {
     
-    String loggedUsername = "paola";
+    String loggedUserid = "6464d3155ded8d052d323c2a";
     
-    List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUsername, loggedUsername);
+    List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
     
     return conversazioni.stream().map(conversation -> {
         String lastMessagePreview = "";
@@ -105,8 +105,8 @@ public class MessageServiceImpl implements MessageService {
           lastMessagePreview = lastMessage.getContent();
           timeAgo = prettyTime.format(lastMessage.getTimestamp());
         }
-        
-        String altroUtente = conversation.getUser1().equals(loggedUsername) ? conversation.getUser2() : conversation.getUser1();
+      
+      String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
         
         return AnteprimaInbox.builder()
           .conversationId(conversation.getId())

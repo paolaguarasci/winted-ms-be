@@ -1,5 +1,6 @@
 package it.pingflood.winted.orderservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pingflood.winted.orderservice.client.AddressClient;
 import it.pingflood.winted.orderservice.client.PaymentClient;
 import it.pingflood.winted.orderservice.client.ProductClient;
@@ -14,6 +15,7 @@ import it.pingflood.winted.orderservice.data.dto.OrderResponse;
 import it.pingflood.winted.orderservice.event.NewOrderEvent;
 import it.pingflood.winted.orderservice.repository.OrderRepository;
 import it.pingflood.winted.orderservice.service.OrderService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
@@ -35,14 +37,16 @@ public class OrderServiceImpl implements OrderService {
   private final AddressClient addressClient;
   private final PaymentClient paymentClient;
   private final KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate;
+  private final ObjectMapper objectMapper;
   
   
-  public OrderServiceImpl(OrderRepository orderRepository, ProductClient productClient, AddressClient addressClient, PaymentClient paymentClient, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate) {
+  public OrderServiceImpl(OrderRepository orderRepository, ProductClient productClient, AddressClient addressClient, PaymentClient paymentClient, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate, ObjectMapper objectMapper) {
     this.orderRepository = orderRepository;
     this.productClient = productClient;
     this.addressClient = addressClient;
     this.paymentClient = paymentClient;
     this.newOrderEventKafkaTemplate = newOrderEventKafkaTemplate;
+    this.objectMapper = objectMapper;
     modelMapper = new ModelMapper();
     modelMapper.getConfiguration()
       .setFieldMatchingEnabled(true)
@@ -72,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
   
   @Override
   public OrderResponse confirmOrder(OrderConfirmRequest orderConfirmRequest) {
-    String loggedUsername = "paola";
+    String loggedUserId = "6464d3155ded8d052d323c2a";
     Order order = orderRepository.findById(UUID.fromString(orderConfirmRequest.getId())).orElseThrow();
     
     try {
@@ -88,8 +92,8 @@ public class OrderServiceImpl implements OrderService {
         throw new IllegalArgumentException("Errore");
       }
       
-      if (!addressResponse.getUsername().equals(loggedUsername) ||
-        !paymentMethodResponse.getUsername().equals(loggedUsername)) {
+      if (!addressResponse.getUser().equals(loggedUserId) ||
+        !paymentMethodResponse.getUser().equals(loggedUserId)) {
         throw new IllegalArgumentException("Errore nei dati dell'ordine");
       }
     } catch (Exception e) {
@@ -112,19 +116,19 @@ public class OrderServiceImpl implements OrderService {
   
   @Override
   public OrderResponse createPreorder(OrderRequest orderRequest) {
-    String loggedUsername = "paola";
-    if (orderRepository.findByBuyerAndProduct(loggedUsername, orderRequest.getProduct()).isPresent()) {
-      return modelMapper.map(orderRepository.findByBuyerAndProduct(loggedUsername, orderRequest.getProduct()), OrderResponse.class);
+    String loggedUserId = "6464d3155ded8d052d323c2a";
+    if (orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()).isPresent()) {
+      return modelMapper.map(orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()), OrderResponse.class);
     }
     
     return modelMapper.map(
       orderRepository.save(Order.builder()
-        .buyer(loggedUsername)
+        .buyer(loggedUserId)
         .owner(getProductOwnerId(orderRequest.getProduct()))
         .product(orderRequest.getProduct())
         .status(OrderStatus.NEW)
-        .address(getAddressId(loggedUsername))
-        .paymentMethod(getPaymentMethod(loggedUsername))
+        .address(getAddressId(loggedUserId))
+        .paymentMethod(getPaymentMethod(loggedUserId))
         .build()), OrderResponse.class);
   }
   
@@ -160,7 +164,9 @@ public class OrderServiceImpl implements OrderService {
     productClient.setProductBoughtStatus(productId);
   }
   
-  private void sendMessageToOwner(String ownerid, String buyerid, String productId) {
-    newOrderEventKafkaTemplate.send("NewOrder", "order-service", new NewOrderEvent(productId, buyerid, ownerid));
+  @SneakyThrows
+  private void sendMessageToOwner(String owner, String buyer, String product) {
+    NewOrderEvent newOrderEvent = new NewOrderEvent(product, buyer, owner);
+    newOrderEventKafkaTemplate.send("NewOrder", "order-service", newOrderEvent);
   }
 }

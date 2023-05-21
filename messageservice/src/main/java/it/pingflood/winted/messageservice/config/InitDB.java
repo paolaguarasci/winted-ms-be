@@ -22,6 +22,7 @@ import java.util.List;
 public class InitDB implements CommandLineRunner {
   private final MessageRepository messageRepository;
   private final ConversationRepository conversationRepository;
+  
   public void run(String... args) throws Exception {
     log.debug("Init dei dati");
     if (conversationRepository.count() == 0L) {
@@ -29,42 +30,42 @@ public class InitDB implements CommandLineRunner {
       
       List<Message> messages = new ArrayList<>();
       
-      String username1 = "paola";
-      String username2 = "margheritaepietro";
+      String user1 = "6464d3155ded8d052d323c2a";
+      String user2 = "6464db0bf96f9d64c2a2787b";
       
       messages.add(Message.builder()
         .content("Ciao!")
         .timestamp(LocalDateTime.now())
-        .from(username1)
-        .to(username2)
+        .from(user1)
+        .to(user2)
         .messageType(MsgType.TESTO)
         .build());
       messages.add(Message.builder()
         .content("Ciao a te!")
         .timestamp(LocalDateTime.now())
-        .from(username2)
-        .to(username1)
+        .from(user2)
+        .to(user1)
         .messageType(MsgType.TESTO)
         .build());
       messages.add(Message.builder()
         .content("Come va?")
         .timestamp(LocalDateTime.now())
-        .from(username1)
-        .to(username2)
+        .from(user1)
+        .to(user2)
         .messageType(MsgType.TESTO)
         .build());
       messages.add(Message.builder()
         .content("Molto Bene!")
         .timestamp(LocalDateTime.now())
-        .from(username2)
-        .to(username1)
+        .from(user2)
+        .to(user1)
         .messageType(MsgType.TESTO)
         .build());
       messageRepository.saveAll(messages);
       
       conversationRepository.save(Conversation.builder()
-        .user1(username1)
-        .user2(username2)
+        .user1(user1)
+        .user2(user2)
         .messages(messages)
         .build());
       

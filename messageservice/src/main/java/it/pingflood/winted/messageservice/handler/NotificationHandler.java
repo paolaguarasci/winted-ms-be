@@ -1,19 +1,25 @@
 package it.pingflood.winted.messageservice.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pingflood.winted.messageservice.data.MsgType;
 import it.pingflood.winted.messageservice.data.dto.ConversationRequest;
 import it.pingflood.winted.messageservice.data.dto.ConversationResponse;
 import it.pingflood.winted.messageservice.data.dto.MessageRequest;
+import it.pingflood.winted.messageservice.event.GenericEvent;
 import it.pingflood.winted.messageservice.event.NewOrderEvent;
+import it.pingflood.winted.messageservice.event.NewProductEvent;
 import it.pingflood.winted.messageservice.service.ConversationService;
 import it.pingflood.winted.messageservice.service.MessageService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -22,34 +28,36 @@ public class NotificationHandler {
   private final MessageService messageService;
   private final ConversationService conversationService;
   private final ModelMapper modelMapper;
+  private final ObjectMapper objectMapper;
   
-  public NotificationHandler(MessageService messageService, ConversationService conversationService) {
+  public NotificationHandler(MessageService messageService, ConversationService conversationService, ObjectMapper objectMapper) {
     this.messageService = messageService;
     this.conversationService = conversationService;
+    this.objectMapper = objectMapper;
     this.modelMapper = new ModelMapper();
   }
-
-//  @KafkaListener(id = "message-service1", topics = "NewProduct")
-//  public void handleNewTopic(NewProductEvent newProductEvent) {
-//    log.info("Nuovo prodotto caricato {}", newProductEvent.getProductId());
-//  }
   
-  @KafkaListener(groupId = "message-service", topics = "NewOrder")
-  public void handleNewOrder(@Payload(required = false) NewOrderEvent newOrderEvent) {
-    
-    log.info("L'utente {} ha comprato da {} il prodotto {}", newOrderEvent.getBuyerId(), newOrderEvent.getSellerId(),
-      
-      newOrderEvent.getProductId());
+  @KafkaListener(id = "message-service1", topics = "NewProduct")
+  @SneakyThrows
+  public void handleNewTopic(@Payload GenericEvent genericEvent, @Headers Map headers) {
+    NewProductEvent newProductEvent = objectMapper.readValue(genericEvent.getPayload(), NewProductEvent.class);
+    log.info("Nuovo prodotto caricato {}", newProductEvent.getProductId());
+  }
+  
+  @SneakyThrows
+  @KafkaListener(id = "message-service2", topics = "NewOrder")
+  public void handleNewOrder(@Payload GenericEvent genericEvent, @Headers Map headers) {
+    NewOrderEvent newOrderEvent = objectMapper.readValue(genericEvent.getPayload(), NewOrderEvent.class);
     
     ConversationResponse conversationResponse = conversationService.newConversation(ConversationRequest.builder()
-      .user1(newOrderEvent.getBuyerId())
-      .user2(newOrderEvent.getProductId())
-      .prodottoCorrelato(newOrderEvent.getProductId())
+      .user1(newOrderEvent.getBuyer())
+      .user2(newOrderEvent.getProduct())
+      .prodottoCorrelato(newOrderEvent.getProduct())
       .build());
     
     conversationService.addMessageToConversation(conversationResponse.getId(),
       MessageRequest.builder()
-        .to(newOrderEvent.getSellerId())
+        .to(newOrderEvent.getSeller())
         .from("winted")
         .messageType(MsgType.SYSTEM.toString())
         .content("Il tuo oggetto e' stato comprato, scarica l'etichetta. Link etichetta")
@@ -58,7 +66,7 @@ public class NotificationHandler {
     
     conversationService.addMessageToConversation(conversationResponse.getId(),
       MessageRequest.builder()
-        .to(newOrderEvent.getBuyerId())
+        .to(newOrderEvent.getBuyer())
         .from("winted")
         .messageType(MsgType.SYSTEM.toString())
         .content("Attendi che il venditore invii il pacco")
@@ -66,7 +74,7 @@ public class NotificationHandler {
         .build());
     
   }
-//
+
 //  @KafkaListener(id = "message-service3", topics = "NewReplay")
 //  public void handleNewReplay(NewReplayEvent newReplayEvent) {
 //    log.info("L'utente {} ha risposto all'utente {}", newReplayEvent.getActor1Id(), newReplayEvent.getActor2Id());
@@ -78,7 +86,7 @@ public class NotificationHandler {
 //      newOfferEvent.getSellerId(), newOfferEvent.getBuyerId(), newOfferEvent.getProductId(),
 //      newOfferEvent.getPrice());
 //  }
-
+//
 //  @KafkaListener(id = "message-service", topics = "OfferAccepted")
 //  public void handleOfferAccepted(OfferAcceptedEvent offerAcceptedEvent) {
 //    if (offerAcceptedEvent.getIsAccepted()) {

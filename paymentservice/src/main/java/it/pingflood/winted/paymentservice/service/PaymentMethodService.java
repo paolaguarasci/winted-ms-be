@@ -5,7 +5,7 @@ import it.pingflood.winted.paymentservice.data.dto.PaymentMethodResponse;
 public interface PaymentMethodService {
   PaymentMethodResponse getByLoggedUser();
   
-  PaymentMethodResponse getByUsername(String username);
+  PaymentMethodResponse getByUser(String userid);
   
   PaymentMethodResponse getById(String id);
 }

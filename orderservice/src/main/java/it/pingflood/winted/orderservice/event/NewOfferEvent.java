@@ -10,8 +10,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewOfferEvent implements Serializable {
-  private String productId;
-  private String buyerId;
-  private String sellerId;
+  private String product;
+  private String buyer;
+  private String seller;
   private String price;
 }
