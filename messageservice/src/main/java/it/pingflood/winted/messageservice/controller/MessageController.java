@@ -1,5 +1,6 @@
 package it.pingflood.winted.messageservice.controller;
 
+import it.pingflood.winted.messageservice.data.dto.AnteprimaInbox;
 import it.pingflood.winted.messageservice.data.dto.MessageListResponse;
 import it.pingflood.winted.messageservice.data.dto.MessageRequest;
 import it.pingflood.winted.messageservice.data.dto.MessageResponse;
@@ -22,6 +23,13 @@ public class MessageController {
   
   public MessageController(MessageService messageService) {
     this.messageService = messageService;
+  }
+  
+  // sarebbe inbox preview sul frontend
+  @GetMapping
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<List<AnteprimaInbox>> getAllConversationFromLoggedUser() {
+    return ResponseEntity.of(Optional.of(messageService.getAllConversationPreviewFromLoggedUser()));
   }
   
   @GetMapping("/from/{username}")

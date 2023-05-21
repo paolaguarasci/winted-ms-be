@@ -13,6 +13,7 @@ public class MessageRequest {
   private String from;
   private String to;
   private String content;
-  private String answer;
   private String timestamp;
+  private String timeAgo;
+  private String messageType;
 }

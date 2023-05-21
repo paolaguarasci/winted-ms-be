@@ -40,7 +40,7 @@ spring:
         - id: message-service
           uri: lb://message-service
           predicates:
-            - Path=/api/v1/message,/api/v1/message/**
+            - Path=/api/v1/message,/api/v1/message/**,/api/v1/conversation,/api/v1/conversation/**
         - id: resource-service
           uri: lb://resource-service
           predicates:

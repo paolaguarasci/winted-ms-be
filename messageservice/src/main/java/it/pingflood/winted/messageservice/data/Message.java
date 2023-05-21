@@ -18,7 +18,6 @@ public class Message {
   private String to;
   private LocalDateTime timestamp;
   private String content;
-  private String answer;
   private String timeAgo;
   private MsgType messageType;
 }

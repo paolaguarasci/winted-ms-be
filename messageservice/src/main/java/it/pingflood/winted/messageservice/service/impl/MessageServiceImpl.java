@@ -1,14 +1,18 @@
 package it.pingflood.winted.messageservice.service.impl;
 
+import it.pingflood.winted.messageservice.data.Conversation;
 import it.pingflood.winted.messageservice.data.Message;
+import it.pingflood.winted.messageservice.data.dto.AnteprimaInbox;
 import it.pingflood.winted.messageservice.data.dto.MessageListResponse;
 import it.pingflood.winted.messageservice.data.dto.MessageRequest;
 import it.pingflood.winted.messageservice.data.dto.MessageResponse;
+import it.pingflood.winted.messageservice.repository.ConversationRepository;
 import it.pingflood.winted.messageservice.repository.MessageRepository;
 import it.pingflood.winted.messageservice.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,15 +29,20 @@ import static java.util.stream.Collectors.groupingBy;
 @Slf4j
 @Transactional
 public class MessageServiceImpl implements MessageService {
+  private final ConversationRepository conversationRepository;
   private final MessageRepository messageRepository;
   private final ModelMapper modelMapper;
+  private final PrettyTime prettyTime;
   
-  public MessageServiceImpl(MessageRepository messageRepository) {
+  public MessageServiceImpl(MessageRepository messageRepository,
+                            ConversationRepository conversationRepository) {
     this.messageRepository = messageRepository;
     modelMapper = new ModelMapper();
     modelMapper.getConfiguration()
       .setFieldMatchingEnabled(true)
       .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
+    this.conversationRepository = conversationRepository;
+    prettyTime = new PrettyTime();
   }
   
   @Override
@@ -79,5 +88,34 @@ public class MessageServiceImpl implements MessageService {
     });
     
     return listToResponse;
+  }
+  
+  @Override
+  public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser() {
+    
+    String loggedUsername = "paola";
+    
+    List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUsername, loggedUsername);
+    
+    return conversazioni.stream().map(conversation -> {
+        String lastMessagePreview = "";
+        String timeAgo = "";
+        if (conversation.getMessages().size() > 0) {
+          Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
+          lastMessagePreview = lastMessage.getContent();
+          timeAgo = prettyTime.format(lastMessage.getTimestamp());
+        }
+        
+        String altroUtente = conversation.getUser1().equals(loggedUsername) ? conversation.getUser2() : conversation.getUser1();
+        
+        return AnteprimaInbox.builder()
+          .conversationId(conversation.getId())
+          .lastMessage(lastMessagePreview)
+          .timeAgo(timeAgo)
+          .prodottoCorrelato(conversation.getProdottoCorrelato())
+          .altroUtente(altroUtente)
+          .build();
+      }
+    ).collect(Collectors.toList());
   }
 }
