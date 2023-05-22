@@ -1,6 +1,5 @@
 package it.pingflood.winted.messageservice.data.dto;
 
-import it.pingflood.winted.messageservice.data.Message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +17,6 @@ public class ConversationResponse {
   private String user2;
   private String loggedUser;
   private String altroUtente;
-  private List<Message> messages;
+  private List<MessageResponse> messages;
   private String prodottoCorrelato;
 }
