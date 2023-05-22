@@ -105,8 +105,8 @@ public class MessageServiceImpl implements MessageService {
           lastMessagePreview = lastMessage.getContent();
           timeAgo = prettyTime.format(lastMessage.getTimestamp());
         }
-      
-      String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
+        
+        String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
         
         return AnteprimaInbox.builder()
           .conversationId(conversation.getId())

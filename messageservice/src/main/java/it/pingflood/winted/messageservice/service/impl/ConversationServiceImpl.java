@@ -43,15 +43,15 @@ public class ConversationServiceImpl implements ConversationService {
     String loggedUserid = "6464d3155ded8d052d323c2a";
     List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
     return conversazioni.stream().map(conversation -> {
-      String lastMessagePreview = "";
-      String timeAgo = "";
-      if (conversation.getMessages() != null && !conversation.getMessages().isEmpty()) {
-        Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
-        lastMessagePreview = lastMessage.getContent();
-        timeAgo = prettyTime.format(lastMessage.getTimestamp());
-      }
-      
-      String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
+        String lastMessagePreview = "";
+        String timeAgo = "";
+        if (conversation.getMessages() != null && !conversation.getMessages().isEmpty()) {
+          Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
+          lastMessagePreview = lastMessage.getContent();
+          timeAgo = prettyTime.format(lastMessage.getTimestamp());
+        }
+        
+        String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
         
         return AnteprimaInbox.builder()
           .conversationId(conversation.getId())
