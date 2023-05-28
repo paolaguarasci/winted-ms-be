@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class PaymentMethodResponse {
   private String id;
-  private String username;
+  private String user;
   private String last4Digit;
   private String gestore;
 }

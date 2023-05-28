@@ -46,7 +46,7 @@ class MessageServiceTest {
     message1 = Message.builder().from("userid3").to("userid2").timestamp(timeStamp).content("Ciao!").build();
     messageRequest = MessageRequest.builder().from("userid1").to("userid2").timestamp(timeStamp.toString()).content("Ciao!").build();
     messageResponse = MessageResponse.builder().from("userid1").to("userid2").timestamp(timeStamp.toString()).content("Ciao!").build();
-    messageListResponse = MessageListResponse.builder().messageList(List.of(messageResponse)).build();
+    messageListResponse = MessageListResponse.builder().messaggi(List.of(messageResponse)).build();
   }
   
   @DisplayName("Save - return correct value")
@@ -75,10 +75,10 @@ class MessageServiceTest {
     // lenient().when.... bypassa l'eccezione "Potenziali problemi di stubbing" che in questo caso mi serve
     when(messageRepository.findAllByFromIsInAndToIsInOrderByTimestampDesc(List.of("userid1", "userid2"), List.of("userid1", "userid2"))).thenReturn(List.of(message, message, message));
     MessageListResponse messagesResponse = messageService.getConversation("userid1", "userid2");
-    assertThat(messagesResponse.getMessageList())
+    assertThat(messagesResponse.getMessaggi())
       .isInstanceOf(List.class)
       .hasSize(3);
-    assertThat(messagesResponse.getMessageList().get(0).getFrom())
+    assertThat(messagesResponse.getMessaggi().get(0).getFrom())
       .isEqualTo(message.getFrom());
   }
   
@@ -86,7 +86,7 @@ class MessageServiceTest {
   @Test
   void when_get_message_from_should_be_return_message() {
     when(messageRepository.findAllByFromIsIgnoreCase(any(String.class))).thenReturn(List.of(message, message));
-    Map<String, List<MessageResponse>> messageResponse = messageService.getAllConversationFromUsername(message.getFrom());
+    Map<String, List<MessageResponse>> messageResponse = messageService.getAllConversationFromUser(message.getFrom());
     assertThat(messageResponse).containsKey(message.getTo());
   }
   
@@ -95,7 +95,7 @@ class MessageServiceTest {
   @Test
   void when_get_message_to_should_be_return_message() {
     when(messageRepository.findAllByToIsIgnoreCase(any(String.class))).thenReturn(List.of(message1, message));
-    Map<String, List<MessageResponse>> messageResponse = messageService.getAllConversationToUsername(message.getTo());
+    Map<String, List<MessageResponse>> messageResponse = messageService.getAllConversationToUser(message.getTo());
     assertThat(messageResponse).containsKey(message.getFrom());
   }
 

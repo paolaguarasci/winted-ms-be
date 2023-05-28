@@ -17,7 +17,7 @@ public class InitDB implements CommandLineRunner {
   public void run(String... args) throws Exception {
     log.info("InitDB");
     paymentMethodRepository.save(PaymentMethod.builder()
-      .username("paola")
+      .user("6464d3155ded8d052d323c2a")
       .gestore("visa")
       .titolareCarta("Giovanni Rossi")
       .numeroCarta("1111222233334444")

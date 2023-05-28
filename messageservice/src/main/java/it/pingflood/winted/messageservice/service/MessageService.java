@@ -1,5 +1,6 @@
 package it.pingflood.winted.messageservice.service;
 
+import it.pingflood.winted.messageservice.data.dto.AnteprimaInbox;
 import it.pingflood.winted.messageservice.data.dto.MessageListResponse;
 import it.pingflood.winted.messageservice.data.dto.MessageRequest;
 import it.pingflood.winted.messageservice.data.dto.MessageResponse;
@@ -12,7 +13,9 @@ public interface MessageService {
   
   MessageResponse saveMessage(String u1, String u2, MessageRequest messageRequest);
   
-  Map<String, List<MessageResponse>> getAllConversationFromUsername(String username);
+  Map<String, List<MessageResponse>> getAllConversationFromUser(String userid);
   
-  Map<String, List<MessageResponse>> getAllConversationToUsername(String username);
+  Map<String, List<MessageResponse>> getAllConversationToUser(String userid);
+  
+  List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser();
 }

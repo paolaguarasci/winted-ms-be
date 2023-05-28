@@ -27,9 +27,9 @@ public class PaymentMethodController {
     return ResponseEntity.ok(paymentMethodService.getById(id));
   }
   
-  @GetMapping("/username/{username}")
+  @GetMapping("/user/{userid}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<PaymentMethodResponse> getOneByUsername(@PathVariable String username) {
-    return ResponseEntity.ok(paymentMethodService.getByUsername(username));
+  public ResponseEntity<PaymentMethodResponse> getOneByUser(@PathVariable String userid) {
+    return ResponseEntity.ok(paymentMethodService.getByUser(userid));
   }
 }

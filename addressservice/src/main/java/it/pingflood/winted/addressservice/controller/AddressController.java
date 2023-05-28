@@ -27,9 +27,9 @@ public class AddressController {
     return ResponseEntity.ok(addressService.getOneById(id));
   }
   
-  @GetMapping("/username/{username}")
+  @GetMapping("/user/{userid}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<AddressResponse> getOneByUsername(@PathVariable String username) {
-    return ResponseEntity.ok(addressService.getOneByUsername(username));
+  public ResponseEntity<AddressResponse> getOneByUserid(@PathVariable String userid) {
+    return ResponseEntity.ok(addressService.getOneByUserid(userid));
   }
 }

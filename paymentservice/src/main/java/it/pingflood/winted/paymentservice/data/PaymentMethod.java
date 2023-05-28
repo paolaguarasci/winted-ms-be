@@ -22,7 +22,7 @@ public class PaymentMethod {
   @Column(name = "id", nullable = false)
   @JdbcTypeCode(SqlTypes.VARCHAR)
   private UUID id;
-  private String username;
+  private String user;
   private String gestore;
   private String titolareCarta;
   private String numeroCarta;

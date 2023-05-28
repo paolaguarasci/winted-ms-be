@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OfferAcceptedEvent {
-  private String productId;
-  private String buyerId;
-  private String sellerId;
+public class OfferAcceptedEvent implements Serializable {
+  private String product;
+  private String buyer;
+  private String seller;
   private String price;
-  private Boolean isAccepted;
+  private Boolean accepted;
 }

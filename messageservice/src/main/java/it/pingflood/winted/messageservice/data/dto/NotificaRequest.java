@@ -9,11 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MessageRequest {
-  private String from;
-  private String to;
-  private String content;
-  private String timestamp;
-  private String timeAgo;
-  private String messageType;
+public class NotificaRequest {
+  private String id;
 }

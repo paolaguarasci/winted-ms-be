@@ -8,5 +8,5 @@ public interface AddressService {
   
   AddressResponse getOneById(String id);
   
-  AddressResponse getOneByUsername(String username);
+  AddressResponse getOneByUserid(String userid);
 }

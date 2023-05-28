@@ -5,15 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MessageRequest {
-  private String from;
-  private String to;
+public class NotificaResponse {
+  private String id;
+  private String user;
+  private LocalDateTime timestamp;
   private String content;
-  private String timestamp;
   private String timeAgo;
-  private String messageType;
+  private String prodottoCorrelato;
+  private Boolean read;
 }
