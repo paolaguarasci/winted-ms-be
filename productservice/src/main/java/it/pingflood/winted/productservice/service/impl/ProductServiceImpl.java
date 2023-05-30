@@ -62,7 +62,8 @@ public class ProductServiceImpl implements ProductService {
   
   @SneakyThrows
   @Override
-  public ProductResponse createProduct(ProductRequest productRequest) {
+  public ProductResponse createProduct(ProductRequest productRequest, String owner) {
+    System.out.println("RICHIESTA! " + productRequest.toString());
     MultipartBodyBuilder builder = new MultipartBodyBuilder();
     MultipartFile[] files = productRequest.getFiles();
     for (MultipartFile file : files) {
@@ -87,6 +88,7 @@ public class ProductServiceImpl implements ProductService {
       System.out.println(resp);
       
     } catch (Exception ignored) {
+      log.error("PROBLEMA {}", ignored.getMessage());
       throw new IllegalArgumentException("Errore nel salvataggio del prodotto.");
     }
     
@@ -95,9 +97,6 @@ public class ProductServiceImpl implements ProductService {
     for (Map<String, Object> img : resp) {
       ids.add(img.get("id").toString());
     }
-    
-    // TODO Procurarselo in maniera corretta!
-    String loggedUserId = "6464d3155ded8d052d323c2a";
     
     Product newProduct = Product.builder()
       .name(productRequest.getName())
@@ -108,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
       .draft(false) // TODO poi vediamo ???
       .brand(productRequest.getBrand())
       .category(productRequest.getCategory())
-      .owner(loggedUserId)
+      .owner(owner)
       .price(productRequest.getPrice())
       .build();
     Product savedProduct = productRepository.save(newProduct);

@@ -13,7 +13,7 @@ public interface ProductService {
   List<ProductResponse> getAll();
   
   
-  ProductResponse createProduct(ProductRequest productRequest);
+  ProductResponse createProduct(ProductRequest productRequest, String owner);
   
   ProductResponse updateProduct(String id, ProductPutRequest productPutRequest);
   

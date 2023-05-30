@@ -36,7 +36,7 @@ public class ProfileController {
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   ResponseEntity<ProfileResponse> handleGetOneInt(@PathVariable("id") String id, Principal principal) {
-    return ResponseEntity.ok(profileService.getOneByExtId(principal.getName()));
+    return ResponseEntity.ok(profileService.getOneByExtId(id));
   }
   
   @GetMapping("/my")

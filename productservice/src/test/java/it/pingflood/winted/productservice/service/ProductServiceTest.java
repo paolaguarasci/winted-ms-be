@@ -49,7 +49,7 @@ class ProductServiceTest {
   @Test
   void when_save_product_is_should_be_return_product() {
     when(productRepository.save(any(Product.class))).thenReturn(product);
-    ProductResponse productResponse = productService.createProduct(productRequest);
+    ProductResponse productResponse = productService.createProduct(productRequest, "");
     assertThat(productResponse.getName()).isSameAs(productResponse.getName());
   }
   
@@ -58,7 +58,7 @@ class ProductServiceTest {
   void when_try_to_save_whit_existing_name_throws_exception() {
     product.setId(null); // altrimenti solleva un eccezione rispetto ad un potenziale errore di stubbing
     when(productRepository.save(product)).thenThrow(DuplicateKeyException.class);
-    org.junit.jupiter.api.Assertions.assertThrows(DuplicateKeyException.class, () -> productService.createProduct(productRequest));
+    org.junit.jupiter.api.Assertions.assertThrows(DuplicateKeyException.class, () -> productService.createProduct(productRequest, ""));
   }
   
   @DisplayName("Get All - return correct value")

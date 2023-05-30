@@ -26,7 +26,11 @@ public class ProductController {
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<List<ProductResponse>> getAll(@RequestParam(required = false) String owner, @RequestParam(required = false) String sameto, Principal principal) {
-    log.info("Logged user {}", principal.getName());
+    
+    if (principal != null) {
+      log.info("Logged user {}", principal.getName());
+    }
+    
     if (owner != null && !owner.isBlank()) {
       return ResponseEntity.of(Optional.of(productService.getAllPublicByOwnerId(owner)));
     }
@@ -61,9 +65,10 @@ public class ProductController {
   
   @PostMapping(consumes = {"multipart/form-data"})
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<ProductResponse> saveImage(ProductRequest productRequest) {
-    log.debug("CONTROLLER - Richiesta nuovo prodotto {}", productRequest);
-    return ResponseEntity.of(Optional.of(productService.createProduct(productRequest)));
+  
+  public ResponseEntity<ProductResponse> saveImage(ProductRequest productRequest, Principal principal) {
+    log.debug("CONTROLLER - Richiesta nuovo prodotto {} - owner {}", productRequest, principal.getName());
+    return ResponseEntity.of(Optional.of(productService.createProduct(productRequest, principal.getName())));
   }
   
   

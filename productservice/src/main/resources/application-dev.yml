@@ -21,7 +21,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8000/realms/winted
-        opaquetoken:
+          jwk-set-uri: http://localhost:8000/realms/winted/protocol/openid-connect/certs
           introspection-uri: http://localhost:8000/realms/winted/protocol/openid-connect/token/introspect
           client-id: winted-web
           client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
