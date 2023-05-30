@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,8 @@ public class ProductController {
   
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<List<ProductResponse>> getAll(@RequestParam(required = false) String owner, @RequestParam(required = false) String sameto) {
+  public ResponseEntity<List<ProductResponse>> getAll(@RequestParam(required = false) String owner, @RequestParam(required = false) String sameto, Principal principal) {
+    log.info("Logged user {}", principal.getName());
     if (owner != null && !owner.isBlank()) {
       return ResponseEntity.of(Optional.of(productService.getAllPublicByOwnerId(owner)));
     }

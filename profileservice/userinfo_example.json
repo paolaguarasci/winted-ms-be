@@ -1,0 +1,42 @@
+{
+  "exp": 1685424712,
+  "iat": 1685424412,
+  "auth_time": 1685421899,
+  "jti": "08dd3929-cc6a-4cfc-96c5-742f5396a737",
+  "iss": "http://localhost:8000/realms/winted",
+  "aud": "account",
+  "sub": "abbc6705-df0d-4b38-81a4-541baeb2faa0",
+  "typ": "Bearer",
+  "azp": "winted-web",
+  "session_state": "27b78ac2-2860-4150-a7c6-933db4f458f3",
+  "acr": "0",
+  "allowed-origins": [
+    "http://localhost:4200/"
+  ],
+  "realm_access": {
+    "roles": [
+      "offline_access",
+      "uma_authorization",
+      "ADMIN",
+      "USER",
+      "default-roles-winted"
+    ]
+  },
+  "resource_access": {
+    "account": {
+      "roles": [
+        "manage-account",
+        "manage-account-links",
+        "view-profile"
+      ]
+    }
+  },
+  "scope": "profile email",
+  "sid": "27b78ac2-2860-4150-a7c6-933db4f458f3",
+  "email_verified": true,
+  "name": "Paola Guarasci",
+  "preferred_username": "paola",
+  "given_name": "Paola",
+  "family_name": "Guarasci",
+  "email": "paolaguarasci@gmail.com"
+}
