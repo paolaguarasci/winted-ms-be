@@ -1,6 +1,9 @@
 package it.pingflood.winted.productservice.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pingflood.winted.productservice.data.dto.RolesDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -18,7 +21,19 @@ import java.util.Collection;
 
 @Configuration
 @Slf4j
+
 public class SecurityConfig {
+  private final ObjectMapper objectMapper;
+  private final ModelMapper modelMapper;
+  
+  public SecurityConfig(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+    this.modelMapper = new ModelMapper();
+    this.modelMapper.getConfiguration()
+      .setFieldMatchingEnabled(true)
+      .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+  }
+  
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.csrf().disable()
@@ -34,15 +49,18 @@ public class SecurityConfig {
   }
   
   public Converter<Jwt, AbstractAuthenticationToken> jwtGrantedAuthoritiesConverter() {
-    log.info("Converter 1");
     JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
     converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-      log.info("Converter 2 - {} ", jwt.getClaims().get("realm_access"));
       Collection<GrantedAuthority> authorities = new ArrayList<>();
-      authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-      authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-      authorities.add(new SimpleGrantedAuthority("USER"));
-      authorities.add(new SimpleGrantedAuthority("ADMIN"));
+      try {
+        RolesDTO rolesDTO = modelMapper.map(jwt.getClaims().get("realm_access"), RolesDTO.class);
+        rolesDTO.getRoles().forEach(role -> {
+          authorities.add(new SimpleGrantedAuthority(role));
+          authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+        });
+      } catch (Exception e) {
+        log.error("No auth! - {}", e.getMessage());
+      }
       return authorities;
     });
     return converter;
