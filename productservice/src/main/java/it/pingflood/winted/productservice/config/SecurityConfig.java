@@ -59,7 +59,7 @@ public class SecurityConfig {
           authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
         });
       } catch (Exception e) {
-        log.error("No auth! - {}", e.getMessage());
+        log.error("No roles! - {}", e.getMessage());
       }
       return authorities;
     });

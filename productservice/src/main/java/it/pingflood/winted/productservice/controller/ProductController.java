@@ -7,6 +7,8 @@ import it.pingflood.winted.productservice.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -65,10 +67,9 @@ public class ProductController {
   
   @PostMapping(consumes = {"multipart/form-data"})
   @ResponseStatus(HttpStatus.CREATED)
-  
-  public ResponseEntity<ProductResponse> saveImage(ProductRequest productRequest, Principal principal) {
+  public ResponseEntity<ProductResponse> saveImage(ProductRequest productRequest, Principal principal, @AuthenticationPrincipal Jwt token) {
     log.debug("CONTROLLER - Richiesta nuovo prodotto {} - owner {}", productRequest, principal.getName());
-    return ResponseEntity.of(Optional.of(productService.createProduct(productRequest, principal.getName())));
+    return ResponseEntity.of(Optional.of(productService.createProduct(productRequest, principal.getName(), token.getTokenValue())));
   }
   
   

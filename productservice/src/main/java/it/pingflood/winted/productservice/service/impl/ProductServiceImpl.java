@@ -62,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
   
   @SneakyThrows
   @Override
-  public ProductResponse createProduct(ProductRequest productRequest, String owner) {
+  public ProductResponse createProduct(ProductRequest productRequest, String owner, String jwtToken) {
     System.out.println("RICHIESTA! " + productRequest.toString());
     MultipartBodyBuilder builder = new MultipartBodyBuilder();
     MultipartFile[] files = productRequest.getFiles();
@@ -72,13 +72,14 @@ public class ProductServiceImpl implements ProductService {
     }
     
     MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
-    
+    log.info("TOKEN {}", jwtToken);
+    log.info("PRINCIPAL {}", owner);
     List<Map<String, Object>> resp;
-    
     try {
       resp = WebClient.builder().build().post()
         .uri(EXTERNAL_UPLOAD_URL)
         .contentType(MediaType.MULTIPART_FORM_DATA)
+        .header("Authorization", "Bearer " + jwtToken)
         .body(BodyInserters.fromMultipartData(multipartBody))
         .exchangeToMono(clientResponse -> clientResponse.bodyToMono(List.class)).block();
       
