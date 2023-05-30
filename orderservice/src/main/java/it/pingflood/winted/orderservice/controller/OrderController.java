@@ -7,8 +7,11 @@ import it.pingflood.winted.orderservice.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,27 +29,27 @@ public class OrderController {
   
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<List<OrderResponse>> getAll() {
+  public ResponseEntity<List<OrderResponse>> getAll(Principal principal) {
     // FIXME Ha senso fare l'optional di una lista?
-    return ResponseEntity.of(Optional.of(orderService.getAll()));
+    return ResponseEntity.of(Optional.of(orderService.getAll(principal.getName())));
   }
   
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<OrderResponse> getOne(@PathVariable("id") UUID id) {
-    return ResponseEntity.of(Optional.of(orderService.getOne(id)));
+  public ResponseEntity<OrderResponse> getOne(@PathVariable("id") UUID id, Principal principal) {
+    return ResponseEntity.of(Optional.of(orderService.getOne(id, principal.getName())));
   }
   
   @PostMapping("/confirm")
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<OrderResponse> confirmOrder(@RequestBody OrderConfirmRequest orderConfirmRequest) {
-    return ResponseEntity.of(Optional.of(orderService.confirmOrder(orderConfirmRequest)));
+  public ResponseEntity<OrderResponse> confirmOrder(@RequestBody OrderConfirmRequest orderConfirmRequest, Principal principal, @AuthenticationPrincipal Jwt token) {
+    return ResponseEntity.of(Optional.of(orderService.confirmOrder(orderConfirmRequest, principal.getName(), token.getTokenValue())));
   }
   
   @PostMapping("/checkout")
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<OrderResponse> createPreorder(@RequestBody OrderRequest orderRequest) {
+  public ResponseEntity<OrderResponse> createPreorder(@RequestBody OrderRequest orderRequest, Principal principal, @AuthenticationPrincipal Jwt token) {
     System.out.println(orderRequest);
-    return ResponseEntity.of(Optional.of(orderService.createPreorder(orderRequest)));
+    return ResponseEntity.of(Optional.of(orderService.createPreorder(orderRequest, principal.getName(), token.getTokenValue())));
   }
 }
