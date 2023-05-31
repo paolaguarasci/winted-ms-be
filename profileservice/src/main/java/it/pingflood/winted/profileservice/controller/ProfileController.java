@@ -33,6 +33,12 @@ public class ProfileController {
     return ResponseEntity.ok(profileService.getAll());
   }
   
+  @GetMapping("/search")
+  @ResponseStatus(HttpStatus.OK)
+  ResponseEntity<List<ProfileResponse>> search(@RequestParam("s") String query) {
+    return ResponseEntity.ok(profileService.search(query));
+  }
+  
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   ResponseEntity<ProfileResponse> handleGetOneInt(@PathVariable("id") String id, Principal principal) {

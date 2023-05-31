@@ -1,6 +1,8 @@
 package it.pingflood.winted.profileservice.service.impl;
 
+import com.querydsl.core.types.Predicate;
 import it.pingflood.winted.profileservice.data.Profile;
+import it.pingflood.winted.profileservice.data.QProfile;
 import it.pingflood.winted.profileservice.data.dto.*;
 import it.pingflood.winted.profileservice.event.ProductEvent;
 import it.pingflood.winted.profileservice.repository.ProfileRepository;
@@ -39,6 +41,15 @@ public class ProfileServiceImpl implements ProfileService {
   @Override
   public List<ProfileResponse> getAll() {
     return profileRepository.findAll().stream().map(profile -> modelMapper.map(profile, ProfileResponse.class)).collect(Collectors.toList());
+  }
+  
+  @Override
+  public List<ProfileResponse> search(String query) {
+    QProfile qProfile = new QProfile("profile");
+    Predicate querySearch = qProfile.username.containsIgnoreCase(query).or(qProfile.firstName.containsIgnoreCase(query)).or(qProfile.lastName.containsIgnoreCase(query));
+    List<Profile> profiles = (List<Profile>) profileRepository.findAll(querySearch);
+    log.info("Trovati {} profili con i criteri di ricerca selezionati", profiles.size());
+    return profiles.stream().map(profile -> modelMapper.map(profile, ProfileResponse.class)).collect(Collectors.toList());
   }
   
   @Override
