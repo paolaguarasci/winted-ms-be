@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -23,14 +24,14 @@ public class ConversationController {
   
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<List<AnteprimaInbox>> getAllConversationFromLoggedUser() {
-    return ResponseEntity.ok(conversationService.getAllConversationPreviewFromLoggedUser());
+  public ResponseEntity<List<AnteprimaInbox>> getAllConversationFromLoggedUser(Principal principal) {
+    return ResponseEntity.ok(conversationService.getAllConversationPreviewFromLoggedUser(principal.getName()));
   }
   
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<ConversationResponse> getOneById(@PathVariable String id) {
-    return ResponseEntity.ok(conversationService.getOneById(id));
+  public ResponseEntity<ConversationResponse> getOneById(@PathVariable String id, Principal principal) {
+    return ResponseEntity.ok(conversationService.getOneById(id, principal.getName()));
   }
   
   @PostMapping("/{id}/newmsg")

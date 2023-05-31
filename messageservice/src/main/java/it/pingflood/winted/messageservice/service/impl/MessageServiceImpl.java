@@ -91,12 +91,8 @@ public class MessageServiceImpl implements MessageService {
   }
   
   @Override
-  public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser() {
-    
-    String loggedUserid = "6464d3155ded8d052d323c2a";
-    
+  public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser(String loggedUserid) {
     List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
-    
     return conversazioni.stream().map(conversation -> {
         String lastMessagePreview = "";
         String timeAgo = "";

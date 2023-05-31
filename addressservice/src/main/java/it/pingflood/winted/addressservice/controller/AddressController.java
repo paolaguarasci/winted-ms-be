@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/v1/address")
 @Slf4j
@@ -17,8 +19,8 @@ public class AddressController {
   
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<AddressResponse> getOneByUserLogged() {
-    return ResponseEntity.ok(addressService.getOneByUserLogged());
+  public ResponseEntity<AddressResponse> getOneByUserLogged(Principal principal) {
+    return ResponseEntity.ok(addressService.getOneByUserLogged(principal.getName()));
   }
   
   @GetMapping("{id}")

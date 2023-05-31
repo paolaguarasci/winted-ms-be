@@ -1,4 +1,13 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8000/realms/winted
+          jwk-set-uri: http://localhost:8000/realms/winted/protocol/openid-connect/certs
+          introspection-uri: http://localhost:8000/realms/winted/protocol/openid-connect/token/introspect
+          client-id: winted-web
+          client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
   data:
   mongodb:
     uri: "mongodb://localhost:27017/ciao"

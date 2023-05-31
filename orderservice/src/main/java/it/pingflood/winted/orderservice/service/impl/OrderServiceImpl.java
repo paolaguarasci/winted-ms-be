@@ -54,12 +54,12 @@ public class OrderServiceImpl implements OrderService {
   }
   
   @Override
-  public OrderResponse getOne(UUID id) {
+  public OrderResponse getOne(UUID id, String principal) {
     return modelMapper.map(orderRepository.findById(id).orElseThrow(), OrderResponse.class);
   }
   
   @Override
-  public List<OrderResponse> getAll() {
+  public List<OrderResponse> getAll(String principal) {
     return orderRepository.findAll()
       .stream()
       .map(order -> modelMapper.map(order, OrderResponse.class))
@@ -67,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
   }
   
   @Override
-  public List<OrderResponse> getAllByUser(String userId) {
+  public List<OrderResponse> getAllByUser(String userId, String principal) {
     return orderRepository.findAllByBuyer(userId)
       .stream()
       .map(order -> modelMapper.map(order, OrderResponse.class))
@@ -75,8 +75,8 @@ public class OrderServiceImpl implements OrderService {
   }
   
   @Override
-  public OrderResponse confirmOrder(OrderConfirmRequest orderConfirmRequest) {
-    String loggedUserId = "6464d3155ded8d052d323c2a";
+  public OrderResponse confirmOrder(OrderConfirmRequest orderConfirmRequest, String principal, String token) {
+    String loggedUserId = principal;
     Order order = orderRepository.findById(UUID.fromString(orderConfirmRequest.getId())).orElseThrow();
     
     try {
@@ -115,8 +115,8 @@ public class OrderServiceImpl implements OrderService {
   }
   
   @Override
-  public OrderResponse createPreorder(OrderRequest orderRequest) {
-    String loggedUserId = "6464d3155ded8d052d323c2a";
+  public OrderResponse createPreorder(OrderRequest orderRequest, String principal, String token) {
+    String loggedUserId = principal;
     if (orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()).isPresent()) {
       return modelMapper.map(orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()), OrderResponse.class);
     }
@@ -128,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
         .product(orderRequest.getProduct())
         .status(OrderStatus.NEW)
         .address(getAddressId(loggedUserId))
-        .paymentMethod(getPaymentMethod(loggedUserId))
+        .paymentMethod(getPaymentMethod(loggedUserId, token))
         .build()), OrderResponse.class);
   }
   
@@ -156,8 +156,8 @@ public class OrderServiceImpl implements OrderService {
     return addressClient.getAddressByUsername(username).getId().toString();
   }
   
-  private String getPaymentMethod(String username) {
-    return paymentClient.getPaymentMethodByUsername(username).getId();
+  private String getPaymentMethod(String userid, String token) {
+    return paymentClient.getPaymentMethodByUserid(token, userid).getId();
   }
   
   private void setProductBoughtStatus(String productId) {

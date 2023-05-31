@@ -1,5 +1,7 @@
 package it.pingflood.winted.orderservice.client;
 
+import feign.Headers;
+import feign.Param;
 import it.pingflood.winted.orderservice.client.data.PaymentMethodResponse;
 import it.pingflood.winted.orderservice.client.data.PaymentResponse;
 import it.pingflood.winted.orderservice.data.Order;
@@ -16,6 +18,10 @@ public interface PaymentClient {
   
   @GetMapping("/api/v1/paymentmethod?username={username}")
   PaymentMethodResponse getPaymentMethodByUsername(@PathVariable String username);
+  
+  @GetMapping("/api/v1/paymentmethod/user/{userid}")
+  @Headers("Authorization: Bearer {token}")
+  PaymentMethodResponse getPaymentMethodByUserid(@Param("token") String token, @PathVariable String userid);
   
   @GetMapping("/api/v1/payment/{id}")
   PaymentResponse getPaymentById(@PathVariable String id);

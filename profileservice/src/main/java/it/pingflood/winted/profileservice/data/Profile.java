@@ -3,6 +3,7 @@ package it.pingflood.winted.profileservice.data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,20 +14,24 @@ import java.util.TreeSet;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Document(value = "profile")
 @Data
 public class Profile {
   @Id
   private String id;
+  
+  @Indexed(unique = true)
+  private String providerIdentityId;
+  
   @Indexed(unique = true)
   private String username;
+  
   private String avatar;
   private Set<String> preferred = new TreeSet<>();
   private Set<String> wardrobe = new HashSet<>();
   private Set<String> draft = new HashSet<>();
   private Double reputation;
-  private String providerIdentityId;
-  
   private String position;
   private String lastVisit;
   

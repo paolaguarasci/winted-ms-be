@@ -38,8 +38,7 @@ public class ConversationServiceImpl implements ConversationService {
   
   
   @Override
-  public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser() {
-    String loggedUserid = "6464d3155ded8d052d323c2a";
+  public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser(String loggedUserid) {
     List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
     return conversazioni.stream().map(conversation -> {
         String lastMessagePreview = "";
@@ -64,8 +63,7 @@ public class ConversationServiceImpl implements ConversationService {
   }
   
   @Override
-  public ConversationResponse getOneById(String id) {
-    String loggedUserid = "6464d3155ded8d052d323c2a";
+  public ConversationResponse getOneById(String id, String loggedUserid) {
     Conversation conv = conversationRepository.findById(id).orElseThrow();
     
     List<Message> messagesOriginal = conv.getMessages();
