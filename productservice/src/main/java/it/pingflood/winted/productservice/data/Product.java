@@ -1,5 +1,6 @@
 package it.pingflood.winted.productservice.data;
 
+import com.querydsl.core.annotations.QueryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Document(value = "product")
 @Data
+@QueryEntity
 public class Product {
   @Id
   private String id;

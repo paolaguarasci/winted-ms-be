@@ -1,6 +1,8 @@
 package it.pingflood.winted.productservice.service.impl;
 
+import com.querydsl.core.types.Predicate;
 import it.pingflood.winted.productservice.data.Product;
+import it.pingflood.winted.productservice.data.QProduct;
 import it.pingflood.winted.productservice.data.dto.ProductPutRequest;
 import it.pingflood.winted.productservice.data.dto.ProductRequest;
 import it.pingflood.winted.productservice.data.dto.ProductResponse;
@@ -61,8 +63,16 @@ public class ProductServiceImpl implements ProductService {
   }
   
   @Override
-  public List<ProductResponse> search(String query) {
-    return List.of();
+  public List<ProductResponse> search(String s) {
+    QProduct qProduct = new QProduct("product");
+    Predicate querySearch = qProduct
+      .name.containsIgnoreCase(s)
+      .or(qProduct.description.containsIgnoreCase(s))
+      .and(qProduct.bought.isFalse())
+      .and(qProduct.draft.isFalse());
+    List<Product> products = (List<Product>) productRepository.findAll(querySearch);
+    log.info("Trovati {} prodotti con i criteri di ricerca selezionati", products.size());
+    return products.stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
   }
   
   @SneakyThrows
