@@ -38,7 +38,7 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.csrf().disable()
       .authorizeRequests(auth -> auth
-        .requestMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**")
+        .requestMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**", "/api/v1/product/search")
         .permitAll()
         .requestMatchers(HttpMethod.POST, "/api/v1/product", "/api/v1/product/**")
         .hasAnyAuthority("ROLE_USER", "USER", "ROLE_ADMIN", "ADMIN")

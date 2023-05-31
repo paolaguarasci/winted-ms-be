@@ -60,6 +60,11 @@ public class ProductServiceImpl implements ProductService {
     return productRepository.findAllByBoughtIsFalseAndDraftIsFalse().stream().map(product -> modelMapper.map(product, ProductResponse.class)).collect(Collectors.toList());
   }
   
+  @Override
+  public List<ProductResponse> search(String query) {
+    return List.of();
+  }
+  
   @SneakyThrows
   @Override
   public ProductResponse createProduct(ProductRequest productRequest, String owner, String jwtToken) {

@@ -12,6 +12,7 @@ public interface ProductService {
   
   List<ProductResponse> getAll();
   
+  List<ProductResponse> search(String query);
   
   ProductResponse createProduct(ProductRequest productRequest, String owner, String token);
   
