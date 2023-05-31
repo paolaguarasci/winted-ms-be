@@ -8,9 +8,9 @@ import it.pingflood.winted.messageservice.data.dto.MessageRequest;
 import java.util.List;
 
 public interface ConversationService {
-  List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser();
+  List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser(String loggedUserId);
   
-  ConversationResponse getOneById(String id);
+  ConversationResponse getOneById(String id, String loggedUserId);
   
   ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest);
   

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +28,8 @@ public class MessageController {
   // sarebbe inbox preview sul frontend
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<List<AnteprimaInbox>> getAllConversationFromLoggedUser() {
-    return ResponseEntity.of(Optional.of(messageService.getAllConversationPreviewFromLoggedUser()));
+  public ResponseEntity<List<AnteprimaInbox>> getAllConversationFromLoggedUser(Principal principal) {
+    return ResponseEntity.of(Optional.of(messageService.getAllConversationPreviewFromLoggedUser(principal.getName())));
   }
   
   @GetMapping("/from/{userid}")

@@ -17,5 +17,5 @@ public interface MessageService {
   
   Map<String, List<MessageResponse>> getAllConversationToUser(String userid);
   
-  List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser();
+  List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser(String userid);
 }
