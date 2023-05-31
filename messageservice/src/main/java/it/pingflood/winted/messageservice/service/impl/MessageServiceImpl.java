@@ -91,30 +91,26 @@ public class MessageServiceImpl implements MessageService {
   }
   
   @Override
-  public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser() {
-    
-    String loggedUserid = "6464d3155ded8d052d323c2a";
-    
+  public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser(String loggedUserid) {
     List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
-    
     return conversazioni.stream().map(conversation -> {
-        String lastMessagePreview = "";
-        String timeAgo = "";
-        if (conversation.getMessages().size() > 0) {
-          Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
-          lastMessagePreview = lastMessage.getContent();
-          timeAgo = prettyTime.format(lastMessage.getTimestamp());
-        }
-        
-        String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
-        
-        return AnteprimaInbox.builder()
-          .conversationId(conversation.getId())
-          .lastMessage(lastMessagePreview)
-          .timeAgo(timeAgo)
-          .prodottoCorrelato(conversation.getProdottoCorrelato())
-          .altroUtente(altroUtente)
-          .build();
+      String lastMessagePreview = "";
+      String timeAgo = "";
+      if (conversation.getMessages().size() > 0) {
+        Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
+        lastMessagePreview = lastMessage.getContent();
+        timeAgo = prettyTime.format(lastMessage.getTimestamp());
+      }
+      
+      String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
+      
+      return AnteprimaInbox.builder()
+        .conversationId(conversation.getId())
+        .lastMessage(lastMessagePreview)
+        .timeAgo(timeAgo)
+        .prodottoCorrelato(conversation.getProdottoCorrelato())
+        .altroUtente(altroUtente)
+        .build();
       }
     ).collect(Collectors.toList());
   }

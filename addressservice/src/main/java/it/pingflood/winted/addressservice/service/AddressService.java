@@ -4,7 +4,7 @@ import it.pingflood.winted.addressservice.data.dto.AddressResponse;
 
 public interface AddressService {
   
-  AddressResponse getOneByUserLogged();
+  AddressResponse getOneByUserLogged(String userid);
   
   AddressResponse getOneById(String id);
   

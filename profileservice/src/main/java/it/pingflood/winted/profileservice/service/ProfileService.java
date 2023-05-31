@@ -3,11 +3,16 @@ package it.pingflood.winted.profileservice.service;
 import it.pingflood.winted.profileservice.data.dto.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProfileService {
   List<ProfileResponse> getAll();
   
   ProfileResponse getOneById(String id);
+  
+  ProfileResponse getOneByExtId(String loggedExternalUserid);
+  
+  ProfileResponse getMyByExtId(Map<String, String> userLoggedData);
   
   ProfileResponse getOneByUsername(String username);
   

@@ -5,8 +5,10 @@ import it.pingflood.winted.paymentservice.data.dto.PaymentMethodResponse;
 import it.pingflood.winted.paymentservice.repository.PaymentMethodRepository;
 import it.pingflood.winted.paymentservice.service.PaymentMethodService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -21,9 +23,8 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
   }
   
   @Override
-  public PaymentMethodResponse getByLoggedUser() {
-    String loggedUserid = "6464d3155ded8d052d323c2a";
-    return getObfuscate(paymentMethodRepository.findByUser(loggedUserid).orElseThrow());
+  public PaymentMethodResponse getByLoggedUser(String principal) {
+    return getObfuscate(paymentMethodRepository.findByUser(principal).orElseThrow());
   }
   
   @Override
@@ -32,8 +33,12 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
   }
   
   @Override
-  public PaymentMethodResponse getById(String id) {
-    return getObfuscate(paymentMethodRepository.findById(UUID.fromString(id)).orElseThrow());
+  public PaymentMethodResponse getById(String id, String principal) {
+    PaymentMethod pm = paymentMethodRepository.findById(UUID.fromString(id)).orElseThrow();
+    if (!pm.getUser().equals(principal)) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+    }
+    return getObfuscate(pm);
   }
   
   private PaymentMethodResponse getObfuscate(PaymentMethod pm) {
