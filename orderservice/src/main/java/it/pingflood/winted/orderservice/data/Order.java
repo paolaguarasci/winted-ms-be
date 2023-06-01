@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "WINTED_ORDER")
-public class Order {
+public class Order extends Auditable<String> implements Serializable {
   
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
