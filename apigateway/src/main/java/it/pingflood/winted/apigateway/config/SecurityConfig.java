@@ -17,7 +17,7 @@ public class SecurityConfig {
       .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
         .pathMatchers("/eureka/**")
         .permitAll()
-        .pathMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**")
+        .pathMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**", "/api/v1/product/search")
         .permitAll()
         .pathMatchers(HttpMethod.GET, "/api/v1/resource", "/api/v1/resource/**")
         .permitAll()

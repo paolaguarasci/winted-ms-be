@@ -1,5 +1,6 @@
 package it.pingflood.winted.profileservice.data;
 
+import com.querydsl.core.annotations.QueryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.TreeSet;
 @NoArgsConstructor
 @Document(value = "profile")
 @Data
+@QueryEntity
 public class Profile {
   @Id
   private String id;
@@ -26,6 +28,9 @@ public class Profile {
   
   @Indexed(unique = true)
   private String username;
+  
+  private String firstName;
+  private String lastName;
   
   private String avatar;
   private Set<String> preferred = new TreeSet<>();

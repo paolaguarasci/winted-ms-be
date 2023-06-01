@@ -43,6 +43,13 @@ public class ProductController {
     
     return ResponseEntity.of(Optional.of(productService.getAll()));
   }
+  
+  @GetMapping("/search")
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<List<ProductResponse>> search(@RequestParam("s") String query) {
+    log.info("Search query {}", query);
+    return ResponseEntity.of(Optional.of(productService.search(query)));
+  }
 
 //  @GetMapping
 //  @ResponseStatus(HttpStatus.OK)

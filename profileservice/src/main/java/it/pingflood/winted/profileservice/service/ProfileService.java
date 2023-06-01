@@ -8,6 +8,8 @@ import java.util.Map;
 public interface ProfileService {
   List<ProfileResponse> getAll();
   
+  List<ProfileResponse> search(String query);
+  
   ProfileResponse getOneById(String id);
   
   ProfileResponse getOneByExtId(String loggedExternalUserid);
