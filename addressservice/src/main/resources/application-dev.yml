@@ -3,15 +3,16 @@ eureka:
     hostname: localhost
   client:
     serviceUrl:
-      defaultZone: http://eureka:password@localhost:8761/eureka
+      defaultZone: https://eureka:password@localhost:8761/eureka
 
 server:
   port: 0
   ssl:
-    key-store-type: PKCS12
-    key-store: classpath:keystore/waddress.p12
+    key-store: store/keystore.jks
     key-store-password: winted
-    key-alias: waddress
+    key-alias: localhost
+    key-password: winted
+    enabled: true
 
 spring:
   security:

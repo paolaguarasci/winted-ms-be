@@ -18,43 +18,51 @@ spring:
 
   cloud:
     gateway:
+#      globalcors:
+      #        corsConfigurations:
+      #          '[/**]':
+      #            allowedOrigins: "https://localhost:4200"
+      #            allowedHeaders: "*"
+      #            allowedMethods:
+      #              - GET
+      #              - POST
       routes:
         - id: discovery-server
-          uri: http://localhost:8761
+          uri: https://localhost:8761
           predicates:
             - Path=/eureka
           filters:
             - SetPath=/
         - id: discovery-server-static
-          uri: http://localhost:8761
+          uri: https://localhost:8761
           predicates:
             - Path=/eureka/**
         - id: product-service
-          uri: lb://product-service
+          uri: lbs://product-service
           predicates:
             - Path=/api/v1/product,/api/v1/product/**
         - id: order-service
-          uri: lb://order-service
+          uri: lbs://order-service
           predicates:
             - Path=/api/v1/order,/api/v1/order/**
         - id: message-service
-          uri: lb://message-service
+          uri: lbs://message-service
           predicates:
             - Path=/api/v1/message,/api/v1/message/**,/api/v1/conversation,/api/v1/conversation/**
         - id: resource-service
-          uri: lb://resource-service
+          uri: lbs://resource-service
           predicates:
             - Path=/api/v1/resource,/api/v1/resource/**
         - id: profile-service
-          uri: lb://profile-service
+          uri: lbs://profile-service
           predicates:
             - Path=/api/v1/profile,/api/v1/profile/**
         - id: payment-service
-          uri: lb://payment-service
+          uri: lbs://payment-service
           predicates:
             - Path=/api/v1/payment,/api/v1/payment/**,/api/v1/paymentmethod,/api/v1/paymentmethod/**
         - id: address-service
-          uri: lb://address-service
+          uri: lbs://address-service
           predicates:
             - Path=/api/v1/address,/api/v1/address/**
   security:
@@ -72,13 +80,14 @@ eureka:
     hostname: localhost
   client:
     serviceUrl:
-      defaultZone: http://eureka:password@localhost:8761/eureka/
+      defaultZone: https://eureka:password@localhost:8761/eureka
 
 
 server:
   port: 8443
   ssl:
-    key-store-type: PKCS12
-    key-store: classpath:keystore/wgateway.p12
+    key-store: store/keystore.jks
     key-store-password: winted
-    key-alias: wgateway
+    key-alias: localhost
+    key-password: winted
+    enabled: true

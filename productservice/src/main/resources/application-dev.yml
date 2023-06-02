@@ -31,11 +31,16 @@ eureka:
     hostname: localhost
   client:
     serviceUrl:
-      defaultZone: http://eureka:password@localhost:8761/eureka
+      defaultZone: https://eureka:password@localhost:8761/eureka
 
 server:
   port: 0
-
+  ssl:
+    key-store: store/keystore.jks
+    key-store-password: winted
+    key-alias: localhost
+    key-password: winted
+    enabled: true
 
 logging:
   level:
