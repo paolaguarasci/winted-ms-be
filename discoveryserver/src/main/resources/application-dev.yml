@@ -4,6 +4,12 @@ eureka:
     secure-port-enabled: true
     secure-port: ${server.port}
   client:
+    tls:
+      key-store: file:store/keystore.jks
+      key-store-password: winted
+      key-alias: localhost
+      key-password: winted
+      enabled: true
     registerWithEureka: false
     fetchRegistry: false
   username: eureka
