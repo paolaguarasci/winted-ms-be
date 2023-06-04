@@ -3,7 +3,7 @@
   "iat": 1685424412,
   "auth_time": 1685421899,
   "jti": "08dd3929-cc6a-4cfc-96c5-742f5396a737",
-  "iss": "http://localhost:8000/realms/winted",
+  "iss": "https://localhost:8000/realms/winted",
   "aud": "account",
   "sub": "abbc6705-df0d-4b38-81a4-541baeb2faa0",
   "typ": "Bearer",

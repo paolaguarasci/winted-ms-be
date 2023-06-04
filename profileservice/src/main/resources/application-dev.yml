@@ -20,9 +20,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8000/realms/winted
+          issuer-uri: https://localhost:8000/realms/winted
         opaquetoken:
-          introspection-uri: http://localhost:8000/realms/winted/protocol/openid-connect/token/introspect
+          introspection-uri: https://localhost:8000/realms/winted/protocol/openid-connect/token/introspect
           client-id: winted-web
           client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
 
