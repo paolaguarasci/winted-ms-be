@@ -1,13 +1,25 @@
 eureka:
   instance:
     hostname: localhost
+    secure-port-enabled: true
+    secure-port: ${server.port}
   client:
-    register-with-eureka: false
-    fetch-registry: false
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+    tls:
+      key-store: file:store/keystore.jks
+      key-store-password: winted
+      key-alias: localhost
+      key-password: winted
+      enabled: true
+    registerWithEureka: false
+    fetchRegistry: false
   username: eureka
   password: password
 
 server:
   port: 8761
+  ssl:
+    key-store: store/keystore.jks
+    key-store-password: winted
+    key-alias: localhost
+    key-password: winted
+    enabled: true

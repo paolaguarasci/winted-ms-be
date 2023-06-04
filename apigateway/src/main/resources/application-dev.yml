@@ -18,15 +18,24 @@ spring:
 
   cloud:
     gateway:
+      loadbalancer:
+        use404: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "https://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
       routes:
         - id: discovery-server
-          uri: http://localhost:8761
+          uri: https://localhost:8761
           predicates:
             - Path=/eureka
           filters:
             - SetPath=/
         - id: discovery-server-static
-          uri: http://localhost:8761
+          uri: https://localhost:8761
           predicates:
             - Path=/eureka/**
         - id: product-service
@@ -61,7 +70,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8000/realms/winted
+          issuer-uri: https://localhost:8000/realms/winted
 app:
   config:
     init:
@@ -70,10 +79,25 @@ app:
 eureka:
   instance:
     hostname: localhost
+    securePortEnabled: true
   client:
     serviceUrl:
-      defaultZone: http://eureka:password@localhost:8761/eureka/
+      defaultZone: https://eureka:password@localhost:8761/eureka
 
 
 server:
-  port: 8080
+  port: 8443
+  ssl:
+    key-store: store/keystore.jks
+    key-store-password: winted
+    key-alias: localhost
+    key-password: winted
+    enabled: true
+
+
+logging:
+  level:
+    root: "debug"
+    org.springframework.web: "debug"
+    org.hibernate: "warn"
+    it.pingflood.winted: "debug"
