@@ -1,6 +1,5 @@
 package it.pingflood.winted.orderservice.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pingflood.winted.orderservice.client.AddressClient;
 import it.pingflood.winted.orderservice.client.PaymentClient;
 import it.pingflood.winted.orderservice.client.ProductClient;
@@ -37,16 +36,14 @@ public class OrderServiceImpl implements OrderService {
   private final AddressClient addressClient;
   private final PaymentClient paymentClient;
   private final KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate;
-  private final ObjectMapper objectMapper;
   
   
-  public OrderServiceImpl(OrderRepository orderRepository, ProductClient productClient, AddressClient addressClient, PaymentClient paymentClient, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate, ObjectMapper objectMapper) {
+  public OrderServiceImpl(OrderRepository orderRepository, ProductClient productClient, AddressClient addressClient, PaymentClient paymentClient, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate) {
     this.orderRepository = orderRepository;
     this.productClient = productClient;
     this.addressClient = addressClient;
     this.paymentClient = paymentClient;
     this.newOrderEventKafkaTemplate = newOrderEventKafkaTemplate;
-    this.objectMapper = objectMapper;
     modelMapper = new ModelMapper();
     modelMapper.getConfiguration()
       .setFieldMatchingEnabled(true)

@@ -1,6 +1,5 @@
 package it.pingflood.winted.profileservice.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pingflood.winted.profileservice.data.dto.RolesDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,11 +22,8 @@ import java.util.Collection;
 @Slf4j
 
 public class SecurityConfig {
-  private final ObjectMapper objectMapper;
   private final ModelMapper modelMapper;
-  
-  public SecurityConfig(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
+  public SecurityConfig() {
     this.modelMapper = new ModelMapper();
     this.modelMapper.getConfiguration()
       .setFieldMatchingEnabled(true)
@@ -37,7 +33,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.csrf().disable()
-      .authorizeRequests(auth -> auth
+      .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.GET, "/api/v1/profile", "/api/v1/profile/**")
         .permitAll()
         .requestMatchers(HttpMethod.POST, "/api/v1/profile", "/api/v1/profile/**")

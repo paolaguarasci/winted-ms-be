@@ -31,7 +31,7 @@ public class AddressServiceImpl implements AddressService {
   
   @Override
   public List<AddressResponse> getAllByUserLogged(String userId) {
-    return addressRepository.findAllByUser(userId).stream().map((element) -> modelMapper.map(element, AddressResponse.class)).collect(Collectors.toList());
+    return addressRepository.findAllByUser(userId).stream().map(element -> modelMapper.map(element, AddressResponse.class)).collect(Collectors.toList());
   }
   
   @Override

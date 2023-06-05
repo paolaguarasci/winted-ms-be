@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
   @SneakyThrows
   @Override
   public ProductResponse createProduct(ProductRequest productRequest, String owner, String jwtToken) {
-    System.out.println("RICHIESTA! " + productRequest.toString());
+    log.debug("RICHIESTA! " + productRequest.toString());
     MultipartBodyBuilder builder = new MultipartBodyBuilder();
     MultipartFile[] files = productRequest.getFiles();
     for (MultipartFile file : files) {
@@ -87,8 +87,8 @@ public class ProductServiceImpl implements ProductService {
     }
     
     MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
-    log.info("TOKEN {}", jwtToken);
-    log.info("PRINCIPAL {}", owner);
+    log.debug("TOKEN {}", jwtToken);
+    log.debug("PRINCIPAL {}", owner);
     List<Map<String, Object>> resp;
     try {
       resp = WebClient.builder().build().post()
@@ -100,8 +100,8 @@ public class ProductServiceImpl implements ProductService {
       
       if (resp == null) throw new IllegalArgumentException("Errore nel caricamento delle immagini");
       
-      System.out.println("================ RESPONSE =================== ");
-      System.out.println(resp);
+      log.debug("================ RESPONSE =================== ");
+      log.debug("{}", resp);
       
     } catch (Exception ignored) {
       log.error("PROBLEMA {}", ignored.getMessage());
