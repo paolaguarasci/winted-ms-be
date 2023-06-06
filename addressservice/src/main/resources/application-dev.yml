@@ -16,6 +16,9 @@ server:
     enabled: true
 
 spring:
+  output:
+    ansi:
+      enabled: always
   security:
     oauth2:
       resourceserver:
@@ -53,3 +56,10 @@ logging:
     org.springframework.web: "debug"
     org.hibernate: "warn"
     it.pingflood.winted: "debug"
+
+springdoc:
+  packagesToScan: it.pingflood.winted.addressservice
+  api-docs:
+    path: /api/v1/address/v3/api-docs
+  swagger-ui:
+    path: /api/v1/address/swagger-ui.html

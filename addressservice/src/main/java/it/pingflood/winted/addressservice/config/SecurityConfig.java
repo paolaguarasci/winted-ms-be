@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,6 +36,8 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.csrf().disable()
       .authorizeHttpRequests(auth -> auth
+        .requestMatchers(HttpMethod.GET, "/api/v1/address/v3/api-docs", "/api/v1/address/v3/api-docs/**", "/api/v1/address/webjars/swagger-ui/index.html", "/address/v3/api-docs")
+        .permitAll()
         .requestMatchers("/api/v1/address", "/api/v1/address/**")
         .hasAnyAuthority("ROLE_USER", "USER", "ROLE_ADMIN", "ADMIN")
         .anyRequest()

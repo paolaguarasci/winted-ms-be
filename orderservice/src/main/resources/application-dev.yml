@@ -56,3 +56,11 @@ logging:
     org.springframework.web: "debug"
     org.hibernate: "warn"
     it.pingflood.winted: "debug"
+
+
+springdoc:
+  packagesToScan: it.pingflood.winted.orderservice
+  api-docs:
+    path: /api/v1/order/v3/api-docs
+  swagger-ui:
+    path: /api/v1/order/swagger-ui.html

@@ -15,6 +15,37 @@ public class SecurityConfig {
     return http
       .csrf().disable()
       .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
+        
+        .pathMatchers(HttpMethod.GET, "/webjars/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+        .pathMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+        
+        .pathMatchers(HttpMethod.GET, "/product/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/product/v3/api-docs/**").permitAll()
+        
+        .pathMatchers(HttpMethod.GET, "/message/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/message/v3/api-docs/**").permitAll()
+        
+        .pathMatchers(HttpMethod.GET, "/address/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/address/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/api/v1/address/v3/api-docs", "/api/v1/address/v3/api-docs/**", "/api/v1/address/webjars/swagger-ui/index.html", "/address/v3/api-docs")
+        .permitAll()
+        .pathMatchers(HttpMethod.GET, "/api/v1/message/v3/api-docs", "/api/v1/message/v3/api-docs/**", "/api/v1/message/webjars/swagger-ui/index.html", "/message/v3/api-docs")
+        .permitAll()
+        .pathMatchers(HttpMethod.GET, "/order/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/order/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/api/v1/order/v3/api-docs", "/api/v1/order/v3/api-docs/**", "/api/v1/order/webjars/swagger-ui/index.html", "/order/v3/api-docs")
+        .permitAll()
+        
+        .pathMatchers(HttpMethod.GET, "/payment/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/payment/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/api/v1/payment/v3/api-docs", "/api/v1/payment/v3/api-docs/**", "/api/v1/payment/webjars/swagger-ui/index.html", "/payment/v3/api-docs")
+        .permitAll()
+        .pathMatchers(HttpMethod.GET, "/profile/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/profile/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/api/v1/profile/v3/api-docs", "/api/v1/profile/v3/api-docs/**", "/api/v1/profile/webjars/swagger-ui/index.html", "/profile/v3/api-docs")
+        .permitAll()
         .pathMatchers("/eureka/**", "/actuator", "/actuator/**")
         .permitAll()
         .pathMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**", "/api/v1/product/search")

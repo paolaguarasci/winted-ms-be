@@ -15,6 +15,9 @@ server:
     key-password: winted
     enabled: true
 spring:
+  output:
+    ansi:
+      enabled: always
   servlet:
     multipart:
       max-file-size: 5MB
@@ -47,3 +50,10 @@ app:
     credential:
       accessKey: 'AKIAVFWIQUJXGMLH5U5F'
       secretKey: "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"
+
+springdoc:
+  packagesToScan: it.pingflood.winted.resourceservice
+  api-docs:
+    path: /api/v1/resource/v3/api-docs
+  swagger-ui:
+    path: /api/v1/resource/swagger-ui.html

@@ -18,6 +18,9 @@ spring:
 
   cloud:
     gateway:
+      filter:
+        request-rate-limiter:
+          deny-empty-key: false
       loadbalancer:
         use404: true
       globalcors:
@@ -108,6 +111,12 @@ spring:
                 redis-rate-limiter.replenishRate: 1
                 redis-rate-limiter.burstCapacity: 1
                 redis-rate-limiter.requestedTokens: 1
+        - id: openapi
+          uri: https://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
   security:
     oauth2:
       resourceserver:
@@ -148,3 +157,24 @@ management:
   health:
     redis:
       enabled: true
+
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: address-service
+        url: /v3/api-docs/api/v1/address
+      - name: message-service
+        url: /v3/api-docs/api/v1/message
+      - name: order-service
+        url: /v3/api-docs/api/v1/order
+      - name: payment-service
+        url: /v3/api-docs/api/v1/payment
+      - name: profile-service
+        url: /v3/api-docs/api/v1/profile
+      - name: product-service
+        url: /v3/api-docs/api/v1/product
+      - name: profile-service
+        url: /v3/api-docs/api/v1/profile
+      - name: resource-service
+        url: /v3/api-docs/api/v1/resource
