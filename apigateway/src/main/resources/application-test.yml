@@ -45,69 +45,33 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.replenishRate: 2
+                redis-rate-limiter.burstCapacity: 2
                 redis-rate-limiter.requestedTokens: 1
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/v1/order,/api/v1/order/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
         - id: message-service
           uri: lb://message-service
           predicates:
             - Path=/api/v1/message,/api/v1/message/**,/api/v1/conversation,/api/v1/conversation/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
         - id: resource-service
           uri: lb://resource-service
           predicates:
             - Path=/api/v1/resource,/api/v1/resource/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
         - id: profile-service
           uri: lb://profile-service
           predicates:
             - Path=/api/v1/profile,/api/v1/profile/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
         - id: payment-service
           uri: lb://payment-service
           predicates:
             - Path=/api/v1/payment,/api/v1/payment/**,/api/v1/paymentmethod,/api/v1/paymentmethod/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
         - id: address-service
           uri: lb://address-service
           predicates:
             - Path=/api/v1/address,/api/v1/address/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
   security:
     oauth2:
       resourceserver:
@@ -126,16 +90,14 @@ eureka:
     serviceUrl:
       defaultZone: https://eureka:password@localhost:8761/eureka
 
-
 server:
   port: 8443
   ssl:
-    key-store: store/keystore.jks
+    key-store: /home/paola/workspace/progetti_m/winted_ms/be/store/keystore.jks
     key-store-password: winted
     key-alias: localhost
     key-password: winted
     enabled: true
-
 
 logging:
   level:
