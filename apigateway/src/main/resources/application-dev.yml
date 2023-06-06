@@ -18,6 +18,9 @@ spring:
 
   cloud:
     gateway:
+      filter:
+        request-rate-limiter:
+          deny-empty-key: false
       loadbalancer:
         use404: true
       globalcors:
