@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 @SpringBootApplication
 @EnableMongoAuditing
 @OpenAPIDefinition(info =
-@Info(title = "Course API", version = "1.0", description = "Documentation Course API v1.0")
+@Info(title = "Product API", version = "1.0", description = "Documentation Product API v1.0")
 )
 public class ProductserviceApplication {
   

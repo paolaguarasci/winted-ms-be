@@ -162,5 +162,19 @@ management:
 springdoc:
   swagger-ui:
     urls:
+      - name: address-service
+        url: /v3/api-docs/api/v1/address
+      - name: message-service
+        url: /v3/api-docs/api/v1/message
+      - name: order-service
+        url: /v3/api-docs/api/v1/order
+      - name: payment-service
+        url: /v3/api-docs/api/v1/payment
+      - name: profile-service
+        url: /v3/api-docs/api/v1/profile
       - name: product-service
         url: /v3/api-docs/api/v1/product
+      - name: profile-service
+        url: /v3/api-docs/api/v1/profile
+      - name: resource-service
+        url: /v3/api-docs/api/v1/resource
