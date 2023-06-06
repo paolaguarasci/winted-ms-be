@@ -49,7 +49,7 @@ public class OrderController {
   @PostMapping("/checkout")
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<OrderResponse> createPreorder(@RequestBody OrderRequest orderRequest, Principal principal, @AuthenticationPrincipal Jwt token) {
-    System.out.println(orderRequest);
+    log.debug("{}", orderRequest);
     return ResponseEntity.of(Optional.of(orderService.createPreorder(orderRequest, principal.getName(), token.getTokenValue())));
   }
 }

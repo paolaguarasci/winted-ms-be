@@ -26,7 +26,7 @@ public class NotificaServiceImpl implements NotificaService {
   
   @Override
   public List<NotificaResponse> getAllByLoggedUser() {
-    return null;
+    return List.of();
   }
   
   @Override

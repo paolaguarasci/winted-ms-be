@@ -9,10 +9,8 @@ import it.pingflood.winted.messageservice.event.GenericEvent;
 import it.pingflood.winted.messageservice.event.NewOrderEvent;
 import it.pingflood.winted.messageservice.event.NewProductEvent;
 import it.pingflood.winted.messageservice.service.ConversationService;
-import it.pingflood.winted.messageservice.service.MessageService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -25,16 +23,12 @@ import java.util.Map;
 @Slf4j
 public class NotificationHandler {
   
-  private final MessageService messageService;
   private final ConversationService conversationService;
-  private final ModelMapper modelMapper;
   private final ObjectMapper objectMapper;
   
-  public NotificationHandler(MessageService messageService, ConversationService conversationService, ObjectMapper objectMapper) {
-    this.messageService = messageService;
+  public NotificationHandler(ConversationService conversationService, ObjectMapper objectMapper) {
     this.conversationService = conversationService;
     this.objectMapper = objectMapper;
-    this.modelMapper = new ModelMapper();
   }
   
   @KafkaListener(id = "message-service1", topics = "NewProduct")

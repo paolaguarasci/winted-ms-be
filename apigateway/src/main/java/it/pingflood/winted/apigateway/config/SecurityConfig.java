@@ -15,7 +15,7 @@ public class SecurityConfig {
     return http
       .csrf().disable()
       .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
-        .pathMatchers("/eureka/**")
+        .pathMatchers("/eureka/**", "/actuator", "/actuator/**")
         .permitAll()
         .pathMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**", "/api/v1/product/search")
         .permitAll()

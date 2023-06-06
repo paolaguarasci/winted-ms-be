@@ -112,17 +112,6 @@
             <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.mysema.querydsl</groupId>-->
-        <!--            <artifactId>querydsl-mongodb</artifactId>-->
-        <!--            <version>4.3.1</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.mysema.querydsl</groupId>-->
-        <!--            <artifactId>querydsl-apt</artifactId>-->
-        <!--            <version>4.3.1</version>-->
-        <!--        </dependency>-->
-
     </dependencies>
     <dependencyManagement>
         <dependencies>

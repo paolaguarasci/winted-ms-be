@@ -96,7 +96,7 @@ public class MessageServiceImpl implements MessageService {
     return conversazioni.stream().map(conversation -> {
         String lastMessagePreview = "";
         String timeAgo = "";
-        if (conversation.getMessages().size() > 0) {
+        if (!conversation.getMessages().isEmpty()) {
           Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
           lastMessagePreview = lastMessage.getContent();
           timeAgo = prettyTime.format(lastMessage.getTimestamp());

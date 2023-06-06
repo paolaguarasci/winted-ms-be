@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +48,7 @@ public class ProfileController {
   @GetMapping("/my")
   @ResponseStatus(HttpStatus.OK)
   ResponseEntity<ProfileResponse> handleGetMY(@AuthenticationPrincipal Jwt token) {
-    Map<String, String> map = new Hashtable<String, String>();
+    Map<String, String> map = new HashMap<>();
     map.put("user_name", token.getClaimAsString("preferred_username"));
     map.put("email", token.getClaimAsString("email"));
     map.put("name", token.getClaimAsString("name"));
