@@ -15,6 +15,17 @@ public class SecurityConfig {
     return http
       .csrf().disable()
       .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
+        
+        .pathMatchers(HttpMethod.GET, "/webjars/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+        .pathMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/user-service/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/dept-service/v3/api-docs/**").permitAll()
+        
+        .pathMatchers(HttpMethod.GET, "/product/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/product/v3/api-docs/**").permitAll()
+        
         .pathMatchers("/eureka/**", "/actuator", "/actuator/**")
         .permitAll()
         .pathMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**", "/api/v1/product/search")

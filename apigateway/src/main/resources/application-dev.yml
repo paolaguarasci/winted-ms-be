@@ -111,6 +111,12 @@ spring:
                 redis-rate-limiter.replenishRate: 1
                 redis-rate-limiter.burstCapacity: 1
                 redis-rate-limiter.requestedTokens: 1
+        - id: openapi
+          uri: https://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
   security:
     oauth2:
       resourceserver:
@@ -151,3 +157,10 @@ management:
   health:
     redis:
       enabled: true
+
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: product-service
+        url: /v3/api-docs/api/v1/product
