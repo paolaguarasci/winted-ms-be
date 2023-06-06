@@ -33,6 +33,12 @@ public class SecurityConfig {
         .permitAll()
         .pathMatchers(HttpMethod.GET, "/api/v1/message/v3/api-docs", "/api/v1/message/v3/api-docs/**", "/api/v1/message/webjars/swagger-ui/index.html", "/message/v3/api-docs")
         .permitAll()
+        .pathMatchers(HttpMethod.GET, "/order/v3/api-docs").permitAll()
+        .pathMatchers(HttpMethod.GET, "/order/v3/api-docs/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/api/v1/order/v3/api-docs", "/api/v1/order/v3/api-docs/**", "/api/v1/order/webjars/swagger-ui/index.html", "/order/v3/api-docs")
+        .permitAll()
+        
+        
         .pathMatchers("/eureka/**", "/actuator", "/actuator/**")
         .permitAll()
         .pathMatchers(HttpMethod.GET, "/api/v1/product", "/api/v1/product/**", "/api/v1/product/search")
