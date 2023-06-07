@@ -42,7 +42,7 @@ eureka:
       defaultZone: http://eureka:password@eureka:8761/eureka
 
 server:
-  port: 8080
+  port: 0
 
 logging:
   level:

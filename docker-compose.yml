@@ -1,5 +1,37 @@
 version: '3'
 services:
+
+
+  product-service:
+    container_name: product-service
+    build:
+      context: productservice
+      dockerfile: Dockerfile
+    image: product-service:latest
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  address-service:
+    container_name: address-service
+    build:
+      context: addressservice
+      dockerfile: Dockerfile
+    image: address-service:latest
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+
+
+
+
+
+
+
+
   eureka:
     container_name: eureka
     build:
@@ -19,17 +51,6 @@ services:
     image: gateway-service:latest
     ports:
       - 8080:8080
-    networks:
-      - spring-cloud-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-
-  product-service:
-    container_name: product-service
-    build:
-      context: productservice
-      dockerfile: Dockerfile
-    image: product-service:latest
     networks:
       - spring-cloud-network
     environment:
@@ -84,6 +105,8 @@ services:
     container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - spring-cloud-network
     volumes:
       - mariadbdata:/var/lib/mysql
       - ./mariadb/init.d/:/docker-entrypoint-initdb.d
