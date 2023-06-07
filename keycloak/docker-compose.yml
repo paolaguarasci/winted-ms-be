@@ -1,16 +1,16 @@
-# docker run -p 8000:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak.cert/keycloak.cert:21.1.1 start-dev
+# docker run -p 8000:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:21.1.1 start-dev
 version: '3'
 services:
   keycloak:
-    image: quay.io/keycloak.cert/keycloak.cert:latest
-    hostname: keycloak.cert
-    container_name: keycloak.cert
+    image: quay.io/keycloak/keycloak:latest
+    hostname: keycloak
+    container_name: keycloak
     volumes:
-      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak.cert/data:/opt/keycloak.cert/data/import
-      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak.cert/config:/opt/keycloak.cert/conf
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data:/opt/keycloak/data/import
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config:/opt/keycloak/conf
     ports:
       - "8000:8000"
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    entrypoint: [ '/opt/keycloak.cert/bin/kc.sh', 'start', '--import-realm' ]
+    entrypoint: [ '/opt/keycloak/bin/kc.sh', 'start', '--import-realm' ]
