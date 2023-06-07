@@ -29,4 +29,8 @@ public class PaymentMethod extends Auditable<String> implements Serializable {
   private String numeroCarta;
   private String dataScadenza;
   private String ccv;
+  
+  @Version
+  @Column(name = "optlock", columnDefinition = "integer DEFAULT 0", nullable = false)
+  private long version = 0L;
 }

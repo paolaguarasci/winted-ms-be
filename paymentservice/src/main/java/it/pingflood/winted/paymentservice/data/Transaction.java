@@ -26,4 +26,8 @@ public class Transaction extends Auditable<String> implements Serializable {
   private String paymentFrom;
   private String paymentTo;
   private Double paymentImport;
+  
+  @Version
+  @Column(name = "optlock", columnDefinition = "integer DEFAULT 0", nullable = false)
+  private long version = 0L;
 }
