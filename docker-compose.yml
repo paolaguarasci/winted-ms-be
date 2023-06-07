@@ -1,0 +1,83 @@
+version: '3'
+services:
+  eureka:
+    container_name: eureka
+    build:
+      context: discoveryserver
+      dockerfile: Dockerfile
+    image: eureka:latest
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  gateway:
+    container_name: gateway-service
+    build:
+      context: apigateway
+      dockerfile: Dockerfile
+    image: gateway-service:latest
+    ports:
+      - 8080:8080
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  product-service:
+    container_name: product-service
+    build:
+      context: productservice
+      dockerfile: Dockerfile
+    image: product-service:latest
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - spring-cloud-network
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - spring-cloud-network
+  mongodb:
+    hostname: mongodb
+    container_name: mongodb
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+    restart: always
+    volumes:
+      - ./mongodb/init.d/:/docker-entrypoint-initdb.d/
+      - mongodbdata:/data/db
+    networks:
+      - spring-cloud-network
+networks:
+  spring-cloud-network:
+    driver: bridge
+volumes:
+  mongodbdata:
+    driver: local

@@ -1,0 +1,173 @@
+spring:
+  application:
+    name: api-gateway
+  datasource:
+    url: jdbc:h2:file:./data/apigateway
+    username: sa
+    password: sa
+    driverClassName: org.h2.Driver
+
+  jpa:
+    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+  cloud:
+    gateway:
+      filter:
+        request-rate-limiter:
+          deny-empty-key: false
+      loadbalancer:
+        use404: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+      routes:
+        - id: discovery-server
+          uri: http://eureka:8761
+          predicates:
+            - Path=/eureka
+          filters:
+            - SetPath=/
+        - id: discovery-server-static
+          uri: http://eureka:8761
+          predicates:
+            - Path=/eureka/**
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/v1/product,/api/v1/product/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.requestedTokens: 1
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/order,/api/v1/order/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.requestedTokens: 1
+        - id: message-service
+          uri: lb://message-service
+          predicates:
+            - Path=/api/v1/message,/api/v1/message/**,/api/v1/conversation,/api/v1/conversation/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.requestedTokens: 1
+        - id: resource-service
+          uri: lb://resource-service
+          predicates:
+            - Path=/api/v1/resource,/api/v1/resource/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.requestedTokens: 1
+        - id: profile-service
+          uri: lb://profile-service
+          predicates:
+            - Path=/api/v1/profile,/api/v1/profile/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.requestedTokens: 1
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payment,/api/v1/payment/**,/api/v1/paymentmethod,/api/v1/paymentmethod/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.requestedTokens: 1
+        - id: address-service
+          uri: lb://address-service
+          predicates:
+            - Path=/api/v1/address,/api/v1/address/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
+                redis-rate-limiter.requestedTokens: 1
+        - id: openapi
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8000/realms/winted
+app:
+  config:
+    init:
+      db: true
+
+eureka:
+  instance:
+    hostname: localhost
+    securePortEnabled: true
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:password@eureka:8761/eureka
+
+
+server:
+  port: 8443
+
+logging:
+  level:
+    root: "info"
+    org.springframework.web: "debug"
+    org.hibernate: "warn"
+    it.pingflood.winted: "debug"
+
+management:
+  health:
+    redis:
+      enabled: true
+
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: address-service
+        url: /v3/api-docs/api/v1/address
+      - name: message-service
+        url: /v3/api-docs/api/v1/message
+      - name: order-service
+        url: /v3/api-docs/api/v1/order
+      - name: payment-service
+        url: /v3/api-docs/api/v1/payment
+      - name: profile-service
+        url: /v3/api-docs/api/v1/profile
+      - name: product-service
+        url: /v3/api-docs/api/v1/product
+      - name: profile-service
+        url: /v3/api-docs/api/v1/profile
+      - name: resource-service
+        url: /v3/api-docs/api/v1/resource

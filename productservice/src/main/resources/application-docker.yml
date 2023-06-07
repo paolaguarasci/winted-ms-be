@@ -8,7 +8,11 @@ spring:
       max-request-size: 5MB
   data:
     mongodb:
-      uri: mongodb://localhost:27017/winted-product-service
+      host: mongodb
+      port: 27017
+      database: winted-product-service
+      username: winted-product-service
+      password: winted-product-service
   application:
     name: product-service
   kafka:
@@ -18,39 +22,30 @@ spring:
     template:
       default-topic: notificationTopic
     bootstrap-servers:
-      - localhost:9092
+      - kafka:9092
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://localhost:8000/realms/winted
-          jwk-set-uri: https://localhost:8000/realms/winted/protocol/openid-connect/certs
-          introspection-uri: https://localhost:8000/realms/winted/protocol/openid-connect/token/introspect
+          issuer-uri: http://keycloak:8000/realms/winted
+          jwk-set-uri: http://keycloak:8000/realms/winted/protocol/openid-connect/certs
+          introspection-uri: http://keycloak:8000/realms/winted/protocol/openid-connect/token/introspect
           client-id: winted-web
           client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
 
 eureka:
   instance:
-    hostname: localhost
-    securePortEnabled: true
+    hostname: eureka
   client:
     serviceUrl:
-      defaultZone: https://eureka:password@localhost:8761/eureka
+      defaultZone: http://eureka:password@eureka:8761/eureka
 
 server:
-  port: 0
-  ssl:
-    key-store: store/keystore.jks
-    key-store-password: winted
-    key-alias: localhost
-    key-password: winted
-    enabled: true
+  port: 8080
 
 logging:
   level:
-    #    root: "warn"
-    #    org.springframework.web: "warn"
-    #    org.hibernate: "debug"
     it.pingflood.winted: "debug"
 
 
