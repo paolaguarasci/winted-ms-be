@@ -22,7 +22,7 @@ spring:
     template:
       default-topic: notificationTopic
     bootstrap-servers:
-      - kafka:9092
+      - http://kafka:9092
 
   security:
     oauth2:
