@@ -29,4 +29,8 @@ public class Address extends Auditable<String> implements Serializable {
   private String citta;
   private String numeroCivico;
   private String cap;
+  
+  @Version
+  @Column(name = "optlock", columnDefinition = "integer DEFAULT 0", nullable = false)
+  private long version = 0L;
 }

@@ -30,6 +30,10 @@ public class Resource {
   private String fileType;
   private String fileUrl;
   
+  @Version
+  @Column(name = "optlock", columnDefinition = "integer DEFAULT 0", nullable = false)
+  private long version = 0L;
+  
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

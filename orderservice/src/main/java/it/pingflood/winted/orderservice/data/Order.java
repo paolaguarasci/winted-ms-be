@@ -33,6 +33,10 @@ public class Order extends Auditable<String> implements Serializable {
   private String address;
   private String paymentMethod;
   
+  @Version
+  @Column(name = "optlock", columnDefinition = "integer DEFAULT 0", nullable = false)
+  private long version = 0L;
+  
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
