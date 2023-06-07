@@ -1,11 +1,11 @@
 eureka:
   instance:
     hostname: localhost
-    secure-port-enabled: true
-    secure-port: ${server.port}
   client:
     registerWithEureka: false
     fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
   username: eureka
   password: password
 

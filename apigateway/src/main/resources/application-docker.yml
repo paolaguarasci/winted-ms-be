@@ -1,4 +1,8 @@
 spring:
+  cache:
+    redis:
+      host: redis
+      port: 6379
   application:
     name: api-gateway
   datasource:
@@ -128,9 +132,6 @@ app:
       db: true
 
 eureka:
-  instance:
-    hostname: localhost
-    securePortEnabled: true
   client:
     serviceUrl:
       defaultZone: http://eureka:password@eureka:8761/eureka
@@ -138,6 +139,12 @@ eureka:
 
 server:
   port: 8443
+  ssl:
+    key-store: store/keystore.jks
+    key-store-password: winted
+    key-alias: localhost
+    key-password: winted
+    enabled: true
 
 logging:
   level:
