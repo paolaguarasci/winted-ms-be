@@ -77,9 +77,22 @@ services:
       - mongodbdata:/data/db
     networks:
       - spring-cloud-network
+
+  mariadb:
+    image: mariadb:latest
+    hostname: mariadb
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mariadbdata:/var/lib/mysql
+      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
+
 networks:
   spring-cloud-network:
     driver: bridge
 volumes:
   mongodbdata:
+    driver: local
+  mariadbdata:
     driver: local
