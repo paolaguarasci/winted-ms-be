@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
   
-  public static final String EXTERNAL_UPLOAD_URL = "http://localhost:8080/api/v1/resource/image";
+  public static final String EXTERNAL_UPLOAD_URL = "https://localhost:8443/api/v1/resource/image";
   private final ProductRepository productRepository;
   private final ModelMapper modelMapper;
   

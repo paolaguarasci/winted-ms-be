@@ -4,7 +4,6 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     hostname: keycloak
-    container_name: keycloak
     volumes:
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data:/opt/keycloak/data/import
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config:/opt/keycloak/conf
