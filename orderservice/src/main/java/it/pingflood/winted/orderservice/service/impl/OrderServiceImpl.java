@@ -1,16 +1,16 @@
 package it.pingflood.winted.orderservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pingflood.winted.orderservice.client.AddressClient;
 import it.pingflood.winted.orderservice.client.PaymentClient;
 import it.pingflood.winted.orderservice.client.ProductClient;
-import it.pingflood.winted.orderservice.client.data.AddressResponse;
-import it.pingflood.winted.orderservice.client.data.PaymentMethodResponse;
-import it.pingflood.winted.orderservice.client.data.ProductResponse;
+import it.pingflood.winted.orderservice.client.data.*;
 import it.pingflood.winted.orderservice.data.Order;
 import it.pingflood.winted.orderservice.data.OrderStatus;
 import it.pingflood.winted.orderservice.data.dto.OrderConfirmRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
+import it.pingflood.winted.orderservice.data.dto.OrderUpdateRequest;
 import it.pingflood.winted.orderservice.event.NewOrderEvent;
 import it.pingflood.winted.orderservice.repository.OrderRepository;
 import it.pingflood.winted.orderservice.service.OrderService;
@@ -35,14 +35,16 @@ public class OrderServiceImpl implements OrderService {
   private final ProductClient productClient;
   private final AddressClient addressClient;
   private final PaymentClient paymentClient;
+  private final ObjectMapper objectMapper;
   private final KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate;
   
   
-  public OrderServiceImpl(OrderRepository orderRepository, ProductClient productClient, AddressClient addressClient, PaymentClient paymentClient, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate) {
+  public OrderServiceImpl(OrderRepository orderRepository, ProductClient productClient, AddressClient addressClient, PaymentClient paymentClient, ObjectMapper objectMapper, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate) {
     this.orderRepository = orderRepository;
     this.productClient = productClient;
     this.addressClient = addressClient;
     this.paymentClient = paymentClient;
+    this.objectMapper = objectMapper;
     this.newOrderEventKafkaTemplate = newOrderEventKafkaTemplate;
     modelMapper = new ModelMapper();
     modelMapper.getConfiguration()
@@ -75,90 +77,194 @@ public class OrderServiceImpl implements OrderService {
   public OrderResponse confirmOrder(OrderConfirmRequest orderConfirmRequest, String principal, String token) {
     String loggedUserId = principal;
     Order order = orderRepository.findById(UUID.fromString(orderConfirmRequest.getId())).orElseThrow();
-    
+    AddressResponse addressResponse = null;
+    ProductResponse productResponse = null;
+    PaymentMethodResponse paymentMethodResponse = null;
     try {
       
-      AddressResponse addressResponse = addressClient.getAddressById(order.getAddress());
-      ProductResponse productResponse = productClient.getProductById(order.getProduct());
-      PaymentMethodResponse paymentMethodResponse = paymentClient.getPaymentMethodById(order.getPaymentMethod());
+      addressResponse = getAddress(token, order.getAddress());
+      productResponse = getProduct(token, order.getProduct());
+      paymentMethodResponse = getPaymentMethod(token, order.getPaymentMethod());
       
-      
-      if (productResponse.getId().isEmpty() ||
-        addressResponse.getId().toString().isEmpty() ||
-        paymentMethodResponse.getId().isEmpty()) {
-        throw new IllegalArgumentException("Errore");
+      if (productResponse == null || productResponse.getId().isEmpty() ||
+        addressResponse == null || addressResponse.getId().toString().isEmpty() ||
+        paymentMethodResponse == null || paymentMethodResponse.getId().isEmpty()) {
+        throw new IllegalArgumentException("Errore - L'ordine deve avere un prodotto, un indirizzo e un metodo di pagamento validi");
       }
-      
-      if (!addressResponse.getUser().equals(loggedUserId) ||
-        !paymentMethodResponse.getUser().equals(loggedUserId)) {
+      if (addressResponse.getUser() == null || !addressResponse.getUser().equals(loggedUserId) ||
+        paymentMethodResponse.getUser() == null || !paymentMethodResponse.getUser().equals(loggedUserId)) {
         throw new IllegalArgumentException("Errore nei dati dell'ordine");
       }
     } catch (Exception e) {
       log.error("Errore! {}", e.getMessage());
     }
     
+    PaymentResponse paymentResponse = null;
     try {
-      makePayment(order);
+      paymentResponse = makePayment(token, order, String.valueOf(productResponse.getPrice()));
       order.setStatus(OrderStatus.PAYED);
+      setProductBoughtStatus(token, order.getProduct());
+      sendMessageToOwner(order.getOwner(), order.getBuyer(), order.getProduct());
     } catch (Exception e) {
-      makeRefund(order);
+      if (paymentResponse != null && paymentResponse.getStatus().equals("LOCAL")) {
+        makeRefund(token, paymentResponse.getId());
+      }
+      undoSetProductBoughtStatus(token, order.getProduct());
       order.setStatus(OrderStatus.PAYMENTERROR);
     }
-    
-    setProductBoughtStatus(order.getProduct());
-    sendMessageToOwner(order.getOwner(), order.getBuyer(), order.getProduct());
     
     return modelMapper.map(order, OrderResponse.class);
   }
   
   @Override
   public OrderResponse createPreorder(OrderRequest orderRequest, String principal, String token) {
+    
     String loggedUserId = principal;
     if (orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()).isPresent()) {
       return modelMapper.map(orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()), OrderResponse.class);
     }
-    
+    String ownerId = getProduct(token, orderRequest.getProduct()).getOwner();
+    if (loggedUserId.equals(ownerId)) {
+      throw new IllegalArgumentException("Cant modify this object");
+    }
+    log.info("token\n{}", token);
+    AddressResponse adr = getAddressByUser(token, loggedUserId);
+    String addressId = null;
+    if (adr != null) {
+      addressId = adr.getId().toString();
+    }
+    PaymentMethodResponse paymentMethodResponse = getPaymentMethodByUser(token, loggedUserId);
+    String paymentMethodId = null;
+    if (paymentMethodResponse != null) {
+      paymentMethodId = paymentMethodResponse.getId();
+    }
     return modelMapper.map(
       orderRepository.save(Order.builder()
         .buyer(loggedUserId)
-        .owner(getProductOwnerId(orderRequest.getProduct()))
+        .owner(ownerId)
         .product(orderRequest.getProduct())
         .status(OrderStatus.NEW)
-        .address(getAddressId(loggedUserId))
-        .paymentMethod(getPaymentMethod(loggedUserId, token))
+        .address(addressId)
+        .paymentMethod(paymentMethodId)
         .build()), OrderResponse.class);
   }
   
-  private void makePayment(Order order) {
+  @Override
+  public OrderResponse updatePreorder(UUID id, OrderUpdateRequest orderRequest, String principal, String token) {
+    String loggedUserId = principal;
+    Order older = orderRepository.findById(id).orElseThrow();
+    if (!loggedUserId.equals(older.getBuyer())) {
+      throw new IllegalArgumentException("Cant modify this object");
+    }
+    
+    if (orderRequest.getAddressId() != null && !orderRequest.getAddressId().equals("")) {
+      older.setAddress(orderRequest.getAddressId());
+    }
+    if (orderRequest.getPaymentMethodId() != null && !orderRequest.getPaymentMethodId().equals("")) {
+      older.setPaymentMethod(orderRequest.getPaymentMethodId());
+    }
+    orderRepository.save(older);
+    return modelMapper.map(older, OrderResponse.class);
+  }
+  
+  private PaymentResponse makePayment(String token, Order order, String price) {
     try {
-      this.paymentClient.makePayment(order);
+      String res = this.paymentClient.makePayment("Bearer " + token, PaymentRequest.builder()
+        .from(order.getBuyer()).to(order.getOwner()).paymentMethodId(order.getPaymentMethod()).importo(price)
+        .build());
+      log.info("Risposta da makepayment {}", res);
+      PaymentResponse obj = objectMapper.readValue(res, PaymentResponse.class);
+      log.info("Risposta da makepayment obj {}", obj);
+      return obj;
     } catch (Exception e) {
       throw new IllegalStateException("Errore nel pagamento");
     }
   }
   
-  private void makeRefund(Order order) {
+  private void makeRefund(String token, String paymentId) {
     try {
-      this.paymentClient.makeRefund(order);
+      this.paymentClient.makeRefund("Bearer " + token, paymentId);
     } catch (Exception e) {
       throw new IllegalStateException("Errore nel refund del pagamento");
     }
   }
   
-  private String getProductOwnerId(String productId) {
-    return productClient.getProductById(productId).getOwner();
+  
+  private ProductResponse getProduct(String token, String productId) {
+    var res = productClient.getProductById("Bearer " + token, productId);
+    log.info("Product response (by id) {}", res);
+    ProductResponse productResponse = null;
+    try {
+      productResponse = objectMapper.readValue(res, ProductResponse.class);
+      log.info("Product response (by id) object {}", productResponse);
+    } catch (Exception e) {
+      return null;
+    }
+    return productResponse;
   }
   
-  private String getAddressId(String username) {
-    return addressClient.getAddressByUsername(username).getId().toString();
+  @SneakyThrows
+  private AddressResponse getAddress(String token, String id) {
+    var res = addressClient.getAddressById("Bearer " + token, id);
+    log.info("Address response (by id) {}", res);
+    AddressResponse adr = null;
+    try {
+      adr = objectMapper.readValue(res, AddressResponse.class);
+      log.info("Address response (by id) object {}", adr);
+    } catch (Exception e) {
+      return null;
+    }
+    return adr;
   }
   
-  private String getPaymentMethod(String userid, String token) {
-    return paymentClient.getPaymentMethodByUserid(token, userid).getId();
+  @SneakyThrows
+  private AddressResponse getAddressByUser(String token, String userid) {
+    var res = addressClient.getAddressByUserId("Bearer " + token, userid);
+    log.info("Address response (by user) {}", res);
+    AddressResponse adr = null;
+    try {
+      adr = objectMapper.readValue(res, AddressResponse.class);
+      log.info("Address response (by user) object {}", adr);
+    } catch (Exception e) {
+      return null;
+    }
+    return adr;
   }
   
-  private void setProductBoughtStatus(String productId) {
-    productClient.setProductBoughtStatus(productId);
+  @SneakyThrows
+  private PaymentMethodResponse getPaymentMethod(String token, String id) {
+    var res = paymentClient.getPaymentMethodById("Bearer " + token, id);
+    log.info("Payment method response (by id) {}", res);
+    PaymentMethodResponse paymentMethodResponse = null;
+    try {
+      paymentMethodResponse = objectMapper.readValue(res, PaymentMethodResponse.class);
+      log.info("Payment method response (by id) object {}", paymentMethodResponse);
+    } catch (Exception e) {
+      return null;
+    }
+    return paymentMethodResponse;
+  }
+  
+  @SneakyThrows
+  private PaymentMethodResponse getPaymentMethodByUser(String token, String userid) {
+    var res = paymentClient.getPaymentMethodByUserid("Bearer " + token, userid);
+    log.info("Payment method response (by user) {}", res);
+    PaymentMethodResponse paymentMethodResponse = null;
+    try {
+      paymentMethodResponse = objectMapper.readValue(res, PaymentMethodResponse.class);
+      log.info("Payment method response (by user) object {}", paymentMethodResponse);
+    } catch (Exception e) {
+      return null;
+    }
+    return paymentMethodResponse;
+  }
+  
+  private void setProductBoughtStatus(String token, String productId) {
+    productClient.setProductBoughtStatus("Bearer " + token, productId);
+  }
+  
+  private void undoSetProductBoughtStatus(String token, String productId) {
+    productClient.undoSetProductBoughtStatus("Bearer " + token, productId);
   }
   
   @SneakyThrows

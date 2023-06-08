@@ -48,6 +48,7 @@ public class AddressController {
   @GetMapping("/user/{userid}")
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<AddressResponse> getOneByUserid(@PathVariable String userid) {
+    log.info("USERID {}", userid);
     return ResponseEntity.ok(addressService.getOneByUserid(userid));
   }
 }

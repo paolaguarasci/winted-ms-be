@@ -1,16 +1,19 @@
 package it.pingflood.winted.orderservice.client;
 
-import it.pingflood.winted.orderservice.client.data.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient("product-service")
+@FeignClient(value = "product-service", url = "https://localhost:8443")
 public interface ProductClient {
-  @GetMapping("/api/v1/product/{id}")
-  ProductResponse getProductById(@PathVariable String id);
+  @RequestMapping(method = RequestMethod.GET, value = "/api/v1/product/{id}")
+  String getProductById(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String id);
   
-  @PostMapping("/api/v1/product/{id}/bought")
-  ProductResponse setProductBoughtStatus(@PathVariable String id);
+  @RequestMapping(method = RequestMethod.POST, value = "/api/v1/product/{id}/bought")
+  String setProductBoughtStatus(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String id);
+  
+  @RequestMapping(method = RequestMethod.POST, value = "/api/v1/product/{id}/bought/undo")
+  String undoSetProductBoughtStatus(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String id);
 }

@@ -5,10 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PaymentMethodRequest {
-  private String id;
+public class PaymentMethodRequest implements Serializable {
+  private String gestore;
+  private String titolareCarta;
+  private String numeroCarta;
+  private String dataScadenza;
+  private String ccv;
 }

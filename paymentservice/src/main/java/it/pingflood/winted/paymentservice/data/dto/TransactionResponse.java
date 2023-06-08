@@ -6,11 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TransactionResponse {
+public class TransactionResponse implements Serializable {
+  private String id;
   private String paymentMethodId;
   private String paymentFrom;
   private String paymentTo;

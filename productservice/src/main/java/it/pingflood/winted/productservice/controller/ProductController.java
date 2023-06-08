@@ -87,9 +87,17 @@ public class ProductController {
   }
   
   @PostMapping("/{id}/bought")
+//  @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<ProductResponse> makeBought(@PathVariable String id) {
     return ResponseEntity.of(Optional.of(productService.makeBought(id)));
+  }
+  
+  @PostMapping("/{id}/bought/undo")
+//  @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<ProductResponse> undoBought(@PathVariable String id) {
+    return ResponseEntity.of(Optional.of(productService.undoBought(id)));
   }
   
   @DeleteMapping("/{id}")
