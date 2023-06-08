@@ -1,0 +1,7 @@
+### DOCKERIZZATO
+GET https://localhost:8443/api/v1/product
+
+###
+GET https://localhost:8443/api/v1/address
+
+###

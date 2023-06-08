@@ -1,4 +1,8 @@
 spring:
+  cache:
+    redis:
+      host: redis
+      port: 6379
   application:
     name: api-gateway
   datasource:
@@ -26,19 +30,19 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "https://localhost:4200"
+            allowedOrigins: "http://localhost:4200"
             allowedMethods:
               - GET
               - POST
       routes:
         - id: discovery-server
-          uri: https://localhost:8761
+          uri: http://eureka:8761
           predicates:
             - Path=/eureka
           filters:
             - SetPath=/
         - id: discovery-server-static
-          uri: https://localhost:8761
+          uri: http://eureka:8761
           predicates:
             - Path=/eureka/**
         - id: product-service
@@ -48,9 +52,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 100
-                redis-rate-limiter.burstCapacity: 100
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: order-service
           uri: lb://order-service
           predicates:
@@ -58,9 +62,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 100
-                redis-rate-limiter.burstCapacity: 100
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: message-service
           uri: lb://message-service
           predicates:
@@ -68,9 +72,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 100
-                redis-rate-limiter.burstCapacity: 100
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: resource-service
           uri: lb://resource-service
           predicates:
@@ -78,9 +82,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 100
-                redis-rate-limiter.burstCapacity: 100
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: profile-service
           uri: lb://profile-service
           predicates:
@@ -88,9 +92,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 100
-                redis-rate-limiter.burstCapacity: 100
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: payment-service
           uri: lb://payment-service
           predicates:
@@ -98,9 +102,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 100
-                redis-rate-limiter.burstCapacity: 100
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: address-service
           uri: lb://address-service
           predicates:
@@ -108,11 +112,11 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 100
-                redis-rate-limiter.burstCapacity: 100
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: openapi
-          uri: https://localhost:${server.port}
+          uri: http://localhost:${server.port}
           predicates:
             - Path=/v3/api-docs/**
           filters:
@@ -121,19 +125,17 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://localhost:8000/realms/winted
+          issuer-uri: https://localhost:8000/realms/winted # questo deve coincidere con l'url che usano i client
+          jwk-set-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/certs # solo questo deve essere raggiungibile da spring
 app:
   config:
     init:
       db: true
 
 eureka:
-  instance:
-    hostname: localhost
-    securePortEnabled: true
   client:
     serviceUrl:
-      defaultZone: https://eureka:password@localhost:8761/eureka
+      defaultZone: http://eureka:password@eureka:8761/eureka
 
 
 server:
@@ -144,7 +146,6 @@ server:
     key-alias: localhost
     key-password: winted
     enabled: true
-
 
 logging:
   level:

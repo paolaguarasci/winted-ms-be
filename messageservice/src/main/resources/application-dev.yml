@@ -12,8 +12,8 @@ spring:
           client-id: winted-web
           client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
   data:
-  mongodb:
-    uri: "mongodb://localhost:27017/ciao"
+    mongodb:
+      uri: "mongodb://localhost:27017/winted-message-service"
   application:
     name: message-service
   kafka:

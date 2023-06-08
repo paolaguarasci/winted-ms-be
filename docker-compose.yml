@@ -1,0 +1,157 @@
+version: "3.9"
+services:
+  product-service:
+    container_name: product-service
+    hostname: product-service
+    build:
+      context: productservice
+      dockerfile: Dockerfile
+    image: product-service:latest
+    depends_on:
+      - eureka
+      - mongodb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  address-service:
+    container_name: address-service
+    build:
+      context: addressservice
+      dockerfile: Dockerfile
+    image: address-service:latest
+    depends_on:
+      - eureka
+      - mariadb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  gateway:
+    container_name: gateway-service
+    build:
+      context: apigateway
+      dockerfile: Dockerfile
+    image: gateway-service:latest
+    ports:
+      - "8443:8443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - eureka
+      - redis
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  eureka:
+    container_name: eureka
+    build:
+      context: discoveryserver
+      dockerfile: Dockerfile
+    image: eureka:latest
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    hostname: keycloak
+    container_name: keycloak
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data:/opt/keycloak/data/import
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config/keycloak.docker.conf:/opt/keycloak/conf/keycloak.conf
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config/cert-doker:/opt/keycloak/conf/cert
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    networks:
+      - spring-cloud-network
+    entrypoint: [ '/opt/keycloak/bin/kc.sh', 'start-dev', '--import-realm' ]
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - spring-cloud-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    hostname: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - spring-cloud-network
+
+  mongodb:
+    hostname: mongodb
+    container_name: mongodb
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+    restart: always
+    volumes:
+      - ./mongodb/init.d/:/docker-entrypoint-initdb.d/
+      - mongodbdata:/data/db
+    networks:
+      - spring-cloud-network
+
+  mariadb:
+    image: mariadb:latest
+    hostname: mariadb
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - spring-cloud-network
+    volumes:
+      - mariadbdata:/var/lib/mysql
+      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:alpine
+    hostname: redis
+    container_name: redis
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - cache:/data
+    networks:
+      - spring-cloud-network
+
+networks:
+  spring-cloud-network:
+    driver: bridge
+volumes:
+  mongodbdata:
+    driver: local
+  mariadbdata:
+    driver: local
+  cache:
+    driver: local
