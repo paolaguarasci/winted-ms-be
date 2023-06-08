@@ -52,9 +52,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: order-service
           uri: lb://order-service
           predicates:
@@ -62,9 +62,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: message-service
           uri: lb://message-service
           predicates:
@@ -72,9 +72,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: resource-service
           uri: lb://resource-service
           predicates:
@@ -82,9 +82,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: profile-service
           uri: lb://profile-service
           predicates:
@@ -92,9 +92,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: payment-service
           uri: lb://payment-service
           predicates:
@@ -102,9 +102,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: address-service
           uri: lb://address-service
           predicates:
@@ -112,9 +112,9 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1
-                redis-rate-limiter.burstCapacity: 1
-                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 10
         - id: openapi
           uri: http://localhost:${server.port}
           predicates:
@@ -125,7 +125,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/winted
+          issuer-uri: http://keycloak:8080/realms/winted
 app:
   config:
     init:
