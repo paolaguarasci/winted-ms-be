@@ -30,6 +30,9 @@ spring:
             allowedMethods:
               - GET
               - POST
+              - PUT
+              - DELETE
+              - OPTIONS
       routes:
         - id: discovery-server
           uri: https://localhost:8761

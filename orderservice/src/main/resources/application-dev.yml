@@ -52,10 +52,11 @@ spring:
 
 logging:
   level:
-    root: "warn"
-    org.springframework.web: "debug"
-    org.hibernate: "warn"
-    it.pingflood.winted: "debug"
+    root: "info"
+#    org.springframework.web: "debug"
+#    org.hibernate: "warn"
+#    it.pingflood.winted: "debug"
+#    org.springframework.cloud.openfeign.FeignClient: "debug"
 
 
 springdoc:
@@ -64,3 +65,9 @@ springdoc:
     path: /api/v1/order/v3/api-docs
   swagger-ui:
     path: /api/v1/order/swagger-ui.html
+
+#feign:
+#  client:
+#    config:
+#      default:
+#        loggerLevel: full

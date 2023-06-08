@@ -185,4 +185,11 @@ public class ProductServiceImpl implements ProductService {
     p.setBought(true);
     return modelMapper.map(productRepository.save(p), ProductResponse.class);
   }
+  
+  @Override
+  public ProductResponse undoBought(String productId) {
+    Product p = productRepository.findById(productId).orElseThrow();
+    p.setBought(false);
+    return modelMapper.map(productRepository.save(p), ProductResponse.class);
+  }
 }

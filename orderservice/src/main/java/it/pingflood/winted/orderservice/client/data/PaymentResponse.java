@@ -1,5 +1,4 @@
-package it.pingflood.winted.paymentservice.data.dto;
-
+package it.pingflood.winted.orderservice.client.data;
 
 import lombok.*;
 
@@ -10,9 +9,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Getter
-public class TransactionRequest implements Serializable {
+public class PaymentResponse implements Serializable {
+  private String id;
   private String paymentMethodId;
   private String from;
   private String to;
   private String importo;
+  private String status;
 }

@@ -3,6 +3,7 @@ package it.pingflood.winted.orderservice.service;
 import it.pingflood.winted.orderservice.data.dto.OrderConfirmRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
+import it.pingflood.winted.orderservice.data.dto.OrderUpdateRequest;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,4 +19,6 @@ public interface OrderService {
   
   OrderResponse createPreorder(OrderRequest orderRequest, String principal, String token);
   
+  
+  OrderResponse updatePreorder(UUID id, OrderUpdateRequest orderRequest, String principal, String token);
 }

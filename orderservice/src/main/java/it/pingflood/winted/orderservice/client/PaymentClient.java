@@ -1,34 +1,26 @@
 package it.pingflood.winted.orderservice.client;
 
-import feign.Headers;
-import feign.Param;
-import it.pingflood.winted.orderservice.client.data.PaymentMethodResponse;
-import it.pingflood.winted.orderservice.data.Order;
-import it.pingflood.winted.orderservice.data.dto.PaymentResponse;
+import it.pingflood.winted.orderservice.client.data.PaymentRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("payment-service")
 public interface PaymentClient {
-  @GetMapping("/api/v1/paymentmethod/{id}")
-  PaymentMethodResponse getPaymentMethodById(@PathVariable String id);
+  @RequestMapping(method = RequestMethod.GET, value = "/api/v1/paymentmethod/{id}")
+  String getPaymentMethodById(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String id);
   
-  @GetMapping("/api/v1/paymentmethod?username={username}")
-  PaymentMethodResponse getPaymentMethodByUsername(@PathVariable String username);
+  @RequestMapping(method = RequestMethod.GET, value = "/api/v1/paymentmethod?username={username}")
+  String getPaymentMethodByUsername(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String username);
   
-  @GetMapping("/api/v1/paymentmethod/user/{userid}")
-  @Headers("Authorization: Bearer {token}")
-  PaymentMethodResponse getPaymentMethodByUserid(@Param("token") String token, @PathVariable String userid);
+  @RequestMapping(method = RequestMethod.GET, value = "/api/v1/paymentmethod/user/{userid}")
+  String getPaymentMethodByUserid(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String userid);
   
   @GetMapping("/api/v1/payment/{id}")
-  PaymentResponse getPaymentById(@PathVariable String id);
+  String getPaymentById(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String id);
   
-  @PostMapping("/api/v1/payment")
-  PaymentResponse makePayment(@RequestBody Order order);
+  @RequestMapping(method = RequestMethod.POST, value = "/api/v1/payment")
+  String makePayment(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @RequestBody PaymentRequest paymentRequest);
   
-  @PostMapping("/api/v1/payment/{id}/refund")
-  PaymentResponse makeRefund(@RequestBody Order order);
+  @RequestMapping(method = RequestMethod.POST, value = "/api/v1/payment/{id}/refund")
+  String makeRefund(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String id);
 }

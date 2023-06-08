@@ -1,15 +1,18 @@
 package it.pingflood.winted.orderservice.client;
 
-import it.pingflood.winted.orderservice.client.data.AddressResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient("address-service")
+@FeignClient(url = "https://localhost:8443", name = "address-service")
 public interface AddressClient {
-  @GetMapping("/api/v1/address/{id}")
-  AddressResponse getAddressById(@PathVariable String id);
+  @RequestMapping(method = RequestMethod.GET, value = "/api/v1/address/{id}")
+  String getAddressById(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable(value = "id") String id);
   
-  @GetMapping("/api/v1/address?username={username}")
-  AddressResponse getAddressByUsername(@PathVariable String username);
+  
+  @RequestMapping(method = RequestMethod.GET, value = "/api/v1/address/user/{userid}")
+  String getAddressByUserId(@RequestHeader(value = "Authorization", required = true) String authorizationHeader,
+                            @PathVariable(value = "userid") String userid);
 }

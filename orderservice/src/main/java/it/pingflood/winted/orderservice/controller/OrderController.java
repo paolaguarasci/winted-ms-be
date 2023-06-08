@@ -3,6 +3,7 @@ package it.pingflood.winted.orderservice.controller;
 import it.pingflood.winted.orderservice.data.dto.OrderConfirmRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderRequest;
 import it.pingflood.winted.orderservice.data.dto.OrderResponse;
+import it.pingflood.winted.orderservice.data.dto.OrderUpdateRequest;
 import it.pingflood.winted.orderservice.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -51,5 +52,12 @@ public class OrderController {
   public ResponseEntity<OrderResponse> createPreorder(@RequestBody OrderRequest orderRequest, Principal principal, @AuthenticationPrincipal Jwt token) {
     log.debug("{}", orderRequest);
     return ResponseEntity.of(Optional.of(orderService.createPreorder(orderRequest, principal.getName(), token.getTokenValue())));
+  }
+  
+  @PutMapping("/checkout/{id}")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<OrderResponse> updatePreorder(@PathVariable("id") UUID id, @RequestBody OrderUpdateRequest orderUpdateRequest, Principal principal, @AuthenticationPrincipal Jwt token) {
+    log.debug("==================================================>>>>>>>>>>>>>>> PUT {}", orderUpdateRequest);
+    return ResponseEntity.of(Optional.of(orderService.updatePreorder(id, orderUpdateRequest, principal.getName(), token.getTokenValue())));
   }
 }

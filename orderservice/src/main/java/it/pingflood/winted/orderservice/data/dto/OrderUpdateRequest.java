@@ -1,4 +1,4 @@
-package it.pingflood.winted.paymentservice.data.dto;
+package it.pingflood.winted.orderservice.data.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class RolesDTO implements Serializable {
-  List<String> roles;
+public class OrderUpdateRequest implements Serializable {
+  private String addressId;
+  private String paymentMethodId;
 }

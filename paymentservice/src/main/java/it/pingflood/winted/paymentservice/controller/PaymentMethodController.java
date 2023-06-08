@@ -1,5 +1,6 @@
 package it.pingflood.winted.paymentservice.controller;
 
+import it.pingflood.winted.paymentservice.data.dto.PaymentMethodRequest;
 import it.pingflood.winted.paymentservice.data.dto.PaymentMethodResponse;
 import it.pingflood.winted.paymentservice.service.PaymentMethodService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/paymentmethod")
@@ -18,10 +20,15 @@ public class PaymentMethodController {
   
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<PaymentMethodResponse> getAll(Principal principal) {
+  public ResponseEntity<List<PaymentMethodResponse>> getAll(Principal principal) {
     return ResponseEntity.ok(paymentMethodService.getByLoggedUser(principal.getName()));
   }
   
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<PaymentMethodResponse> createOne(@RequestBody PaymentMethodRequest paymentMethodRequest, Principal principal) {
+    return ResponseEntity.ok(paymentMethodService.createOne(paymentMethodRequest, principal.getName()));
+  }
   
   @GetMapping("{id}")
   @ResponseStatus(HttpStatus.OK)
@@ -31,7 +38,7 @@ public class PaymentMethodController {
   
   @GetMapping("/user/{userid}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<PaymentMethodResponse> getOneByUser(@PathVariable String userid) {
-    return ResponseEntity.ok(paymentMethodService.getByUser(userid));
+  public ResponseEntity<PaymentMethodResponse> getOneByUser(@PathVariable String userid, Principal principal) {
+    return ResponseEntity.ok(paymentMethodService.getOneById(userid, principal.getName()));
   }
 }

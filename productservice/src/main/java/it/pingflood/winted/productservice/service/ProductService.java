@@ -31,4 +31,6 @@ public interface ProductService {
   List<ProductResponse> getSameByProdId(String prodid);
   
   ProductResponse makeBought(String productId);
+  
+  ProductResponse undoBought(String productId);
 }

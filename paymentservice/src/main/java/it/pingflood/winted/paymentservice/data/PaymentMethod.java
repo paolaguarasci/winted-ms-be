@@ -20,7 +20,7 @@ import java.util.UUID;
 public class PaymentMethod extends Auditable<String> implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "id", nullable = false)
+  @Column(name = "id", nullable = false, unique = true)
   @JdbcTypeCode(SqlTypes.VARCHAR)
   private UUID id;
   private String user;
