@@ -125,7 +125,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/winted
+          issuer-uri: https://localhost:8000/realms/winted # questo deve coincidere con l'url che usano i client
+          jwk-set-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/certs # solo questo deve essere raggiungibile da spring
 app:
   config:
     init:

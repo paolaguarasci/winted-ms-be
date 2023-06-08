@@ -28,9 +28,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/winted
-          jwk-set-uri: http://keycloak:8000/realms/winted/protocol/openid-connect/certs
-          introspection-uri: http://keycloak:8000/realms/winted/protocol/openid-connect/token/introspect
+          issuer-uri: https://localhost:8000/realms/winted # questo deve coincidere con l'url che usano i client
+          jwk-set-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/certs # solo questo deve essere raggiungibile da spring
+          introspection-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/token/introspect
           client-id: winted-web
           client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
 
