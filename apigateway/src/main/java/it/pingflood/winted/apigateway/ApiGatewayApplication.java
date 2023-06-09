@@ -18,12 +18,12 @@ public class ApiGatewayApplication {
   
   private final RouteDefinitionLocator locator;
   
-  public static void main(String[] args) {
-    SpringApplication.run(it.pingflood.winted.apigateway.ApiGatewayApplication.class, args);
-  }
-  
   public ApiGatewayApplication(RouteDefinitionLocator locator) {
     this.locator = locator;
+  }
+  
+  public static void main(String[] args) {
+    SpringApplication.run(it.pingflood.winted.apigateway.ApiGatewayApplication.class, args);
   }
   
   @Bean
@@ -32,7 +32,7 @@ public class ApiGatewayApplication {
     List<RouteDefinition> definitions = locator.getRouteDefinitions().collectList().block();
     assert definitions != null;
     definitions.stream().filter(routeDefinition -> routeDefinition.getId().matches(".*-service")).forEach(routeDefinition -> {
-      String name = routeDefinition.getId().replaceAll("-service", "");
+      String name = routeDefinition.getId().replace("-service", "");
       groups.add(GroupedOpenApi.builder().pathsToMatch("/" + name + "/**").group(name).build());
     });
     return groups;

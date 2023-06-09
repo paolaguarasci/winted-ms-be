@@ -1,9 +1,6 @@
 package it.pingflood.winted.paymentservice.data.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Getter
 public class RolesDTO implements Serializable {
-  List<String> roles;
+  private List<String> roles;
 }

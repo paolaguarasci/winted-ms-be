@@ -78,7 +78,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
             <version>3.1.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
@@ -103,6 +102,8 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>3.0.6</version>
+            <!-- Rimanere sulla 3.0.6 perche' la versione attuale (3.1.0) rompe tutto,
+            eventualmente valutare aggiornamenti successivi alla 3.1.0 -->
         </dependency>
     </dependencies>
     <dependencyManagement>

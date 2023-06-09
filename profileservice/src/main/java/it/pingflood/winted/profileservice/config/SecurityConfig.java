@@ -23,6 +23,7 @@ import java.util.Collection;
 
 public class SecurityConfig {
   private final ModelMapper modelMapper;
+  
   public SecurityConfig() {
     this.modelMapper = new ModelMapper();
     this.modelMapper.getConfiguration()

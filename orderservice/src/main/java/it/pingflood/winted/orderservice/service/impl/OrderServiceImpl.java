@@ -37,9 +37,10 @@ public class OrderServiceImpl implements OrderService {
   private final PaymentClient paymentClient;
   private final ObjectMapper objectMapper;
   private final KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate;
-  
+  private final String tokenPrefix;
   
   public OrderServiceImpl(OrderRepository orderRepository, ProductClient productClient, AddressClient addressClient, PaymentClient paymentClient, ObjectMapper objectMapper, KafkaTemplate<String, NewOrderEvent> newOrderEventKafkaTemplate) {
+    this.tokenPrefix = "Bearer ";
     this.orderRepository = orderRepository;
     this.productClient = productClient;
     this.addressClient = addressClient;
@@ -75,30 +76,21 @@ public class OrderServiceImpl implements OrderService {
   
   @Override
   public OrderResponse confirmOrder(OrderConfirmRequest orderConfirmRequest, String principal, String token) {
-    String loggedUserId = principal;
     Order order = orderRepository.findById(UUID.fromString(orderConfirmRequest.getId())).orElseThrow();
-    AddressResponse addressResponse = null;
-    ProductResponse productResponse = null;
-    PaymentMethodResponse paymentMethodResponse = null;
-    try {
-      
-      addressResponse = getAddress(token, order.getAddress());
-      productResponse = getProduct(token, order.getProduct());
-      paymentMethodResponse = getPaymentMethod(token, order.getPaymentMethod());
-      
-      if (productResponse == null || productResponse.getId().isEmpty() ||
-        addressResponse == null || addressResponse.getId().toString().isEmpty() ||
-        paymentMethodResponse == null || paymentMethodResponse.getId().isEmpty()) {
-        throw new IllegalArgumentException("Errore - L'ordine deve avere un prodotto, un indirizzo e un metodo di pagamento validi");
-      }
-      if (addressResponse.getUser() == null || !addressResponse.getUser().equals(loggedUserId) ||
-        paymentMethodResponse.getUser() == null || !paymentMethodResponse.getUser().equals(loggedUserId)) {
-        throw new IllegalArgumentException("Errore nei dati dell'ordine");
-      }
-    } catch (Exception e) {
-      log.error("Errore! {}", e.getMessage());
-    }
     
+    AddressResponse addressResponse = getAddress(token, order.getAddress());
+    ProductResponse productResponse = getProduct(token, order.getProduct());
+    PaymentMethodResponse paymentMethodResponse = getPaymentMethod(token, order.getPaymentMethod());
+    
+    if (productResponse == null || productResponse.getId().isEmpty() ||
+      addressResponse == null || addressResponse.getId().toString().isEmpty() ||
+      paymentMethodResponse == null || paymentMethodResponse.getId().isEmpty()) {
+      throw new IllegalArgumentException("Errore - L'ordine deve avere un prodotto, un indirizzo e un metodo di pagamento validi");
+    }
+    if (addressResponse.getUser() == null || !addressResponse.getUser().equals(principal) ||
+      paymentMethodResponse.getUser() == null || !paymentMethodResponse.getUser().equals(principal)) {
+      throw new IllegalArgumentException("Errore nei dati dell'ordine");
+    }
     PaymentResponse paymentResponse = null;
     try {
       paymentResponse = makePayment(token, order, String.valueOf(productResponse.getPrice()));
@@ -112,35 +104,36 @@ public class OrderServiceImpl implements OrderService {
       undoSetProductBoughtStatus(token, order.getProduct());
       order.setStatus(OrderStatus.PAYMENTERROR);
     }
-    
     return modelMapper.map(order, OrderResponse.class);
   }
   
   @Override
   public OrderResponse createPreorder(OrderRequest orderRequest, String principal, String token) {
-    
-    String loggedUserId = principal;
-    if (orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()).isPresent()) {
-      return modelMapper.map(orderRepository.findByBuyerAndProduct(loggedUserId, orderRequest.getProduct()), OrderResponse.class);
+    if (orderRepository.findByBuyerAndProduct(principal, orderRequest.getProduct()).isPresent()) {
+      return modelMapper.map(orderRepository.findByBuyerAndProduct(principal, orderRequest.getProduct()), OrderResponse.class);
     }
-    String ownerId = getProduct(token, orderRequest.getProduct()).getOwner();
-    if (loggedUserId.equals(ownerId)) {
-      throw new IllegalArgumentException("Cant modify this object");
+    ProductResponse productResponse = getProduct(token, orderRequest.getProduct());
+    if (productResponse == null) {
+      throw new IllegalArgumentException("Il prodotto non esiste!");
+    }
+    String ownerId = productResponse.getOwner();
+    if (principal.equals(ownerId)) {
+      throw new IllegalArgumentException("Non puoi comprare un tuo oggetto!");
     }
     log.info("token\n{}", token);
-    AddressResponse adr = getAddressByUser(token, loggedUserId);
+    AddressResponse adr = getAddressByUser(token, principal);
     String addressId = null;
     if (adr != null) {
       addressId = adr.getId().toString();
     }
-    PaymentMethodResponse paymentMethodResponse = getPaymentMethodByUser(token, loggedUserId);
+    PaymentMethodResponse paymentMethodResponse = getPaymentMethodByUser(token, principal);
     String paymentMethodId = null;
     if (paymentMethodResponse != null) {
       paymentMethodId = paymentMethodResponse.getId();
     }
     return modelMapper.map(
       orderRepository.save(Order.builder()
-        .buyer(loggedUserId)
+        .buyer(principal)
         .owner(ownerId)
         .product(orderRequest.getProduct())
         .status(OrderStatus.NEW)
@@ -151,9 +144,8 @@ public class OrderServiceImpl implements OrderService {
   
   @Override
   public OrderResponse updatePreorder(UUID id, OrderUpdateRequest orderRequest, String principal, String token) {
-    String loggedUserId = principal;
     Order older = orderRepository.findById(id).orElseThrow();
-    if (!loggedUserId.equals(older.getBuyer())) {
+    if (!principal.equals(older.getBuyer())) {
       throw new IllegalArgumentException("Cant modify this object");
     }
     
@@ -169,12 +161,12 @@ public class OrderServiceImpl implements OrderService {
   
   private PaymentResponse makePayment(String token, Order order, String price) {
     try {
-      String res = this.paymentClient.makePayment("Bearer " + token, PaymentRequest.builder()
+      String res = this.paymentClient.makePayment(this.tokenPrefix + token, PaymentRequest.builder()
         .from(order.getBuyer()).to(order.getOwner()).paymentMethodId(order.getPaymentMethod()).importo(price)
         .build());
-      log.info("Risposta da makepayment {}", res);
+      log.info("Risposta da makePayment {}", res);
       PaymentResponse obj = objectMapper.readValue(res, PaymentResponse.class);
-      log.info("Risposta da makepayment obj {}", obj);
+      log.info("Risposta da makePayment obj {}", obj);
       return obj;
     } catch (Exception e) {
       throw new IllegalStateException("Errore nel pagamento");
@@ -183,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
   
   private void makeRefund(String token, String paymentId) {
     try {
-      this.paymentClient.makeRefund("Bearer " + token, paymentId);
+      this.paymentClient.makeRefund(this.tokenPrefix + token, paymentId);
     } catch (Exception e) {
       throw new IllegalStateException("Errore nel refund del pagamento");
     }
@@ -191,7 +183,7 @@ public class OrderServiceImpl implements OrderService {
   
   
   private ProductResponse getProduct(String token, String productId) {
-    var res = productClient.getProductById("Bearer " + token, productId);
+    var res = productClient.getProductById(this.tokenPrefix + token, productId);
     log.info("Product response (by id) {}", res);
     ProductResponse productResponse = null;
     try {
@@ -205,7 +197,7 @@ public class OrderServiceImpl implements OrderService {
   
   @SneakyThrows
   private AddressResponse getAddress(String token, String id) {
-    var res = addressClient.getAddressById("Bearer " + token, id);
+    var res = addressClient.getAddressById(this.tokenPrefix + token, id);
     log.info("Address response (by id) {}", res);
     AddressResponse adr = null;
     try {
@@ -219,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
   
   @SneakyThrows
   private AddressResponse getAddressByUser(String token, String userid) {
-    var res = addressClient.getAddressByUserId("Bearer " + token, userid);
+    var res = addressClient.getAddressByUserId(this.tokenPrefix + token, userid);
     log.info("Address response (by user) {}", res);
     AddressResponse adr = null;
     try {
@@ -233,7 +225,7 @@ public class OrderServiceImpl implements OrderService {
   
   @SneakyThrows
   private PaymentMethodResponse getPaymentMethod(String token, String id) {
-    var res = paymentClient.getPaymentMethodById("Bearer " + token, id);
+    var res = paymentClient.getPaymentMethodById(this.tokenPrefix + token, id);
     log.info("Payment method response (by id) {}", res);
     PaymentMethodResponse paymentMethodResponse = null;
     try {
@@ -247,7 +239,7 @@ public class OrderServiceImpl implements OrderService {
   
   @SneakyThrows
   private PaymentMethodResponse getPaymentMethodByUser(String token, String userid) {
-    var res = paymentClient.getPaymentMethodByUserid("Bearer " + token, userid);
+    var res = paymentClient.getPaymentMethodByUserid(this.tokenPrefix + token, userid);
     log.info("Payment method response (by user) {}", res);
     PaymentMethodResponse paymentMethodResponse = null;
     try {
@@ -260,11 +252,11 @@ public class OrderServiceImpl implements OrderService {
   }
   
   private void setProductBoughtStatus(String token, String productId) {
-    productClient.setProductBoughtStatus("Bearer " + token, productId);
+    productClient.setProductBoughtStatus(this.tokenPrefix + token, productId);
   }
   
   private void undoSetProductBoughtStatus(String token, String productId) {
-    productClient.undoSetProductBoughtStatus("Bearer " + token, productId);
+    productClient.undoSetProductBoughtStatus(this.tokenPrefix + token, productId);
   }
   
   @SneakyThrows
