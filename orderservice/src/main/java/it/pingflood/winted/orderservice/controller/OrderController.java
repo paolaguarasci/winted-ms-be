@@ -31,8 +31,7 @@ public class OrderController {
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<List<OrderResponse>> getAll(Principal principal) {
-    // FIXME Ha senso fare l'optional di una lista?
-    return ResponseEntity.of(Optional.of(orderService.getAll(principal.getName())));
+    return ResponseEntity.ok(orderService.getAll(principal.getName()));
   }
   
   @GetMapping("/{id}")

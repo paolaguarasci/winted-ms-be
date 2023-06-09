@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Builder
 @NoArgsConstructor
@@ -13,4 +14,10 @@ import java.io.Serializable;
 @Data
 public class NotificaRequest implements Serializable {
   private String id;
+  private String user;
+  private LocalDateTime timestamp;
+  private String content;
+  private String timeAgo;
+  private String prodottoCorrelato;
+  private Boolean read;
 }

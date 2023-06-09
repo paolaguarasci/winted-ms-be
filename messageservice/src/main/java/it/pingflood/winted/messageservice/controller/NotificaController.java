@@ -31,4 +31,11 @@ public class NotificaController {
   public ResponseEntity<List<NotificaResponse>> marksAllRead(@RequestBody List<NotificaRequest> notificaRequests, Principal principal) {
     return ResponseEntity.ok(notificaService.marksAllRead(notificaRequests, principal.getName()));
   }
+  
+  
+  @PutMapping("/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<NotificaResponse> marksOneRead(@RequestBody NotificaRequest notificaRequest, Principal principal, @PathVariable String id) {
+    return ResponseEntity.ok(notificaService.markOneRead(id, notificaRequest, principal.getName()));
+  }
 }
