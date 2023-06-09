@@ -5,10 +5,12 @@ import it.pingflood.winted.messageservice.data.MsgType;
 import it.pingflood.winted.messageservice.data.dto.ConversationRequest;
 import it.pingflood.winted.messageservice.data.dto.ConversationResponse;
 import it.pingflood.winted.messageservice.data.dto.MessageRequest;
+import it.pingflood.winted.messageservice.data.dto.NotificaPOSTRequest;
 import it.pingflood.winted.messageservice.event.GenericEvent;
 import it.pingflood.winted.messageservice.event.NewOrderEvent;
 import it.pingflood.winted.messageservice.event.NewProductEvent;
 import it.pingflood.winted.messageservice.service.ConversationService;
+import it.pingflood.winted.messageservice.service.NotificaService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -22,11 +24,12 @@ import java.util.Map;
 @Component
 @Slf4j
 public class NotificationHandler {
-  
+  private final NotificaService notificaService;
   private final ConversationService conversationService;
   private final ObjectMapper objectMapper;
   
-  public NotificationHandler(ConversationService conversationService, ObjectMapper objectMapper) {
+  public NotificationHandler(NotificaService notificaService, ConversationService conversationService, ObjectMapper objectMapper) {
+    this.notificaService = notificaService;
     this.conversationService = conversationService;
     this.objectMapper = objectMapper;
   }
@@ -66,6 +69,9 @@ public class NotificationHandler {
         .content("Attendi che il venditore invii il pacco")
         .timestamp(LocalDateTime.now().toString())
         .build(), systemUserId);
+    
+    notificaService.createNotifica(NotificaPOSTRequest.builder().user(newOrderEvent.getBuyer()).prodottoCorrelato(newOrderEvent.getProduct()).content("Prodotto acquistato!").build());
+    notificaService.createNotifica(NotificaPOSTRequest.builder().user(newOrderEvent.getSeller()).prodottoCorrelato(newOrderEvent.getProduct()).content("Prodotto venduto!").build());
   }
 
 //  @KafkaListener(id = "message-service3", topics = "NewReplay")
