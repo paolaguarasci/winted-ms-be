@@ -33,6 +33,10 @@ public class ProductController {
       log.info("Logged user {}", principal.getName());
     }
     
+    if (owner != null && !owner.isBlank() && principal != null && owner.equals(principal.getName())) {
+      return ResponseEntity.of(Optional.of(productService.getAllByOwnerId(owner)));
+    }
+    
     if (owner != null && !owner.isBlank()) {
       return ResponseEntity.of(Optional.of(productService.getAllPublicByOwnerId(owner)));
     }
