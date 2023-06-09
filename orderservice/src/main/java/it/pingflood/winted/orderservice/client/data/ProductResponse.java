@@ -24,4 +24,6 @@ public class ProductResponse implements Serializable {
   private String owner; // owner-id
   private String featured;
   private List<String> resources;
+  private String bought;
+  private String draft;
 }

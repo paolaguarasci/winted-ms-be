@@ -88,7 +88,8 @@ public class OrderServiceImpl implements OrderService {
       throw new IllegalArgumentException("Errore - L'ordine deve avere un prodotto, un indirizzo e un metodo di pagamento validi");
     }
     if (addressResponse.getUser() == null || !addressResponse.getUser().equals(principal) ||
-      paymentMethodResponse.getUser() == null || !paymentMethodResponse.getUser().equals(principal)) {
+      paymentMethodResponse.getUser() == null || !paymentMethodResponse.getUser().equals(principal) ||
+      productResponse.getBought().equals("true") || productResponse.getDraft().equals("true")) {
       throw new IllegalArgumentException("Errore nei dati dell'ordine");
     }
     PaymentResponse paymentResponse = null;
@@ -113,8 +114,8 @@ public class OrderServiceImpl implements OrderService {
       return modelMapper.map(orderRepository.findByBuyerAndProduct(principal, orderRequest.getProduct()), OrderResponse.class);
     }
     ProductResponse productResponse = getProduct(token, orderRequest.getProduct());
-    if (productResponse == null) {
-      throw new IllegalArgumentException("Il prodotto non esiste!");
+    if (productResponse == null || productResponse.getBought().equals("true") || productResponse.getDraft().equals("true")) {
+      throw new IllegalArgumentException("Il prodotto non esiste o non e' acquistabile!");
     }
     String ownerId = productResponse.getOwner();
     if (principal.equals(ownerId)) {
