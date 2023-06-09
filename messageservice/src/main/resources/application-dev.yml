@@ -25,7 +25,9 @@ spring:
       - localhost:9092
   jackson:
     deserialization:
-      read-unknown-enum-values-as-null: false
+      read-unknown-enum-values-as-null: true
+
+
 eureka:
   instance:
     hostname: localhost

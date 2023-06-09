@@ -5,13 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class NotificaResponse {
+public class NotificaResponse implements Serializable {
   private String id;
   private String user;
   private LocalDateTime timestamp;

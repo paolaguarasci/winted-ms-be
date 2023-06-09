@@ -56,7 +56,7 @@ public class NotificationHandler {
         .messageType(MsgType.SYSTEM.toString())
         .content("Il tuo oggetto e' stato comprato, scarica l'etichetta. Link etichetta")
         .timestamp(LocalDateTime.now().toString())
-        .build());
+        .build(), systemUserId);
     
     conversationService.addMessageToConversation(conversationResponse.getId(),
       MessageRequest.builder()
@@ -65,8 +65,7 @@ public class NotificationHandler {
         .messageType(MsgType.SYSTEM.toString())
         .content("Attendi che il venditore invii il pacco")
         .timestamp(LocalDateTime.now().toString())
-        .build());
-    
+        .build(), systemUserId);
   }
 
 //  @KafkaListener(id = "message-service3", topics = "NewReplay")

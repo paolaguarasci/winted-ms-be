@@ -36,7 +36,7 @@ public class ConversationController {
   
   @PostMapping("/{id}/newmsg")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<ConversationResponse> addMessageToConversation(@PathVariable String id, @RequestBody MessageRequest messageRequest) {
-    return ResponseEntity.ok(conversationService.addMessageToConversation(id, messageRequest));
+  public ResponseEntity<ConversationResponse> addMessageToConversation(@PathVariable String id, @RequestBody MessageRequest messageRequest, Principal proncipal) {
+    return ResponseEntity.ok(conversationService.addMessageToConversation(id, messageRequest, proncipal.getName()));
   }
 }

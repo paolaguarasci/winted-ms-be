@@ -65,27 +65,29 @@ public class ConversationServiceImpl implements ConversationService {
   @Override
   public ConversationResponse getOneById(String id, String loggedUserid) {
     Conversation conv = conversationRepository.findById(id).orElseThrow();
-    
-    List<Message> messagesOriginal = conv.getMessages();
+    return filteredConversation(conv, loggedUserid);
+  }
+  
+  private ConversationResponse filteredConversation(Conversation conversation, String loggedUser) {
+    List<Message> messagesOriginal = conversation.getMessages();
     List<Message> messagesOriginal1 = messagesOriginal.stream()
-      .filter(message -> message.getTo().equals(loggedUserid) || message.getFrom().equals(loggedUserid))
+      .filter(message -> message.getTo().equals(loggedUser) || message.getFrom().equals(loggedUser))
       .toList();
     messagesOriginal1.forEach(message -> message.setTimeAgo(prettyTime.format(message.getTimestamp())));
+    String altroUtente = conversation.getUser1().equals(loggedUser) ? conversation.getUser2() : conversation.getUser1();
     
-    String altroUtente = conv.getUser1().equals(loggedUserid) ? conv.getUser2() : conv.getUser1();
-    
-    ConversationResponse convResp = modelMapper.map(conv, ConversationResponse.class);
+    ConversationResponse convResp = modelMapper.map(conversation, ConversationResponse.class);
     convResp.setMessages(messagesOriginal1.stream().map(message -> modelMapper.map(message, MessageResponse.class)).toList());
-    convResp.setLoggedUser(loggedUserid);
+    convResp.setLoggedUser(loggedUser);
     convResp.setAltroUtente(altroUtente);
     return convResp;
   }
   
   @Override
-  public ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest) {
+  public ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid) {
     Conversation conv = conversationRepository.findById(id).orElseThrow();
     conv.getMessages().add(messageRepository.save(modelMapper.map(messageRequest, Message.class)));
-    return modelMapper.map(conversationRepository.save(conv), ConversationResponse.class);
+    return filteredConversation(conversationRepository.save(conv), loggedUserid);
   }
   
   @Override
