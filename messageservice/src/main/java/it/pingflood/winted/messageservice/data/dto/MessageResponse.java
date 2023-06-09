@@ -1,21 +1,21 @@
 package it.pingflood.winted.messageservice.data.dto;
 
-import it.pingflood.winted.messageservice.data.MsgType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MessageResponse {
+@Getter
+@Setter
+public class MessageResponse implements Serializable {
   private String id;
   private String from;
   private String to;
   private String content;
   private String timestamp;
   private String timeAgo;
-  private MsgType messageType;
+  private String messageType;
 }
