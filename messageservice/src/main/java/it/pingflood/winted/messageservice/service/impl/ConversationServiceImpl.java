@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -87,12 +88,36 @@ public class ConversationServiceImpl implements ConversationService {
   public ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid) {
     Conversation conv = conversationRepository.findById(id).orElseThrow();
     conv.getMessages().add(messageRepository.save(modelMapper.map(messageRequest, Message.class)));
+    // TODO Send notification to other user
     return filteredConversation(conversationRepository.save(conv), loggedUserid);
   }
   
+  
   @Override
-  public ConversationResponse newConversation(ConversationRequest conversationRequest) {
+  public ConversationResponse newConversation(ConversationRequest conversationRequest, String principal) {
+    log.info("Nuova conversazione tra {} e {} - logged user {}", conversationRequest.getUser1(), conversationRequest.getUser2(), principal);
+
+//    if ((!Objects.equals(conversationRequest.getUser1(), principal) && !Objects.equals(conversationRequest.getUser2(), principal))) {
+//      throw new IllegalArgumentException("non puoi iniziare una conversazione senza essere loggato");
+//    }
+    
+    List<Conversation> older = findGenericByUsers(conversationRequest.getUser1(), conversationRequest.getUser2());
+    
+    if (!older.isEmpty()) {
+      return modelMapper.map(older.get(0), ConversationResponse.class);
+    }
+    
+    
     conversationRequest.setMessages(new ArrayList<>());
     return modelMapper.map(conversationRepository.save(modelMapper.map(conversationRequest, Conversation.class)), ConversationResponse.class);
   }
+  
+  private List<Conversation> findGenericByUsers(String username1, String username2) {
+    List<Conversation> conversazioni1 = conversationRepository.findAllByUser1IsOrUser2Is(username1, username2);
+    List<Conversation> conversazioni2 = conversationRepository.findAllByUser1IsOrUser2Is(username2, username1);
+    List<Conversation> conversations = Stream.concat(conversazioni1.stream(), conversazioni2.stream()).toList();
+    return conversations.stream()
+      .filter(conversation -> conversation.getProdottoCorrelato() == null || conversation.getProdottoCorrelato().equals("")).collect(Collectors.toList());
+  }
+  
 }

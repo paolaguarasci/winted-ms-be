@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,13 +22,13 @@ public class NotificaController {
   
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<List<NotificaResponse>> getAllByLoggedUser() {
-    return ResponseEntity.ok(notificaService.getAllByLoggedUser());
+  public ResponseEntity<List<NotificaResponse>> getAllByLoggedUser(Principal principal) {
+    return ResponseEntity.ok(notificaService.getAllByLoggedUser(principal.getName()));
   }
   
   @PutMapping
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<List<NotificaResponse>> marksAllRead(@RequestBody List<NotificaRequest> notificaRequests) {
-    return ResponseEntity.ok(notificaService.marksAllRead(notificaRequests));
+  public ResponseEntity<List<NotificaResponse>> marksAllRead(@RequestBody List<NotificaRequest> notificaRequests, Principal principal) {
+    return ResponseEntity.ok(notificaService.marksAllRead(notificaRequests, principal.getName()));
   }
 }

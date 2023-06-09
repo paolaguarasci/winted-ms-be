@@ -15,5 +15,5 @@ public interface ConversationService {
   
   ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid);
   
-  ConversationResponse newConversation(ConversationRequest conversationRequest);
+  ConversationResponse newConversation(ConversationRequest conversationRequest, String principal);
 }

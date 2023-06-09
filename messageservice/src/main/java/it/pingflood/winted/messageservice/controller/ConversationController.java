@@ -1,6 +1,7 @@
 package it.pingflood.winted.messageservice.controller;
 
 import it.pingflood.winted.messageservice.data.dto.AnteprimaInbox;
+import it.pingflood.winted.messageservice.data.dto.ConversationRequest;
 import it.pingflood.winted.messageservice.data.dto.ConversationResponse;
 import it.pingflood.winted.messageservice.data.dto.MessageRequest;
 import it.pingflood.winted.messageservice.service.ConversationService;
@@ -26,6 +27,12 @@ public class ConversationController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<List<AnteprimaInbox>> getAllConversationFromLoggedUser(Principal principal) {
     return ResponseEntity.ok(conversationService.getAllConversationPreviewFromLoggedUser(principal.getName()));
+  }
+  
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<ConversationResponse> addMessageAndInitConversation(@RequestBody ConversationRequest conversationRequest, Principal proncipal) {
+    return ResponseEntity.ok(conversationService.newConversation(conversationRequest, proncipal.getName()));
   }
   
   @GetMapping("/{id}")

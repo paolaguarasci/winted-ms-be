@@ -54,6 +54,7 @@ public class ProfileServiceImpl implements ProfileService {
   
   @Override
   public ProfileResponse getOneById(String id) {
+    log.info("Profilo {}", id);
     return modelMapper.map(profileRepository.findById(id).orElseThrow(), ProfileResponse.class);
   }
   

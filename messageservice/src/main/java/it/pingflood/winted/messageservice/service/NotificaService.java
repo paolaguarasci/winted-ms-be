@@ -6,7 +6,7 @@ import it.pingflood.winted.messageservice.data.dto.NotificaResponse;
 import java.util.List;
 
 public interface NotificaService {
-  List<NotificaResponse> getAllByLoggedUser();
+  List<NotificaResponse> getAllByLoggedUser(String name);
   
-  List<NotificaResponse> marksAllRead(List<NotificaRequest> notificaRequests);
+  List<NotificaResponse> marksAllRead(List<NotificaRequest> notificaRequests, String name);
 }

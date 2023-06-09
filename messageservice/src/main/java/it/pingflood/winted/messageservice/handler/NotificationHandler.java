@@ -47,7 +47,7 @@ public class NotificationHandler {
       .user1(newOrderEvent.getBuyer())
       .user2(newOrderEvent.getSeller())
       .prodottoCorrelato(newOrderEvent.getProduct())
-      .build());
+      .build(), systemUserId);
     
     conversationService.addMessageToConversation(conversationResponse.getId(),
       MessageRequest.builder()

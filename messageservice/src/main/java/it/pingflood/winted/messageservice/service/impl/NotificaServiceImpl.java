@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -25,12 +26,12 @@ public class NotificaServiceImpl implements NotificaService {
   }
   
   @Override
-  public List<NotificaResponse> getAllByLoggedUser() {
-    return List.of();
+  public List<NotificaResponse> getAllByLoggedUser(String name) {
+    return notificaRepository.findAllByUser(name).stream().map((element) -> modelMapper.map(element, NotificaResponse.class)).collect(Collectors.toList());
   }
   
   @Override
-  public List<NotificaResponse> marksAllRead(List<NotificaRequest> notificaRequests) {
+  public List<NotificaResponse> marksAllRead(List<NotificaRequest> notificaRequests, String name) {
     List<String> ids = notificaRequests.stream().map(NotificaRequest::getId).toList();
     List<Notifica> notifiche = notificaRepository.findAllById(ids);
     notifiche.forEach(notifica -> notifica.setRead(true));
