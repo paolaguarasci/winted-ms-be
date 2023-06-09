@@ -58,8 +58,7 @@ public class ProductController {
 //  @GetMapping
 //  @ResponseStatus(HttpStatus.OK)
 //  public ResponseEntity<List<ProductResponse>> getAllSearch() {
-//    // FIXME Ha senso fare l'optional di una lista?
-//    return ResponseEntity.of(Optional.of(productService.getAll()));
+//    return ResponseEntity.ok(productService.getAll());
 //  }
   
   @GetMapping("/{id}")

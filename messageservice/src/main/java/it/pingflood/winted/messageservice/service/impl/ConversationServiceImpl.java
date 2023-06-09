@@ -6,6 +6,7 @@ import it.pingflood.winted.messageservice.data.dto.*;
 import it.pingflood.winted.messageservice.repository.ConversationRepository;
 import it.pingflood.winted.messageservice.repository.MessageRepository;
 import it.pingflood.winted.messageservice.service.ConversationService;
+import it.pingflood.winted.messageservice.service.NotificaService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
@@ -26,9 +27,11 @@ public class ConversationServiceImpl implements ConversationService {
   private final ModelMapper modelMapper;
   private final PrettyTime prettyTime;
   private final MessageRepository messageRepository;
+  private final NotificaService notificaService;
   
-  public ConversationServiceImpl(ConversationRepository conversationRepository, MessageRepository messageRepository) {
+  public ConversationServiceImpl(ConversationRepository conversationRepository, MessageRepository messageRepository, NotificaService notificaService) {
     this.messageRepository = messageRepository;
+    this.notificaService = notificaService;
     this.prettyTime = new PrettyTime();
     this.modelMapper = new ModelMapper();
     this.modelMapper.getConfiguration()
@@ -88,7 +91,11 @@ public class ConversationServiceImpl implements ConversationService {
   public ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid) {
     Conversation conv = conversationRepository.findById(id).orElseThrow();
     conv.getMessages().add(messageRepository.save(modelMapper.map(messageRequest, Message.class)));
-    // TODO Send notification to other user
+    notificaService.createNotifica(NotificaPOSTRequest.builder()
+      .content("Nuovo messaggio")
+      .user(messageRequest.getTo())
+      .prodottoCorrelato(conv.getProdottoCorrelato())
+      .build());
     return filteredConversation(conversationRepository.save(conv), loggedUserid);
   }
   
