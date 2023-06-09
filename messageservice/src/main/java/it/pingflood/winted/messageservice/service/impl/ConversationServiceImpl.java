@@ -103,7 +103,7 @@ public class ConversationServiceImpl implements ConversationService {
     
     List<Conversation> older = findGenericByUsers(conversationRequest.getUser1(), conversationRequest.getUser2());
     
-    if (!older.isEmpty()) {
+    if (!older.isEmpty() && (conversationRequest.getProdottoCorrelato() == null || conversationRequest.getProdottoCorrelato().equals(""))) {
       return modelMapper.map(older.get(0), ConversationResponse.class);
     }
     
