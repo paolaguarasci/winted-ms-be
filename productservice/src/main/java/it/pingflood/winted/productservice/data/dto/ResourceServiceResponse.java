@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ResourceServiceResponse {
+public class ResourceServiceResponse implements Serializable {
   String id;
   String productRelated;
   String isFeatured;

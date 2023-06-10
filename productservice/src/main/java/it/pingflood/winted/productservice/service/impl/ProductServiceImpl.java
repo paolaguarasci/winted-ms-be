@@ -79,53 +79,57 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public ProductResponse createProduct(ProductRequest productRequest, String owner, String jwtToken) {
     log.debug("RICHIESTA! " + productRequest.toString());
-    MultipartBodyBuilder builder = new MultipartBodyBuilder();
-    MultipartFile[] files = productRequest.getFiles();
-    for (MultipartFile file : files) {
-      String headerFile = String.format("form-data; name=%s; filename=%s", "files", file.getOriginalFilename());
-      builder.part("files", new ByteArrayResource(file.getBytes()), MediaType.IMAGE_PNG).header("Content-Disposition", headerFile);
-    }
-    
-    MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
-    log.debug("TOKEN {}", jwtToken);
-    log.debug("PRINCIPAL {}", owner);
-    List<Map<String, Object>> resp;
-    try {
-      resp = WebClient.builder().build().post()
-        .uri(EXTERNAL_UPLOAD_URL)
-        .contentType(MediaType.MULTIPART_FORM_DATA)
-        .header("Authorization", "Bearer " + jwtToken)
-        .body(BodyInserters.fromMultipartData(multipartBody))
-        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(List.class)).block();
-      
-      if (resp == null) throw new IllegalArgumentException("Errore nel caricamento delle immagini");
-      
-      log.debug("================ RESPONSE =================== ");
-      log.debug("{}", resp);
-      
-    } catch (Exception ignored) {
-      log.error("PROBLEMA {}", ignored.getMessage());
-      throw new IllegalArgumentException("Errore nel salvataggio del prodotto.");
-    }
-    
-    List<String> ids = new ArrayList<>();
-    
-    for (Map<String, Object> img : resp) {
-      ids.add(img.get("id").toString());
-    }
     
     Product newProduct = Product.builder()
       .name(productRequest.getName())
       .description(productRequest.getDescription())
-      .resources(ids)
       .preferred(0)
       .bought(false)
-      .draft(false) // TODO poi vediamo ???
+      .draft(productRequest.isDraft())
       .brand(productRequest.getBrand())
       .category(productRequest.getCategory())
       .owner(owner)
       .price(productRequest.getPrice())
       .build();
+    
+    if (productRequest.getFiles() != null) {
+      MultipartBodyBuilder builder = new MultipartBodyBuilder();
+      MultipartFile[] files = productRequest.getFiles();
+      for (MultipartFile file : files) {
+        String headerFile = String.format("form-data; name=%s; filename=%s", "files", file.getOriginalFilename());
+        builder.part("files", new ByteArrayResource(file.getBytes()), MediaType.IMAGE_PNG).header("Content-Disposition", headerFile);
+      }
+      
+      MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
+      log.debug("TOKEN {}", jwtToken);
+      log.debug("PRINCIPAL {}", owner);
+      List<Map<String, Object>> resp;
+      try {
+        resp = WebClient.builder().build().post()
+          .uri(EXTERNAL_UPLOAD_URL)
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .header("Authorization", "Bearer " + jwtToken)
+          .body(BodyInserters.fromMultipartData(multipartBody))
+          .exchangeToMono(clientResponse -> clientResponse.bodyToMono(List.class)).block();
+        
+        if (resp == null) throw new IllegalArgumentException("Errore nel caricamento delle immagini");
+        
+        log.debug("================ RESPONSE =================== ");
+        log.debug("{}", resp);
+        
+      } catch (Exception ignored) {
+        log.error("PROBLEMA {}", ignored.getMessage());
+        throw new IllegalArgumentException("Errore nel salvataggio del prodotto.");
+      }
+      
+      List<String> ids = new ArrayList<>();
+      
+      for (Map<String, Object> img : resp) {
+        ids.add(img.get("id").toString());
+      }
+      newProduct.setResources(ids);
+    }
+    
     Product savedProduct = productRepository.save(newProduct);
     kafkaTemplate.send("NewProduct", "product-service", new NewProductEvent(savedProduct.getId()));
     return modelMapper.map(savedProduct, ProductResponse.class);
@@ -138,12 +142,11 @@ public class ProductServiceImpl implements ProductService {
     ObjectId objectId = new ObjectId(id);
     if (!productPutRequest.getId().equals(objectId.toString())) throw new IllegalArgumentException();
     Product oldProduct = productRepository.findById(objectId.toString()).orElseThrow();
-    
-    // TODO Sostituire con una iterazione dinamica (se poi cambiano i fields??)
+
     oldProduct.setName(productPutRequest.getName());
     oldProduct.setDescription(productPutRequest.getDescription());
     oldProduct.setPrice(productPutRequest.getPrice());
-    
+    oldProduct.setDraft(productPutRequest.isDraft());
     return modelMapper.map(productRepository.save(oldProduct), ProductResponse.class);
   }
   
