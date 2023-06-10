@@ -18,7 +18,7 @@ public interface ProductService {
   
   ProductResponse updateProduct(String id, ProductPutRequest productPutRequest);
   
-  void deleteProduct(String id);
+  void deleteProduct(String id, String name);
   
   void addPreferred(String productId);
   
