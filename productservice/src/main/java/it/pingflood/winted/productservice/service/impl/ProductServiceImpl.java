@@ -151,9 +151,14 @@ public class ProductServiceImpl implements ProductService {
   }
   
   @Override
-  public void deleteProduct(String id) {
-    ObjectId objectId = new ObjectId(id);
-    productRepository.delete(productRepository.findById(objectId.toString()).orElseThrow());
+  public void deleteProduct(String id, String name) {
+    Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Wrong"));
+    if (!product.getOwner().equals(name) ||
+      !product.isDraft() ||
+      product.isBought()) {
+      throw new IllegalArgumentException("Wrong");
+    }
+    productRepository.delete(product);
   }
   
   @Override

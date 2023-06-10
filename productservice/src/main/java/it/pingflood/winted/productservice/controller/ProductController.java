@@ -105,8 +105,8 @@ public class ProductController {
   
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteOne(@PathVariable("id") String id) {
-    productService.deleteProduct(id);
+  public void deleteOne(@PathVariable("id") String id, Principal principal) {
+    productService.deleteProduct(id, principal.getName());
   }
   
 }
