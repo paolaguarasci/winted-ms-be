@@ -22,19 +22,19 @@ public interface ProfileService {
   
   ProfileResponse updateOne(String id, ProfileUpdateRequest profileUpdateRequest);
   
-  ProfileResponse addPreferred(ProductPreferred product);
+  ProfileResponse addPreferred(ProductPreferred product, String principal);
   
-  ProfileResponse removePreferred(ProductPreferred product);
+  ProfileResponse removePreferred(ProductPreferred product, String principal);
   
-  ProfileResponse addWardrobe(ProductWardrobe product);
+  ProfileResponse addWardrobe(ProductWardrobe product, String principal);
   
-  ProfileResponse removeWardrobe(ProductWardrobe product);
+  ProfileResponse removeWardrobe(ProductWardrobe product, String principal);
   
-  ProfileResponse addDraft(ProductDraft product);
+  ProfileResponse addDraft(ProductDraft product, String principal);
   
-  ProfileResponse removeDraft(ProductDraft product);
+  ProfileResponse removeDraft(ProductDraft product, String principal);
   
-  List<String> getPreferred();
+  List<String> getPreferred(String principal);
   
   void deleteOne(String id);
 }

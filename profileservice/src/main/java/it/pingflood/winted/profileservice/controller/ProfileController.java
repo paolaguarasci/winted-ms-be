@@ -104,22 +104,21 @@ public class ProfileController {
   // Chiudere il metodo! Permessi solo all'utente loggato
   @PostMapping("preferred")
   @ResponseStatus(HttpStatus.CREATED)
-  ResponseEntity<Void> handleAddPreferred(@RequestBody ProductPreferred productPreferred, Principal principal, Authentication auth) {
-    profileService.addPreferred(productPreferred);
-    return ResponseEntity.status(HttpStatus.OK).build();
+  ResponseEntity<ProfileResponse> handleAddPreferred(@RequestBody ProductPreferred productPreferred, Principal principal, Authentication auth) {
+    return ResponseEntity.ok(profileService.addPreferred(productPreferred, principal.getName()));
   }
   
   @GetMapping("preferred")
   @ResponseStatus(HttpStatus.OK)
   ResponseEntity<List<String>> handleGetPreferred(Principal principal, Authentication auth) {
-    return ResponseEntity.status(HttpStatus.OK).body(profileService.getPreferred());
+    return ResponseEntity.status(HttpStatus.OK).body(profileService.getPreferred(principal.getName()));
   }
   
   
   @DeleteMapping("preferred/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   ResponseEntity<Void> handleDeleteFromPreferred(@PathVariable("id") String id, Principal principal, Authentication auth) {
-    profileService.removePreferred(ProductPreferred.builder().product(id).build());
+    profileService.removePreferred(ProductPreferred.builder().product(id).build(), principal.getName());
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
   

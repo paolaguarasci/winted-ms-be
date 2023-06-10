@@ -11,9 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,65 +100,64 @@ public class ProfileServiceImpl implements ProfileService {
   }
   
   @Override
-  public ProfileResponse addPreferred(ProductPreferred product) {
-    String loggedUsername = getLoggedUsername();
-    productEventKafkaTemplate.send("AddToPreferred", "profile-service", new ProductEvent(product.getProduct()));
-    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.addPreferred(product.getProduct());
-    profileRepository.save(loggedUser);
-    return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
+  public ProfileResponse addPreferred(ProductPreferred product, String principal) {
+    Profile loggedUser = profileRepository.findById(principal).orElseThrow();
+    if (!loggedUser.getPreferred().contains(product.getProduct())) {
+      loggedUser.addPreferred(product.getProduct());
+      profileRepository.save(loggedUser);
+      productEventKafkaTemplate.send("AddToPreferred", "profile-service", new ProductEvent(product.getProduct()));
+      return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
+    }
+    return null;
   }
   
   @Override
-  public ProfileResponse removePreferred(ProductPreferred product) {
-    String loggedUsername = getLoggedUsername();
-    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
-    loggedUser.removePreferred(product.getProduct());
-    productEventKafkaTemplate.send("RemoteToPreferred", "profile-service", new ProductEvent(product.getProduct()));
-    profileRepository.save(loggedUser);
-    return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
+  public ProfileResponse removePreferred(ProductPreferred product, String principal) {
+    Profile loggedUser = profileRepository.findById(principal).orElseThrow();
+    if (loggedUser.getPreferred().contains(product.getProduct())) {
+      loggedUser.removePreferred(product.getProduct());
+      profileRepository.save(loggedUser);
+      productEventKafkaTemplate.send("RemoteToPreferred", "profile-service", new ProductEvent(product.getProduct()));
+      return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
+    }
+    return null;
   }
   
   @Override
-  public ProfileResponse addWardrobe(ProductWardrobe product) {
-    String loggedUsername = getLoggedUsername();
-    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
+  public ProfileResponse addWardrobe(ProductWardrobe product, String principal) {
+    Profile loggedUser = profileRepository.findById(principal).orElseThrow();
     loggedUser.addWardrobe(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse removeWardrobe(ProductWardrobe product) {
-    String loggedUsername = getLoggedUsername();
-    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
+  public ProfileResponse removeWardrobe(ProductWardrobe product, String principal) {
+    Profile loggedUser = profileRepository.findById(principal).orElseThrow();
     loggedUser.removeWardrobe(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse addDraft(ProductDraft product) {
-    String loggedUsername = getLoggedUsername();
-    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
+  public ProfileResponse addDraft(ProductDraft product, String principal) {
+    Profile loggedUser = profileRepository.findById(principal).orElseThrow();
     loggedUser.addDraft(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public ProfileResponse removeDraft(ProductDraft product) {
-    String loggedUsername = getLoggedUsername();
-    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
+  public ProfileResponse removeDraft(ProductDraft product, String principal) {
+    Profile loggedUser = profileRepository.findById(principal).orElseThrow();
     loggedUser.removeDraft(product.getProduct());
     profileRepository.save(loggedUser);
     return modelMapper.map(profileRepository.save(modelMapper.map(loggedUser, Profile.class)), ProfileResponse.class);
   }
   
   @Override
-  public List<String> getPreferred() {
-    String loggedUsername = getLoggedUsername();
-    Profile loggedUser = profileRepository.findAllByUsername(loggedUsername).orElseThrow();
+  public List<String> getPreferred(String principal) {
+    Profile loggedUser = profileRepository.findById(principal).orElseThrow();
     return loggedUser.getPreferred().stream().toList();
   }
   
@@ -169,17 +165,4 @@ public class ProfileServiceImpl implements ProfileService {
   public void deleteOne(String id) {
     profileRepository.deleteById(id);
   }
-  
-  private String getLoggedUsername() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (!(authentication instanceof AnonymousAuthenticationToken)) {
-      String currentUserName = authentication.getName();
-      Profile profile = profileRepository.findByProviderIdentityId(currentUserName).orElseThrow();
-      log.info("Utente loggato - {}", profile.getUsername());
-      return profile.getUsername();
-    }
-    return null;
-  }
-  
-  
 }

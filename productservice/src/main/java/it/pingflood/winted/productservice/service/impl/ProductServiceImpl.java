@@ -155,12 +155,18 @@ public class ProductServiceImpl implements ProductService {
   
   @Override
   public void addPreferred(String productId) {
-    productRepository.findById(productId).orElseThrow().addPreferred();
+    Product product = productRepository.findById(productId).orElseThrow();
+    product.setPreferred(product.getPreferred() + 1);
+    productRepository.save(product);
   }
   
   @Override
   public void removePreferred(String productId) {
-    productRepository.findById(productId).orElseThrow().removePreferred();
+    Product product = productRepository.findById(productId).orElseThrow();
+    if (product.getPreferred() > 0) {
+      product.setPreferred(product.getPreferred() - 1);
+      productRepository.save(product);
+    }
   }
   
   @Override
