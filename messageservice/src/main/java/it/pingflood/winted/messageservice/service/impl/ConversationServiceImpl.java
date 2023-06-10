@@ -120,8 +120,8 @@ public class ConversationServiceImpl implements ConversationService {
   }
   
   private List<Conversation> findGenericByUsers(String username1, String username2) {
-    List<Conversation> conversazioni1 = conversationRepository.findAllByUser1IsOrUser2Is(username1, username2);
-    List<Conversation> conversazioni2 = conversationRepository.findAllByUser1IsOrUser2Is(username2, username1);
+    List<Conversation> conversazioni1 = conversationRepository.findAllByUser1IsAndUser2Is(username1, username2);
+    List<Conversation> conversazioni2 = conversationRepository.findAllByUser1IsAndUser2Is(username2, username1);
     List<Conversation> conversations = Stream.concat(conversazioni1.stream(), conversazioni2.stream()).toList();
     return conversations.stream()
       .filter(conversation -> conversation.getProdottoCorrelato() == null || conversation.getProdottoCorrelato().equals("")).collect(Collectors.toList());

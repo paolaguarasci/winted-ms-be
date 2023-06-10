@@ -7,5 +7,7 @@ public enum MsgType {
   TESTO,
   IMG,
   DOMANDA,
-  SYSTEM
+  SYSTEM,
+  OFFERT_REQUEST,
+  OFFERT_RESPONSE
 }
