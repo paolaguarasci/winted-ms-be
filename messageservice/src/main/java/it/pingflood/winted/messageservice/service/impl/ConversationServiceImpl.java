@@ -96,8 +96,13 @@ public class ConversationServiceImpl implements ConversationService {
   private ConversationResponse filteredConversation(Conversation conversation, String loggedUser) {
     List<Message> messagesOriginal = conversation.getMessages();
     List<Message> messagesOriginal1 = messagesOriginal.stream()
-      .filter(message -> (message.getTo().equals(loggedUser) && message.getNeedAnswer()) || (message.getTo().equals(loggedUser) || message.getFrom().equals(loggedUser)))
-      .toList();
+      .filter(message -> {
+        if ((message.getTo().equals(loggedUser) && message.getMessageType() == MsgType.SYSTEM_REQUEST)) {
+          return message.getNeedAnswer();
+        }
+        return (message.getTo().equals(loggedUser) || message.getFrom().equals(loggedUser));
+      }).toList();
+    
     messagesOriginal1.forEach(message -> message.setTimeAgo(prettyTime.format(message.getTimestamp())));
     String altroUtente = conversation.getUser1().equals(loggedUser) ? conversation.getUser2() : conversation.getUser1();
     
@@ -114,11 +119,11 @@ public class ConversationServiceImpl implements ConversationService {
     Conversation conv = conversationRepository.findById(id).orElseThrow();
     messageRequest.setTimestamp(LocalDateTime.now().toString());
     String notificaMsg = null;
-    if (messageRequest.getMessageType().equals(MsgType.TESTO.toString())) {
+    if (messageRequest.getMessageType().equals(MsgType.TESTO.toString()) || messageRequest.getMessageType().equals(MsgType.SYSTEM.toString())) {
       conv.getMessages().add(messageRepository.save(Message.builder()
-        .messageType(MsgType.TESTO)
+        .messageType(MsgType.valueOf(messageRequest.getMessageType()))
         .from(messageRequest.getFrom())
-        .to(messageRequest.getFrom())
+        .to(messageRequest.getTo())
         .content(messageRequest.getContent())
         .timestamp(LocalDateTime.now())
         .offerta(null)
@@ -144,7 +149,7 @@ public class ConversationServiceImpl implements ConversationService {
         .build()));
       
       conv.getMessages().add(messageRepository.save(Message.builder()
-        .messageType(MsgType.SYSTEM)
+        .messageType(MsgType.SYSTEM_REQUEST)
         .from(wintedId)
         .to(messageRequest.getTo())
         .content(messageRequest.getContent())
@@ -155,14 +160,10 @@ public class ConversationServiceImpl implements ConversationService {
         .build()));
     }
     
-    
     if (messageRequest.getMessageType().equals(MsgType.OFFERT_RESPONSE.toString()) && messageRequest.getContent().contains("yes")) {
       notificaMsg = "Offerta accettata";
       log.info("Ricevuto nuovo messaggio OFFERTA OK {}", messageRequest);
       Message requestMessage = messageRepository.findById(messageRequest.getIsAnswerTo()).orElseThrow();
-      log.info("Risposta a {}", requestMessage);
-      log.info("user1 {}", conv.getUser1());
-      log.info("user2 {}", conv.getUser2());
       NewCheckOutResponse checkout = getCheckout(conv.getProdottoCorrelato(), conv.getUser1(), requestMessage.getOfferta(), loggedUserid, token);
       if (checkout == null) {
         conv.getMessages().add(messageRepository.save(Message.builder()
@@ -188,7 +189,7 @@ public class ConversationServiceImpl implements ConversationService {
           .messageType(MsgType.SYSTEM)
           .from(wintedId)
           .to(messageRequest.getTo())
-          .content("offerta accettata")
+          .content("Offerta accettata")
           .timestamp(LocalDateTime.now())
           .isAnswerTo(messageRequest.getIsAnswerTo())
           .needAnswer(false)
@@ -197,27 +198,40 @@ public class ConversationServiceImpl implements ConversationService {
           .messageType(MsgType.SYSTEM)
           .from(wintedId)
           .to(loggedUserid)
-          .content("hai accettato l'offerto, attendi che il compratore effettui il checkout")
+          .content("Hai accettato l'offerta, attendi che il compratore effettui il checkout")
           .timestamp(LocalDateTime.now())
           .isAnswerTo(messageRequest.getIsAnswerTo())
           .needAnswer(false)
           .build()));
       }
+      Message m2 = conv.getMessages().stream().filter(message -> message.getId().equals(requestMessage.getId())).toList().get(0);
+      m2.setNeedAnswer(false);
     }
+    
     if (messageRequest.getMessageType().equals(MsgType.OFFERT_RESPONSE.toString()) && messageRequest.getContent().contains("no")) {
       log.info("Ricevuto nuovo messaggio OFFERTA NO {}", messageRequest);
       notificaMsg = "Offerta rifiutata";
       Message requestMessage = messageRepository.findById(messageRequest.getIsAnswerTo()).orElseThrow();
-      requestMessage.setNeedAnswer(false);
-      messageRepository.save(requestMessage);
-      
+      Message m2 = conv.getMessages().stream().filter(message -> message.getId().equals(requestMessage.getId())).toList().get(0);
+      m2.setNeedAnswer(false);
+      log.info("Risposta a DOPO SAVE {}", requestMessage);
       conv.getMessages().add(messageRepository.save(Message.builder()
         .messageType(MsgType.SYSTEM)
         .from(wintedId)
         .to(messageRequest.getTo())
-        .content("offerta rifiutata")
+        .content("Offerta rifiutata")
         .timestamp(LocalDateTime.now())
         .isAnswerTo(messageRequest.getIsAnswerTo())
+        .build()));
+      
+      conv.getMessages().add(messageRepository.save(Message.builder()
+        .messageType(MsgType.SYSTEM)
+        .from(wintedId)
+        .to(loggedUserid)
+        .content("Hai rifiutato l'offerta!")
+        .timestamp(LocalDateTime.now())
+        .isAnswerTo(messageRequest.getIsAnswerTo())
+        .needAnswer(false)
         .build()));
     }
     
@@ -272,24 +286,28 @@ public class ConversationServiceImpl implements ConversationService {
   
   @Override
   public ConversationResponse newConversation(ConversationRequest conversationRequest, String principal) {
-    log.info("Nuova conversazione tra {} e {} - logged user {}", conversationRequest.getUser1(), conversationRequest.getUser2(), principal);
-
-//    if ((!Objects.equals(conversationRequest.getUser1(), principal) && !Objects.equals(conversationRequest.getUser2(), principal))) {
-//      throw new IllegalArgumentException("non puoi iniziare una conversazione senza essere loggato");
-//    }
     
-    List<Conversation> older = findGenericByUsers(conversationRequest.getUser1(), conversationRequest.getUser2());
+    List<Conversation> older = null;
     
-    if (older != null && !older.isEmpty() && (conversationRequest.getProdottoCorrelato() == null || conversationRequest.getProdottoCorrelato().equals(""))) {
-      log.info("RESTITUISCO LA CONVERSAZIONE {}", older.get(0));
+    if (conversationRequest.getProdottoCorrelato() == null || conversationRequest.getProdottoCorrelato().equals("")) {
+      older = findGenericByUsers(conversationRequest.getUser1(), conversationRequest.getUser2());
+    } else {
+      older = findGenericByUsersAndProduct(conversationRequest.getUser1(), conversationRequest.getUser2(), conversationRequest.getProdottoCorrelato());
+    }
+    
+    if (older != null && !older.isEmpty()) {
       return modelMapper.map(older.get(0), ConversationResponse.class);
     }
     
-    log.info("GENERO UNA NUOVA CON VERSAIONE CON PRODOTTO CORRELATO {} ", conversationRequest.getProdottoCorrelato());
-    
     conversationRequest.setMessages(new ArrayList<>());
-    Conversation newConv = conversationRepository.save(modelMapper.map(conversationRequest, Conversation.class));
-    return filteredConversation(newConv, principal);
+    // conversationRequest.setProdottoCorrelato(conversationRequest.getProdottoCorrelato());
+    return filteredConversation(conversationRepository.save(modelMapper.map(conversationRequest, Conversation.class)), principal);
+  }
+  
+  private List<Conversation> findGenericByUsersAndProduct(String username1, String username2, String prodottoCorrelato) {
+    List<Conversation> conversazioni1 = conversationRepository.findAllByUser1IsAndUser2IsAndProdottoCorrelatoIs(username1, username2, prodottoCorrelato);
+    List<Conversation> conversazioni2 = conversationRepository.findAllByUser1IsAndUser2IsAndProdottoCorrelatoIs(username2, username1, prodottoCorrelato);
+    return Stream.concat(conversazioni1.stream(), conversazioni2.stream()).toList();
   }
   
   private List<Conversation> findGenericByUsers(String username1, String username2) {

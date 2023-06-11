@@ -11,4 +11,6 @@ public interface ConversationRepository extends MongoRepository<Conversation, St
   List<Conversation> findAllByUser1IsOrUser2Is(String user1, String user2);
   
   List<Conversation> findAllByUser1IsAndUser2Is(String user1, String user2);
+  
+  List<Conversation> findAllByUser1IsAndUser2IsAndProdottoCorrelatoIs(String user1, String user2, String prodottoCorrelato);
 }

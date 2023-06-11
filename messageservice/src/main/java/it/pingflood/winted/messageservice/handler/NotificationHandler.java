@@ -46,6 +46,7 @@ public class NotificationHandler {
   public void handleNewOrder(@Payload GenericEvent genericEvent, @Headers Map headers) {
     NewOrderEvent newOrderEvent = objectMapper.readValue(genericEvent.getPayload(), NewOrderEvent.class);
     String systemUserId = "6484fb28cb521302e093d93c";
+    
     ConversationResponse conversationResponse = conversationService.newConversation(ConversationRequest.builder()
       .user1(newOrderEvent.getBuyer())
       .user2(newOrderEvent.getSeller())
@@ -57,6 +58,8 @@ public class NotificationHandler {
         .to(newOrderEvent.getSeller())
         .from(systemUserId)
         .messageType(MsgType.SYSTEM.toString())
+        .needAnswer(false)
+        .isAnswerTo(null)
         .content("Il tuo oggetto e' stato comprato, scarica l'etichetta. Link etichetta")
         .timestamp(LocalDateTime.now().toString())
         .build(), systemUserId, null);
@@ -67,6 +70,8 @@ public class NotificationHandler {
         .from(systemUserId)
         .messageType(MsgType.SYSTEM.toString())
         .content("Attendi che il venditore invii il pacco")
+        .needAnswer(false)
+        .isAnswerTo(null)
         .timestamp(LocalDateTime.now().toString())
         .build(), systemUserId, null);
     

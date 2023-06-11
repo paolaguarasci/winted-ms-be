@@ -184,22 +184,22 @@ public class OrderServiceImpl implements OrderService {
     if (!principal.equals(ownerId)) {
       throw new IllegalArgumentException("Non puoi creare un'offerta per un oggetto non tuo!");
     }
-    
-    log.info("token\n{}", token);
-    AddressResponse adr = getAddressByUser(token, buyer);
-    
-    String addressId = null;
-    
-    if (adr != null) {
-      addressId = adr.getId().toString();
-    }
-    
-    PaymentMethodResponse paymentMethodResponse = getPaymentMethodByUser(token, buyer);
-    String paymentMethodId = null;
-    
-    if (paymentMethodResponse != null) {
-      paymentMethodId = paymentMethodResponse.getId();
-    }
+
+//    log.info("token\n{}", token);
+//    AddressResponse adr = getAddressByUser(token, buyer);
+//
+//    String addressId = null;
+//
+//    if (adr != null) {
+//      addressId = adr.getId().toString();
+//    }
+
+//    PaymentMethodResponse paymentMethodResponse = getPaymentMethodByUser(token, buyer);
+//    String paymentMethodId = null;
+//
+//    if (paymentMethodResponse != null) {
+//      paymentMethodId = paymentMethodResponse.getId();
+//    }
     
     return modelMapper.map(
       orderRepository.save(Order.builder()
@@ -207,9 +207,9 @@ public class OrderServiceImpl implements OrderService {
         .owner(ownerId)
         .product(orderRequestByService.getProduct())
         .status(OrderStatus.NEW)
-        .address(addressId)
+        .address(null)
         .offerta(offerta)
-        .paymentMethod(paymentMethodId)
+        .paymentMethod(null)
         .build()), OrderResponse.class);
   }
   
