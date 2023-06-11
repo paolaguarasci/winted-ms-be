@@ -60,21 +60,26 @@ public class ConversationServiceImpl implements ConversationService {
   @Override
   public List<AnteprimaInbox> getAllConversationPreviewFromLoggedUser(String loggedUserid) {
     List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
+    
     return conversazioni.stream().map(conversation -> {
-        String lastMessagePreview = "";
-        String timeAgo = "";
-        if (conversation.getMessages() != null && !conversation.getMessages().isEmpty()) {
-          Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
-          lastMessagePreview = lastMessage.getContent();
-          timeAgo = prettyTime.format(lastMessage.getTimestamp());
-        }
-        
-        String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
-        
-        return AnteprimaInbox.builder()
-          .conversationId(conversation.getId())
-          .lastMessage(lastMessagePreview)
-          .timeAgo(timeAgo)
+      String lastMessagePreview = "";
+      String timeAgo = "";
+      ConversationResponse convFiltered = filteredConversation(conversation, loggedUserid);
+      log.info("Conv filtered {}", convFiltered);
+      if (convFiltered.getMessages() != null && !convFiltered.getMessages().isEmpty()) {
+        MessageResponse lastMessage = convFiltered.getMessages().get(convFiltered.getMessages().size() - 1);
+        log.info("Conv filtered last message {}", lastMessage);
+        log.info("Conv filtered last message timestamp {}", lastMessage.getTimestamp());
+        lastMessagePreview = lastMessage.getContent();
+        timeAgo = lastMessage.getTimeAgo();
+      }
+      
+      String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
+      
+      return AnteprimaInbox.builder()
+        .conversationId(conversation.getId())
+        .lastMessage(lastMessagePreview)
+        .timeAgo(timeAgo)
           .prodottoCorrelato(conversation.getProdottoCorrelato())
           .altroUtente(altroUtente)
           .build();
@@ -91,7 +96,7 @@ public class ConversationServiceImpl implements ConversationService {
   private ConversationResponse filteredConversation(Conversation conversation, String loggedUser) {
     List<Message> messagesOriginal = conversation.getMessages();
     List<Message> messagesOriginal1 = messagesOriginal.stream()
-      .filter(message -> message.getTo().equals(loggedUser) || message.getFrom().equals(loggedUser))
+      .filter(message -> (message.getTo().equals(loggedUser) && message.getNeedAnswer()) || (message.getTo().equals(loggedUser) || message.getFrom().equals(loggedUser)))
       .toList();
     messagesOriginal1.forEach(message -> message.setTimeAgo(prettyTime.format(message.getTimestamp())));
     String altroUtente = conversation.getUser1().equals(loggedUser) ? conversation.getUser2() : conversation.getUser1();
@@ -110,7 +115,16 @@ public class ConversationServiceImpl implements ConversationService {
     messageRequest.setTimestamp(LocalDateTime.now().toString());
     String notificaMsg = null;
     if (messageRequest.getMessageType().equals(MsgType.TESTO.toString())) {
-      conv.getMessages().add(messageRepository.save(modelMapper.map(messageRequest, Message.class)));
+      conv.getMessages().add(messageRepository.save(Message.builder()
+        .messageType(MsgType.TESTO)
+        .from(messageRequest.getFrom())
+        .to(messageRequest.getFrom())
+        .content(messageRequest.getContent())
+        .timestamp(LocalDateTime.now())
+        .offerta(null)
+        .needAnswer(false)
+        .isAnswerTo(null)
+        .build()));
       notificaMsg = "Nuovo messaggio";
     }
     
@@ -125,6 +139,8 @@ public class ConversationServiceImpl implements ConversationService {
         .content("Offerta inviata")
         .timestamp(LocalDateTime.now())
         .offerta(BigDecimal.valueOf(Double.parseDouble(messageRequest.getOfferta())))
+        .needAnswer(false)
+        .isAnswerTo(null)
         .build()));
       
       conv.getMessages().add(messageRepository.save(Message.builder()
@@ -135,6 +151,7 @@ public class ConversationServiceImpl implements ConversationService {
         .timestamp(LocalDateTime.now())
         .offerta(BigDecimal.valueOf(Double.parseDouble(messageRequest.getOfferta())))
         .needAnswer(true)
+        .isAnswerTo(null)
         .build()));
     }
     
@@ -144,25 +161,56 @@ public class ConversationServiceImpl implements ConversationService {
       log.info("Ricevuto nuovo messaggio OFFERTA OK {}", messageRequest);
       Message requestMessage = messageRepository.findById(messageRequest.getIsAnswerTo()).orElseThrow();
       log.info("Risposta a {}", requestMessage);
-      requestMessage.setNeedAnswer(false);
       log.info("user1 {}", conv.getUser1());
       log.info("user2 {}", conv.getUser2());
       NewCheckOutResponse checkout = getCheckout(conv.getProdottoCorrelato(), conv.getUser1(), requestMessage.getOfferta(), loggedUserid, token);
-      assert checkout != null;
-      conv.getMessages().add(messageRepository.save(Message.builder()
-        .messageType(MsgType.SYSTEM)
-        .from(wintedId)
-        .to(messageRequest.getTo())
-        .content("offerta accettata, vai al checkout - link")
-        .timestamp(LocalDateTime.now())
-        .isAnswerTo(messageRequest.getIsAnswerTo())
-        .build()));
+      if (checkout == null) {
+        conv.getMessages().add(messageRepository.save(Message.builder()
+          .messageType(MsgType.SYSTEM)
+          .from(wintedId)
+          .to(loggedUserid)
+          .content("Errore - offerta non accettabile")
+          .timestamp(LocalDateTime.now())
+          .isAnswerTo(messageRequest.getIsAnswerTo())
+          .build()));
+        conv.getMessages().add(messageRepository.save(Message.builder()
+          .messageType(MsgType.SYSTEM)
+          .from(wintedId)
+          .to(messageRequest.getTo())
+          .content("Errore - offerta non accettabile")
+          .timestamp(LocalDateTime.now())
+          .isAnswerTo(messageRequest.getIsAnswerTo())
+          .build()));
+      } else {
+        requestMessage.setNeedAnswer(false);
+        messageRepository.save(requestMessage);
+        conv.getMessages().add(messageRepository.save(Message.builder()
+          .messageType(MsgType.SYSTEM)
+          .from(wintedId)
+          .to(messageRequest.getTo())
+          .content("offerta accettata")
+          .timestamp(LocalDateTime.now())
+          .isAnswerTo(messageRequest.getIsAnswerTo())
+          .needAnswer(false)
+          .build()));
+        conv.getMessages().add(messageRepository.save(Message.builder()
+          .messageType(MsgType.SYSTEM)
+          .from(wintedId)
+          .to(loggedUserid)
+          .content("hai accettato l'offerto, attendi che il compratore effettui il checkout")
+          .timestamp(LocalDateTime.now())
+          .isAnswerTo(messageRequest.getIsAnswerTo())
+          .needAnswer(false)
+          .build()));
+      }
     }
     if (messageRequest.getMessageType().equals(MsgType.OFFERT_RESPONSE.toString()) && messageRequest.getContent().contains("no")) {
       log.info("Ricevuto nuovo messaggio OFFERTA NO {}", messageRequest);
       notificaMsg = "Offerta rifiutata";
       Message requestMessage = messageRepository.findById(messageRequest.getIsAnswerTo()).orElseThrow();
       requestMessage.setNeedAnswer(false);
+      messageRepository.save(requestMessage);
+      
       conv.getMessages().add(messageRepository.save(Message.builder()
         .messageType(MsgType.SYSTEM)
         .from(wintedId)
@@ -208,12 +256,18 @@ public class ConversationServiceImpl implements ConversationService {
       .product(productId)
       .buyer(buyer)
       .build();
+    String response = null;
+    try {
+      response = orderClient.postNewCheckout(this.tokenPrefix + token, newCheckOutRequest);
+      log.info("RISPOSTA da ordine {}", response);
+      NewCheckOutResponse newCheckOutResponse = objectMapper.readValue(response, NewCheckOutResponse.class);
+      log.info("RISPOSTA da ordine obj {}", newCheckOutResponse);
+      return newCheckOutResponse;
+    } catch (Exception e) {
+      return null;
+    }
     
-    String response = orderClient.postNewCheckout(this.tokenPrefix + token, newCheckOutRequest);
-    log.info("RISPOSTA da ordine {}", response);
-    NewCheckOutResponse newCheckOutResponse = objectMapper.readValue(response, NewCheckOutResponse.class);
-    log.info("RISPOSTA da ordine obj {}", newCheckOutResponse);
-    return newCheckOutResponse;
+    
   }
   
   @Override
@@ -226,7 +280,7 @@ public class ConversationServiceImpl implements ConversationService {
     
     List<Conversation> older = findGenericByUsers(conversationRequest.getUser1(), conversationRequest.getUser2());
     
-    if (!older.isEmpty() && (conversationRequest.getProdottoCorrelato() == null || conversationRequest.getProdottoCorrelato().equals(""))) {
+    if (older != null && !older.isEmpty() && (conversationRequest.getProdottoCorrelato() == null || conversationRequest.getProdottoCorrelato().equals(""))) {
       log.info("RESTITUISCO LA CONVERSAZIONE {}", older.get(0));
       return modelMapper.map(older.get(0), ConversationResponse.class);
     }
@@ -234,7 +288,8 @@ public class ConversationServiceImpl implements ConversationService {
     log.info("GENERO UNA NUOVA CON VERSAIONE CON PRODOTTO CORRELATO {} ", conversationRequest.getProdottoCorrelato());
     
     conversationRequest.setMessages(new ArrayList<>());
-    return modelMapper.map(conversationRepository.save(modelMapper.map(conversationRequest, Conversation.class)), ConversationResponse.class);
+    Conversation newConv = conversationRepository.save(modelMapper.map(conversationRequest, Conversation.class));
+    return filteredConversation(newConv, principal);
   }
   
   private List<Conversation> findGenericByUsers(String username1, String username2) {
