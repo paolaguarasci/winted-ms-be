@@ -1,4 +1,4 @@
-package it.pingflood.winted.orderservice.data.dto;
+package it.pingflood.winted.messageservice.client.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderResponse implements Serializable {
+public class NewCheckOutResponse implements Serializable {
   private UUID id;
   private String buyer;
   private String product;
@@ -20,5 +20,4 @@ public class OrderResponse implements Serializable {
   private String owner;
   private String address;
   private String paymentMethod;
-  private OffertaResponse offerta;
 }

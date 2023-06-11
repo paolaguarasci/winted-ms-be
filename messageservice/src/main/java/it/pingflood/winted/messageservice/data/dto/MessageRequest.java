@@ -18,4 +18,7 @@ public class MessageRequest implements Serializable {
   private String timestamp;
   private String timeAgo;
   private String messageType;
+  private Boolean needAnswer;
+  private String isAnswerTo;
+  private String offerta;
 }

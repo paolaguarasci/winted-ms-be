@@ -6,19 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderResponse implements Serializable {
-  private UUID id;
-  private String buyer;
+public class OrderRequestService implements Serializable {
   private String product;
-  private String status;
-  private String owner;
-  private String address;
-  private String paymentMethod;
-  private OffertaResponse offerta;
+  private Double price;
+  private String buyer;
 }

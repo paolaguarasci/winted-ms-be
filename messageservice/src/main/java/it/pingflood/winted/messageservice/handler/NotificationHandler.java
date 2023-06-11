@@ -45,7 +45,8 @@ public class NotificationHandler {
   @KafkaListener(id = "message-service2", topics = "NewOrder")
   public void handleNewOrder(@Payload GenericEvent genericEvent, @Headers Map headers) {
     NewOrderEvent newOrderEvent = objectMapper.readValue(genericEvent.getPayload(), NewOrderEvent.class);
-    String systemUserId = "646a5b54e698ec5f4411aecb";
+    String systemUserId = "6484fb28cb521302e093d93c";
+    
     ConversationResponse conversationResponse = conversationService.newConversation(ConversationRequest.builder()
       .user1(newOrderEvent.getBuyer())
       .user2(newOrderEvent.getSeller())
@@ -57,9 +58,11 @@ public class NotificationHandler {
         .to(newOrderEvent.getSeller())
         .from(systemUserId)
         .messageType(MsgType.SYSTEM.toString())
+        .needAnswer(false)
+        .isAnswerTo(null)
         .content("Il tuo oggetto e' stato comprato, scarica l'etichetta. Link etichetta")
         .timestamp(LocalDateTime.now().toString())
-        .build(), systemUserId);
+        .build(), systemUserId, null);
     
     conversationService.addMessageToConversation(conversationResponse.getId(),
       MessageRequest.builder()
@@ -67,8 +70,10 @@ public class NotificationHandler {
         .from(systemUserId)
         .messageType(MsgType.SYSTEM.toString())
         .content("Attendi che il venditore invii il pacco")
+        .needAnswer(false)
+        .isAnswerTo(null)
         .timestamp(LocalDateTime.now().toString())
-        .build(), systemUserId);
+        .build(), systemUserId, null);
     
     notificaService.createNotifica(NotificaPOSTRequest.builder().user(newOrderEvent.getBuyer()).prodottoCorrelato(newOrderEvent.getProduct()).content("Prodotto acquistato!").build());
     notificaService.createNotifica(NotificaPOSTRequest.builder().user(newOrderEvent.getSeller()).prodottoCorrelato(newOrderEvent.getProduct()).content("Prodotto venduto!").build());

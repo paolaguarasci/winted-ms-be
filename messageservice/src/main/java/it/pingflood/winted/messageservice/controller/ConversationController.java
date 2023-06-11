@@ -8,6 +8,8 @@ import it.pingflood.winted.messageservice.service.ConversationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -43,7 +45,7 @@ public class ConversationController {
   
   @PostMapping("/{id}/newmsg")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<ConversationResponse> addMessageToConversation(@PathVariable String id, @RequestBody MessageRequest messageRequest, Principal proncipal) {
-    return ResponseEntity.ok(conversationService.addMessageToConversation(id, messageRequest, proncipal.getName()));
+  public ResponseEntity<ConversationResponse> addMessageToConversation(@PathVariable String id, @RequestBody MessageRequest messageRequest, Principal proncipal, @AuthenticationPrincipal Jwt token) {
+    return ResponseEntity.ok(conversationService.addMessageToConversation(id, messageRequest, proncipal.getName(), token.getTokenValue()));
   }
 }
