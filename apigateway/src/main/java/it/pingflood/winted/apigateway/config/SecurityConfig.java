@@ -54,6 +54,12 @@ public class SecurityConfig {
         .permitAll()
         .pathMatchers(HttpMethod.GET, "/api/v1/profile", "/api/v1/profile/**")
         .permitAll()
+        
+        // TODO trovare come far funzionare i WebSockets con OAuth2, per ora e' libero...
+        // /api/v1/message/websocket/greeting
+        .pathMatchers("/api/v1/message/websocket/", "/api/v1/message/websocket/**")
+        .permitAll()
+        
         .anyExchange()
         .authenticated())
       .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt)
