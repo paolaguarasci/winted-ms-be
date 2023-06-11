@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -21,4 +22,7 @@ public class Message extends Auditable<String> implements Serializable {
   private String content;
   private String timeAgo;
   private MsgType messageType;
+  private Boolean needAnswer;
+  private String isAnswerTo;
+  private BigDecimal offerta;
 }

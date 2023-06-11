@@ -13,7 +13,7 @@ public interface ConversationService {
   ConversationResponse getOneById(String id, String loggedUserId);
   
   
-  ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid);
+  ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid, String token);
   
   ConversationResponse newConversation(ConversationRequest conversationRequest, String principal);
 }

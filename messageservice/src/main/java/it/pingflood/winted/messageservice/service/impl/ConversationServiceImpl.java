@@ -1,12 +1,18 @@
 package it.pingflood.winted.messageservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pingflood.winted.messageservice.client.OrderClient;
+import it.pingflood.winted.messageservice.client.dto.NewCheckOutRequest;
+import it.pingflood.winted.messageservice.client.dto.NewCheckOutResponse;
 import it.pingflood.winted.messageservice.data.Conversation;
 import it.pingflood.winted.messageservice.data.Message;
+import it.pingflood.winted.messageservice.data.MsgType;
 import it.pingflood.winted.messageservice.data.dto.*;
 import it.pingflood.winted.messageservice.repository.ConversationRepository;
 import it.pingflood.winted.messageservice.repository.MessageRepository;
 import it.pingflood.winted.messageservice.service.ConversationService;
 import it.pingflood.winted.messageservice.service.NotificaService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
@@ -14,6 +20,8 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,8 +36,16 @@ public class ConversationServiceImpl implements ConversationService {
   private final PrettyTime prettyTime;
   private final MessageRepository messageRepository;
   private final NotificaService notificaService;
+  private final String wintedId;
+  private final ObjectMapper objectMapper;
+  private final OrderClient orderClient;
+  private final String tokenPrefix;
   
-  public ConversationServiceImpl(ConversationRepository conversationRepository, MessageRepository messageRepository, NotificaService notificaService) {
+  public ConversationServiceImpl(ConversationRepository conversationRepository, MessageRepository messageRepository, NotificaService notificaService, ObjectMapper objectMapper, OrderClient orderClient) {
+    this.objectMapper = objectMapper;
+    this.orderClient = orderClient;
+    this.tokenPrefix = "Bearer ";
+    wintedId = "6484fb28cb521302e093d93c";
     this.messageRepository = messageRepository;
     this.notificaService = notificaService;
     this.prettyTime = new PrettyTime();
@@ -88,17 +104,117 @@ public class ConversationServiceImpl implements ConversationService {
   }
   
   @Override
-  public ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid) {
+  public ConversationResponse addMessageToConversation(String id, MessageRequest messageRequest, String loggedUserid, String token) {
+    log.info("Ricevuto nuovo messaggio {}", messageRequest);
     Conversation conv = conversationRepository.findById(id).orElseThrow();
-    conv.getMessages().add(messageRepository.save(modelMapper.map(messageRequest, Message.class)));
+    messageRequest.setTimestamp(LocalDateTime.now().toString());
+    String notificaMsg = null;
+    if (messageRequest.getMessageType().equals(MsgType.TESTO.toString())) {
+      conv.getMessages().add(messageRepository.save(modelMapper.map(messageRequest, Message.class)));
+      notificaMsg = "Nuovo messaggio";
+    }
+    
+    if (messageRequest.getMessageType().equals(MsgType.OFFERT_REQUEST.toString())) {
+      log.info("Ricevuto nuovo messaggio OFFERTA {}", messageRequest);
+      notificaMsg = "Nuova offerta!";
+      
+      conv.getMessages().add(messageRepository.save(Message.builder()
+        .messageType(MsgType.SYSTEM)
+        .from(wintedId)
+        .to(messageRequest.getFrom())
+        .content("Offerta inviata")
+        .timestamp(LocalDateTime.now())
+        .offerta(BigDecimal.valueOf(Double.parseDouble(messageRequest.getOfferta())))
+        .build()));
+      
+      conv.getMessages().add(messageRepository.save(Message.builder()
+        .messageType(MsgType.SYSTEM)
+        .from(wintedId)
+        .to(messageRequest.getTo())
+        .content(messageRequest.getContent())
+        .timestamp(LocalDateTime.now())
+        .offerta(BigDecimal.valueOf(Double.parseDouble(messageRequest.getOfferta())))
+        .needAnswer(true)
+        .build()));
+    }
+    
+    
+    if (messageRequest.getMessageType().equals(MsgType.OFFERT_RESPONSE.toString()) && messageRequest.getContent().contains("yes")) {
+      notificaMsg = "Offerta accettata";
+      log.info("Ricevuto nuovo messaggio OFFERTA OK {}", messageRequest);
+      Message requestMessage = messageRepository.findById(messageRequest.getIsAnswerTo()).orElseThrow();
+      log.info("Risposta a {}", requestMessage);
+      requestMessage.setNeedAnswer(false);
+      log.info("user1 {}", conv.getUser1());
+      log.info("user2 {}", conv.getUser2());
+      NewCheckOutResponse checkout = getCheckout(conv.getProdottoCorrelato(), conv.getUser1(), requestMessage.getOfferta(), loggedUserid, token);
+      assert checkout != null;
+      conv.getMessages().add(messageRepository.save(Message.builder()
+        .messageType(MsgType.SYSTEM)
+        .from(wintedId)
+        .to(messageRequest.getTo())
+        .content("offerta accettata, vai al checkout - link")
+        .timestamp(LocalDateTime.now())
+        .isAnswerTo(messageRequest.getIsAnswerTo())
+        .build()));
+    }
+    if (messageRequest.getMessageType().equals(MsgType.OFFERT_RESPONSE.toString()) && messageRequest.getContent().contains("no")) {
+      log.info("Ricevuto nuovo messaggio OFFERTA NO {}", messageRequest);
+      notificaMsg = "Offerta rifiutata";
+      Message requestMessage = messageRepository.findById(messageRequest.getIsAnswerTo()).orElseThrow();
+      requestMessage.setNeedAnswer(false);
+      conv.getMessages().add(messageRepository.save(Message.builder()
+        .messageType(MsgType.SYSTEM)
+        .from(wintedId)
+        .to(messageRequest.getTo())
+        .content("offerta rifiutata")
+        .timestamp(LocalDateTime.now())
+        .isAnswerTo(messageRequest.getIsAnswerTo())
+        .build()));
+    }
+    
     notificaService.createNotifica(NotificaPOSTRequest.builder()
-      .content("Nuovo messaggio")
+      .content(notificaMsg)
       .user(messageRequest.getTo())
       .prodottoCorrelato(conv.getProdottoCorrelato())
       .build());
+    
     return filteredConversation(conversationRepository.save(conv), loggedUserid);
   }
   
+  // TODO Risolvere alcuni problemi prima
+  //
+  // problema 1: prima il problema di una comunicazione sicura tra servizi (non accessibile dall'esterno, nemmeno da
+  // loggato. Possibile soluzione liv auth ADMIN per l'endpoint ricevente, ma il token chi me lo da? mi devo loggare
+  // prima? RISOLTO IN PARTE (check sul principal che crea il checkout)
+  //
+  // problema 2: entity offerta? Perche' altrimenti al momento del checkout/ordine (nel service ordine)
+  // il prezzo e' sempre preso dalla base di dati ed e' quello del prodotto stesso.
+  // Se devo cambiare il prezzo del prodotto mi serve un item che leghi insieme prodotto, buyer e nuovoPrezzo,
+  // costruito server side ovviamente.
+  //
+  // E quindi... risolti questi due problemi in questa chiamata triggero la generazione di una nuova offerta, non di
+  // nuovo checkout, ed al momento della richiesta normale di nuovo checkout (come sempre avviene per i nuovi acquisti)
+  // controllo che ci sia una nuova offerta (per quell'utente, su quel prodotto, a quel prezzo)
+  //
+  // ... quindi l'ordine ha un prezzo che cambia in base al fatto che ci sia o meno un offerta.
+  // forse RISOLTO...
+  
+  @SneakyThrows
+  private NewCheckOutResponse getCheckout(String productId, String buyer, BigDecimal newPrice, String principal, String token) {
+    
+    NewCheckOutRequest newCheckOutRequest = NewCheckOutRequest.builder()
+      .price(newPrice.toString())
+      .product(productId)
+      .buyer(buyer)
+      .build();
+    
+    String response = orderClient.postNewCheckout(this.tokenPrefix + token, newCheckOutRequest);
+    log.info("RISPOSTA da ordine {}", response);
+    NewCheckOutResponse newCheckOutResponse = objectMapper.readValue(response, NewCheckOutResponse.class);
+    log.info("RISPOSTA da ordine obj {}", newCheckOutResponse);
+    return newCheckOutResponse;
+  }
   
   @Override
   public ConversationResponse newConversation(ConversationRequest conversationRequest, String principal) {
@@ -111,9 +227,11 @@ public class ConversationServiceImpl implements ConversationService {
     List<Conversation> older = findGenericByUsers(conversationRequest.getUser1(), conversationRequest.getUser2());
     
     if (!older.isEmpty() && (conversationRequest.getProdottoCorrelato() == null || conversationRequest.getProdottoCorrelato().equals(""))) {
+      log.info("RESTITUISCO LA CONVERSAZIONE {}", older.get(0));
       return modelMapper.map(older.get(0), ConversationResponse.class);
     }
     
+    log.info("GENERO UNA NUOVA CON VERSAIONE CON PRODOTTO CORRELATO {} ", conversationRequest.getProdottoCorrelato());
     
     conversationRequest.setMessages(new ArrayList<>());
     return modelMapper.map(conversationRepository.save(modelMapper.map(conversationRequest, Conversation.class)), ConversationResponse.class);

@@ -17,8 +17,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "WINTED_ORDER")
-public class Order extends Auditable<String> implements Serializable {
+@Table(name = "WINTED_OFFERTA")
+public class Offerta extends Auditable<String> implements Serializable {
   
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,16 +26,7 @@ public class Order extends Auditable<String> implements Serializable {
   @JdbcTypeCode(SqlTypes.VARCHAR)
   private UUID id;
   
-  private String buyer;
-  private String product;
-  private String owner;
-  private OrderStatus status;
-  private String address;
-  private String paymentMethod;
-  
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinColumn(name = "offerta_id", nullable = true)
-  private Offerta offerta;
+  private Double price;
   
   @Version
   @Column(name = "optlock", columnDefinition = "integer DEFAULT 0", nullable = false)

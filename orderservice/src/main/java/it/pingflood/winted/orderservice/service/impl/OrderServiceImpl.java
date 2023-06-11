@@ -4,13 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pingflood.winted.orderservice.client.AddressClient;
 import it.pingflood.winted.orderservice.client.PaymentClient;
 import it.pingflood.winted.orderservice.client.ProductClient;
+import it.pingflood.winted.orderservice.client.data.PaymentResponse;
 import it.pingflood.winted.orderservice.client.data.*;
+import it.pingflood.winted.orderservice.data.Offerta;
 import it.pingflood.winted.orderservice.data.Order;
 import it.pingflood.winted.orderservice.data.OrderStatus;
-import it.pingflood.winted.orderservice.data.dto.OrderConfirmRequest;
-import it.pingflood.winted.orderservice.data.dto.OrderRequest;
-import it.pingflood.winted.orderservice.data.dto.OrderResponse;
-import it.pingflood.winted.orderservice.data.dto.OrderUpdateRequest;
+import it.pingflood.winted.orderservice.data.dto.*;
 import it.pingflood.winted.orderservice.event.NewOrderEvent;
 import it.pingflood.winted.orderservice.repository.OrderRepository;
 import it.pingflood.winted.orderservice.service.OrderService;
@@ -22,6 +21,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,8 +93,12 @@ public class OrderServiceImpl implements OrderService {
       throw new IllegalArgumentException("Errore nei dati dell'ordine");
     }
     PaymentResponse paymentResponse = null;
+    BigDecimal price = productResponse.getPrice();
+    if (order.getOfferta() != null) {
+      price = BigDecimal.valueOf(order.getOfferta().getPrice());
+    }
     try {
-      paymentResponse = makePayment(token, order, String.valueOf(productResponse.getPrice()));
+      paymentResponse = makePayment(token, order, String.valueOf(price));
       order.setStatus(OrderStatus.PAYED);
       setProductBoughtStatus(token, order.getProduct());
       sendMessageToOwner(order.getOwner(), order.getBuyer(), order.getProduct());
@@ -158,6 +162,55 @@ public class OrderServiceImpl implements OrderService {
     }
     orderRepository.save(older);
     return modelMapper.map(older, OrderResponse.class);
+  }
+  
+  @Override
+  public OrderResponse createPreorderService(OrderRequestService orderRequestByService, String principal, String token) {
+    Offerta offerta = Offerta.builder().price(orderRequestByService.getPrice()).build();
+    String buyer = orderRequestByService.getBuyer();
+    if (orderRepository.findByBuyerAndProduct(buyer, orderRequestByService.getProduct()).isPresent()) {
+      Order older = orderRepository.findByBuyerAndProduct(buyer, orderRequestByService.getProduct()).orElseThrow();
+      older.setOfferta(offerta);
+      return modelMapper.map(orderRepository.save(older), OrderResponse.class);
+    }
+    
+    ProductResponse productResponse = getProduct(token, orderRequestByService.getProduct());
+    if (productResponse == null || productResponse.getBought().equals("true") || productResponse.getDraft().equals("true")) {
+      throw new IllegalArgumentException("Il prodotto non esiste o non e' acquistabile!");
+    }
+    
+    String ownerId = productResponse.getOwner();
+    
+    if (!principal.equals(ownerId)) {
+      throw new IllegalArgumentException("Non puoi creare un'offerta per un oggetto non tuo!");
+    }
+    
+    log.info("token\n{}", token);
+    AddressResponse adr = getAddressByUser(token, buyer);
+    
+    String addressId = null;
+    
+    if (adr != null) {
+      addressId = adr.getId().toString();
+    }
+    
+    PaymentMethodResponse paymentMethodResponse = getPaymentMethodByUser(token, buyer);
+    String paymentMethodId = null;
+    
+    if (paymentMethodResponse != null) {
+      paymentMethodId = paymentMethodResponse.getId();
+    }
+    
+    return modelMapper.map(
+      orderRepository.save(Order.builder()
+        .buyer(buyer)
+        .owner(ownerId)
+        .product(orderRequestByService.getProduct())
+        .status(OrderStatus.NEW)
+        .address(addressId)
+        .offerta(offerta)
+        .paymentMethod(paymentMethodId)
+        .build()), OrderResponse.class);
   }
   
   private PaymentResponse makePayment(String token, Order order, String price) {
