@@ -36,6 +36,13 @@ public class SecurityConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.GET, "/api/v1/message/v3/api-docs", "/api/v1/message/v3/api-docs/**", "/api/v1/message/webjars/swagger-ui/index.html", "/message/v3/api-docs")
         .permitAll()
+        
+        // TODO trovare come far funzionare i WebSockets con OAuth2, per ora e' libero...
+        // /api/v1/message/websocket/greeting
+        .requestMatchers("/api/v1/message/websocket/", "/api/v1/message/websocket/**")
+        .permitAll()
+        
+        
         .requestMatchers("/api/v1/message", "/api/v1/message/**")
         .hasAnyAuthority("ROLE_USER", "USER", "ROLE_ADMIN", "ADMIN")
         .requestMatchers("/api/v1/conversation", "/api/v1/conversation/**")

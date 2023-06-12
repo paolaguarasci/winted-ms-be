@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
 import org.ocpsoft.prettytime.PrettyTime;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +41,12 @@ public class ConversationServiceImpl implements ConversationService {
   private final ObjectMapper objectMapper;
   private final OrderClient orderClient;
   private final String tokenPrefix;
+  private final SimpMessagingTemplate simpMessagingTemplate;
   
-  public ConversationServiceImpl(ConversationRepository conversationRepository, MessageRepository messageRepository, NotificaService notificaService, ObjectMapper objectMapper, OrderClient orderClient) {
+  public ConversationServiceImpl(ConversationRepository conversationRepository, MessageRepository messageRepository, NotificaService notificaService, ObjectMapper objectMapper, OrderClient orderClient, SimpMessagingTemplate simpMessagingTemplate) {
     this.objectMapper = objectMapper;
     this.orderClient = orderClient;
+    this.simpMessagingTemplate = simpMessagingTemplate;
     this.tokenPrefix = "Bearer ";
     wintedId = "6484fb28cb521302e093d93c";
     this.messageRepository = messageRepository;
@@ -240,7 +243,7 @@ public class ConversationServiceImpl implements ConversationService {
       .user(messageRequest.getTo())
       .prodottoCorrelato(conv.getProdottoCorrelato())
       .build());
-    
+    simpMessagingTemplate.convertAndSend("/room/" + conv.getId(), SocketDTO.builder().message("update").build());
     return filteredConversation(conversationRepository.save(conv), loggedUserid);
   }
   

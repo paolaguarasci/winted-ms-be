@@ -1,13 +1,11 @@
 package it.pingflood.winted.messageservice.controller;
 
-import it.pingflood.winted.messageservice.data.dto.AnteprimaInbox;
-import it.pingflood.winted.messageservice.data.dto.ConversationRequest;
-import it.pingflood.winted.messageservice.data.dto.ConversationResponse;
-import it.pingflood.winted.messageservice.data.dto.MessageRequest;
+import it.pingflood.winted.messageservice.data.dto.*;
 import it.pingflood.winted.messageservice.service.ConversationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +18,11 @@ import java.util.List;
 @RequestMapping("/api/v1/conversation")
 public class ConversationController {
   private final ConversationService conversationService;
+  private final SimpMessagingTemplate simpMessagingTemplate;
   
-  public ConversationController(ConversationService conversationService) {
+  public ConversationController(ConversationService conversationService, SimpMessagingTemplate simpMessagingTemplate) {
     this.conversationService = conversationService;
+    this.simpMessagingTemplate = simpMessagingTemplate;
   }
   
   @GetMapping
@@ -46,6 +46,7 @@ public class ConversationController {
   @PostMapping("/{id}/newmsg")
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<ConversationResponse> addMessageToConversation(@PathVariable String id, @RequestBody MessageRequest messageRequest, Principal proncipal, @AuthenticationPrincipal Jwt token) {
+    simpMessagingTemplate.convertAndSend("/room/" + id, SocketDTO.builder().message("update").build());
     return ResponseEntity.ok(conversationService.addMessageToConversation(id, messageRequest, proncipal.getName(), token.getTokenValue()));
   }
 }
