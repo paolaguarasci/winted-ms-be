@@ -13,15 +13,15 @@ public class WebSocketConf implements WebSocketMessageBrokerConfigurer {
   
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
-    config.enableSimpleBroker("/room", "/topic");
+    config.enableSimpleBroker("/room", "/notify");
     config.setApplicationDestinationPrefixes("/api/v1/message");
-    
+//    config.setUserDestinationPrefix("/user");
   }
   
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/api/v1/message/websocket").setAllowedOriginPatterns("*").withSockJS();
-    registry.addEndpoint("/api/v1/message/websocket").setAllowedOriginPatterns("*");
+    registry.addEndpoint("/api/v1/message/websocket").setAllowedOriginPatterns("https://localhost:4200").withSockJS();
+    registry.addEndpoint("/api/v1/message/websocket").setAllowedOriginPatterns("https://localhost:4200");
   }
   
 }
