@@ -1,0 +1,51 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/addressservice" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/apigateway" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/discoveryserver" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/messageservice" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/orderservice" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/paymentservice" # Location of package manifests
+    schedule:
+      interval: "weekly"
+        - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/productservice" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/profileservice" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Maven" # See documentation for possible values
+    directory: "/resourceservice" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Docker" # See documentation for possible values
+    directory: "/kafkabroker" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "Docker" # See documentation for possible values
+    directory: "/keycloak" # Location of package manifests
+    schedule:
+      interval: "weekly"
