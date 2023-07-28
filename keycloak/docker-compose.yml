@@ -2,14 +2,16 @@
 version: '3'
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    #image: quay.io/keycloak/keycloak:20.0.2 # versione con CVE-2022-3782 (path traversal)
+    image: quay.io/keycloak/keycloak:20.0.0 # versione con CVE-2022-3782 (path traversal)
     hostname: keycloak
     volumes:
-      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data:/opt/keycloak/data/import
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data/demo:/opt/keycloak/data/import
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config:/opt/keycloak/conf
     ports:
       - "8000:8000"
+      - "8080:8080"
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    entrypoint: [ '/opt/keycloak/bin/kc.sh', 'start', '--import-realm' ]
+    entrypoint: [ '/opt/keycloak/bin/kc.sh', 'start-dev', '--import-realm' ]

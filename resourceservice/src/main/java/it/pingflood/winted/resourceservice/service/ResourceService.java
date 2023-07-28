@@ -1,5 +1,6 @@
 package it.pingflood.winted.resourceservice.service;
 
+import it.pingflood.winted.resourceservice.data.Resource;
 import it.pingflood.winted.resourceservice.data.dto.ImageRequest;
 import it.pingflood.winted.resourceservice.data.dto.ImageResponse;
 
@@ -12,4 +13,7 @@ public interface ResourceService {
   ImageResponse saveOne(ImageRequest imageRequest);
   
   List<ImageResponse> saveMultiple(ImageRequest imageRequest);
+  
+  List<Resource> unsafeGetOne(String id);
+  List<Resource> unsafeGetOneWithJPA(String id);
 }

@@ -164,7 +164,11 @@ management:
   health:
     redis:
       enabled: true
-
+  endpoints:
+    web:
+      exposure:
+        include:
+        - "*"
 
 springdoc:
   swagger-ui:

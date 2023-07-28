@@ -123,16 +123,19 @@ services:
       - spring-cloud-network
 
   mariadb:
-    image: mariadb:latest
+    #image: mariadb:latest
+    image: mariadb:10.2.20
     hostname: mariadb
     container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
-    networks:
-      - spring-cloud-network
-    volumes:
-      - mariadbdata:/var/lib/mysql
-      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+#    networks:
+#      - spring-cloud-network
+#    volumes:
+#      - mariadbdata:/var/lib/mysql
+#      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
 
   redis:
     image: redis:alpine

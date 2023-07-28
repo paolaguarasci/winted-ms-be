@@ -3,7 +3,7 @@ package it.pingflood.winted.resourceservice.service;
 import com.amazonaws.services.s3.model.S3Object;
 
 public interface AWSService {
-  String saveObj(byte[] file);
+  String saveObj(byte[] file, String fileExtension);
   
   String saveTxt(byte[] file);
   
