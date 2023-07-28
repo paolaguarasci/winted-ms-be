@@ -168,7 +168,7 @@ management:
     web:
       exposure:
         include:
-        - "*"
+          - "*"
 
 springdoc:
   swagger-ui:

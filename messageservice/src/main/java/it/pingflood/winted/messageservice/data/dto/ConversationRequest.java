@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class ConversationRequest implements Serializable {
-//  private String id;
+  //  private String id;
   private String user1;
   private String user2;
   private String loggedUser;

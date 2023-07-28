@@ -15,5 +15,6 @@ public interface ResourceService {
   List<ImageResponse> saveMultiple(ImageRequest imageRequest);
   
   List<Resource> unsafeGetOne(String id);
+  
   List<Resource> unsafeGetOneWithJPA(String id);
 }

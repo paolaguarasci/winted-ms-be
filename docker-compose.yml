@@ -131,11 +131,11 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
-#    networks:
-#      - spring-cloud-network
-#    volumes:
-#      - mariadbdata:/var/lib/mysql
-#      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
+  #    networks:
+  #      - spring-cloud-network
+  #    volumes:
+  #      - mariadbdata:/var/lib/mysql
+  #      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
 
   redis:
     image: redis:alpine
