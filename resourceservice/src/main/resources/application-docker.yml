@@ -1,19 +1,10 @@
 eureka:
-  instance:
-    hostname: localhost
-    securePortEnabled: true
   client:
     serviceUrl:
-      defaultZone: https://eureka:password@eureka:8761/eureka
+      defaultZone: http://eureka:password@eureka:8761/eureka
 
 server:
   port: 0
-  ssl:
-    key-store: store/keystore.jks
-    key-store-password: winted
-    key-alias: localhost
-    key-password: winted
-    enabled: true
 spring:
   output:
     ansi:

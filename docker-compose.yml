@@ -80,36 +80,36 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
-  # product-service:
-  #   container_name: product-service
-  #   hostname: product-service
-  #   build:
-  #     context: productservice
-  #     dockerfile: Dockerfile
-  #   image: product-service:latest
-  #   depends_on:
-  #     - eureka
-  #     - mongodb
-  #     - kafka
-  #   networks:
-  #     - spring-cloud-network
-  #   environment:
-  #     SPRING_PROFILES_ACTIVE: docker
+  product-service:
+    container_name: product-service
+    hostname: product-service
+    build:
+      context: productservice
+      dockerfile: Dockerfile
+    image: product-service:latest
+    depends_on:
+      - eureka
+      - mongodb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
 
-  # address-service:
-  #   container_name: address-service
-  #   build:
-  #     context: addressservice
-  #     dockerfile: Dockerfile
-  #   image: address-service:latest
-  #   depends_on:
-  #     - eureka
-  #     - mariadb
-  #     - kafka
-  #   networks:
-  #     - spring-cloud-network
-  #   environment:
-  #     SPRING_PROFILES_ACTIVE: docker
+  address-service:
+    container_name: address-service
+    build:
+      context: addressservice
+      dockerfile: Dockerfile
+    image: address-service:latest
+    depends_on:
+      - eureka
+      - mariadb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
 
   gateway:
     container_name: gateway-service
@@ -146,7 +146,8 @@ services:
     hostname: keycloak
     container_name: keycloak
     ports:
-      - '8080:8080'
+      - "8000:8000"
+      - "8080:8080"
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:

@@ -14,9 +14,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://keycloak:8000/realms/winted
-          jwk-set-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/certs
-          introspection-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/token/introspect
+          issuer-uri: https://localhost:8000/realms/winted
+          jwk-set-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/certs
+          introspection-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/token/introspect
           client-id: winted-web
           client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
   application:
@@ -39,7 +39,7 @@ spring:
     template:
       default-topic: notificationTopic
     bootstrap-servers:
-      - localhost:9092
+      - http://kafka:9092
 
 logging:
   level:

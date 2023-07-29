@@ -7,8 +7,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://localhost:8000/realms/winted
-          jwk-set-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/certs
-          introspection-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/token/introspect
+          jwk-set-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/certs
+          introspection-uri: http://keycloak:8080/realms/winted/protocol/openid-connect/token/introspect
           client-id: winted-web
           client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
   data:
@@ -39,13 +39,7 @@ eureka:
 
 server:
   port: 0
-  # ssl:
-  #   key-store: store/keystore.jks
-  #   key-store-password: winted
-  #   key-alias: localhost
-  #   key-password: winted
-  #   enabled: true
-  
+
 logging:
   level:
     root: "warn"
