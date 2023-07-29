@@ -62,7 +62,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
 
   keycloak:
-    image: quay.io/keycloak/keycloak:20.0.0
+    image: quay.io/keycloak/keycloak:latest
     hostname: keycloak
     container_name: keycloak
     ports:
@@ -71,8 +71,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data/demo:/opt/keycloak/data/import
-      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config/keycloak.docker.eh.conf:/opt/keycloak/conf/keycloak.conf
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data:/opt/keycloak/data/import
+      - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config/keycloak.docker.conf:/opt/keycloak/conf/keycloak.conf
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config/cert-doker:/opt/keycloak/conf/cert
     environment:
       KEYCLOAK_ADMIN: admin
