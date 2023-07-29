@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 // @FeignClient(url = "https://localhost:8443", name = "address-service")
-@FeignClient(name = "address-service")
+// @FeignClient(url = "http://product-service:7001", value = "product-service")
+@FeignClient(url = "http://address-service:7003", value = "address-service")
 public interface AddressClient {
   @RequestMapping(method = RequestMethod.GET, value = "/api/v1/address/{id}")
   String getAddressById(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable(value = "id") String id);

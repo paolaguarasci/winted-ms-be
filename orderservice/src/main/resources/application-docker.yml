@@ -1,10 +1,12 @@
 eureka:
+  # instance:
+  #   hostname: eureka
   client:
     serviceUrl:
       defaultZone: http://eureka:password@eureka:8761/eureka
 
 server:
-  port: 0
+  port: 7005
 
 spring:
   security:
