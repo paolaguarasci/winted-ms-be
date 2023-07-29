@@ -65,24 +65,24 @@ public class ConversationServiceImpl implements ConversationService {
     List<Conversation> conversazioni = conversationRepository.findAllByUser1IsOrUser2Is(loggedUserid, loggedUserid);
     
     return conversazioni.stream().map(conversation -> {
-      String lastMessagePreview = "";
-      String timeAgo = "";
-      ConversationResponse convFiltered = filteredConversation(conversation, loggedUserid);
-      log.info("Conv filtered {}", convFiltered);
-      if (convFiltered.getMessages() != null && !convFiltered.getMessages().isEmpty()) {
-        MessageResponse lastMessage = convFiltered.getMessages().get(convFiltered.getMessages().size() - 1);
-        log.info("Conv filtered last message {}", lastMessage);
-        log.info("Conv filtered last message timestamp {}", lastMessage.getTimestamp());
-        lastMessagePreview = lastMessage.getContent();
-        timeAgo = lastMessage.getTimeAgo();
-      }
-      
-      String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
-      
-      return AnteprimaInbox.builder()
-        .conversationId(conversation.getId())
-        .lastMessage(lastMessagePreview)
-        .timeAgo(timeAgo)
+        String lastMessagePreview = "";
+        String timeAgo = "";
+        ConversationResponse convFiltered = filteredConversation(conversation, loggedUserid);
+        log.info("Conv filtered {}", convFiltered);
+        if (convFiltered.getMessages() != null && !convFiltered.getMessages().isEmpty()) {
+          MessageResponse lastMessage = convFiltered.getMessages().get(convFiltered.getMessages().size() - 1);
+          log.info("Conv filtered last message {}", lastMessage);
+          log.info("Conv filtered last message timestamp {}", lastMessage.getTimestamp());
+          lastMessagePreview = lastMessage.getContent();
+          timeAgo = lastMessage.getTimeAgo();
+        }
+        
+        String altroUtente = conversation.getUser1().equals(loggedUserid) ? conversation.getUser2() : conversation.getUser1();
+        
+        return AnteprimaInbox.builder()
+          .conversationId(conversation.getId())
+          .lastMessage(lastMessagePreview)
+          .timeAgo(timeAgo)
           .prodottoCorrelato(conversation.getProdottoCorrelato())
           .altroUtente(altroUtente)
           .build();

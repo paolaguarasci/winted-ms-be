@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 services:
   product-service:
     container_name: product-service
@@ -11,8 +11,7 @@ services:
       - eureka
       - mongodb
       - kafka
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
@@ -26,8 +25,7 @@ services:
       - eureka
       - mariadb
       - kafka
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
@@ -38,15 +36,14 @@ services:
       dockerfile: Dockerfile
     image: gateway-service:latest
     ports:
-      - "8443:8443"
+      - '8443:8443'
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - eureka
       - redis
       - kafka
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
@@ -56,8 +53,7 @@ services:
       context: discoveryserver
       dockerfile: Dockerfile
     image: eureka:latest
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
@@ -66,10 +62,10 @@ services:
     hostname: keycloak
     container_name: keycloak
     ports:
-      - "8000:8000"
-      - "8080:8080"
+      - '8000:8000'
+      - '8080:8080'
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     volumes:
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data:/opt/keycloak/data/import
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config/keycloak.docker.conf:/opt/keycloak/conf/keycloak.conf
@@ -77,9 +73,8 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    networks:
-      - spring-cloud-network
-    entrypoint: [ '/opt/keycloak/bin/kc.sh', 'start-dev', '--import-realm' ]
+    network_mode: 'host'
+    entrypoint: ['/opt/keycloak/bin/kc.sh', 'start-dev', '--import-realm']
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -88,8 +83,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -105,8 +99,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
 
   mongodb:
     hostname: mongodb
@@ -119,23 +112,20 @@ services:
     volumes:
       - ./mongodb/init.d/:/docker-entrypoint-initdb.d/
       - mongodbdata:/data/db
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
 
   mariadb:
-    #image: mariadb:latest
     image: mariadb:10.2.20
     hostname: mariadb
     container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
-  #    networks:
-  #      - spring-cloud-network
-  #    volumes:
-  #      - mariadbdata:/var/lib/mysql
-  #      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
+      - '3306:3306'
+    network_mode: 'host'
+    volumes:
+      - mariadbdata:/var/lib/mysql
+      - ./mariadb/init.d/:/docker-entrypoint-initdb.d
 
   redis:
     image: redis:alpine
@@ -145,12 +135,8 @@ services:
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - cache:/data
-    networks:
-      - spring-cloud-network
+    network_mode: 'host'
 
-networks:
-  spring-cloud-network:
-    driver: bridge
 volumes:
   mongodbdata:
     driver: local
