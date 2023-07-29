@@ -7,6 +7,10 @@ services:
       context: resourceservice
       dockerfile: Dockerfile
     image: resource-service:latest
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '7002:7002'
     depends_on:
       - eureka
       - mariadb
@@ -16,69 +20,69 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
-  profile-service:
-    container_name: profile-service
-    hostname: profile-service
-    build:
-      context: profileservice
-      dockerfile: Dockerfile
-    image: profile-service:latest
-    depends_on:
-      - eureka
-      - mongodb
-      - kafka
-    networks:
-      - spring-cloud-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+  # profile-service:
+  #   container_name: profile-service
+  #   hostname: profile-service
+  #   build:
+  #     context: profileservice
+  #     dockerfile: Dockerfile
+  #   image: profile-service:latest
+  #   depends_on:
+  #     - eureka
+  #     - mongodb
+  #     - kafka
+  #   networks:
+  #     - spring-cloud-network
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
 
-  payment-service:
-    container_name: payment-service
-    hostname: payment-service
-    build:
-      context: paymentservice
-      dockerfile: Dockerfile
-    image: payment-service:latest
-    depends_on:
-      - eureka
-      - mongodb
-      - kafka
-    networks:
-      - spring-cloud-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+  # payment-service:
+  #   container_name: payment-service
+  #   hostname: payment-service
+  #   build:
+  #     context: paymentservice
+  #     dockerfile: Dockerfile
+  #   image: payment-service:latest
+  #   depends_on:
+  #     - eureka
+  #     - mongodb
+  #     - kafka
+  #   networks:
+  #     - spring-cloud-network
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
 
-  order-service:
-    container_name: order-service
-    hostname: order-service
-    build:
-      context: orderservice
-      dockerfile: Dockerfile
-    image: order-service:latest
-    depends_on:
-      - eureka
-      - mariadb
-      - kafka
-    networks:
-      - spring-cloud-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+  # order-service:
+  #   container_name: order-service
+  #   hostname: order-service
+  #   build:
+  #     context: orderservice
+  #     dockerfile: Dockerfile
+  #   image: order-service:latest
+  #   depends_on:
+  #     - eureka
+  #     - mariadb
+  #     - kafka
+  #   networks:
+  #     - spring-cloud-network
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
 
-  message-service:
-    container_name: message-service
-    hostname: message-service
-    build:
-      context: messageservice
-      dockerfile: Dockerfile
-    image: message-service:latest
-    depends_on:
-      - eureka
-      - mongodb
-      - kafka
-    networks:
-      - spring-cloud-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+  # message-service:
+  #   container_name: message-service
+  #   hostname: message-service
+  #   build:
+  #     context: messageservice
+  #     dockerfile: Dockerfile
+  #   image: message-service:latest
+  #   depends_on:
+  #     - eureka
+  #     - mongodb
+  #     - kafka
+  #   networks:
+  #     - spring-cloud-network
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
 
   product-service:
     container_name: product-service
@@ -87,6 +91,10 @@ services:
       context: productservice
       dockerfile: Dockerfile
     image: product-service:latest
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '7001:7001'
     depends_on:
       - eureka
       - mongodb
@@ -96,20 +104,20 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
-  address-service:
-    container_name: address-service
-    build:
-      context: addressservice
-      dockerfile: Dockerfile
-    image: address-service:latest
-    depends_on:
-      - eureka
-      - mariadb
-      - kafka
-    networks:
-      - spring-cloud-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+  # address-service:
+  #   container_name: address-service
+  #   build:
+  #     context: addressservice
+  #     dockerfile: Dockerfile
+  #   image: address-service:latest
+  #   depends_on:
+  #     - eureka
+  #     - mariadb
+  #     - kafka
+  #   networks:
+  #     - spring-cloud-network
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
 
   gateway:
     container_name: gateway-service

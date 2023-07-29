@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(value = "product-service", url = "https://localhost:8443")
+// @FeignClient(value = "product-service", url = "https://localhost:8443")
+@FeignClient(value = "product-service")
 public interface ProductClient {
   @RequestMapping(method = RequestMethod.GET, value = "/api/v1/product/{id}")
   String getProductById(@RequestHeader(value = "Authorization", required = true) String authorizationHeader, @PathVariable String id);

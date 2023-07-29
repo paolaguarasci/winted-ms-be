@@ -40,7 +40,7 @@ eureka:
       defaultZone: http://eureka:password@eureka:8761/eureka
 
 server:
-  port: 0
+  port: 7001
 
 logging:
   level:
