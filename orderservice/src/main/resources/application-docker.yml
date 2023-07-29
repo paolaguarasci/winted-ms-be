@@ -1,0 +1,59 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: https://eureka:password@eureka:8761/eureka
+
+server:
+  port: 0
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak:8000/realms/winted
+          jwk-set-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/certs
+          introspection-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/token/introspect
+          client-id: winted-web
+          client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
+  application:
+    name: order-service
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb:3306/winted-order-service
+    username: winted-order-service
+    password: winted-order-service
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    template:
+      default-topic: notificationTopic
+    bootstrap-servers:
+      - localhost:9092
+
+logging:
+  level:
+    root: "info"
+
+springdoc:
+  packagesToScan: it.pingflood.winted.orderservice
+  api-docs:
+    path: /api/v1/order/v3/api-docs
+  swagger-ui:
+    path: /api/v1/order/swagger-ui.html
+
+#feign:
+#  client:
+#    config:
+#      default:
+#        loggerLevel: full

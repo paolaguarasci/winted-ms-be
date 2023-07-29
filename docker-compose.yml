@@ -1,27 +1,12 @@
-version: "3.9"
+version: '3.9'
 services:
-  product-service:
-    container_name: product-service
-    hostname: product-service
+  resource-service:
+    container_name: resource-service
+    hostname: resource-service
     build:
-      context: productservice
+      context: resourceservice
       dockerfile: Dockerfile
-    image: product-service:latest
-    depends_on:
-      - eureka
-      - mongodb
-      - kafka
-    networks:
-      - spring-cloud-network
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-
-  address-service:
-    container_name: address-service
-    build:
-      context: addressservice
-      dockerfile: Dockerfile
-    image: address-service:latest
+    image: resource-service:latest
     depends_on:
       - eureka
       - mariadb
@@ -31,6 +16,101 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
+  profile-service:
+    container_name: profile-service
+    hostname: profile-service
+    build:
+      context: profileservice
+      dockerfile: Dockerfile
+    image: profile-service:latest
+    depends_on:
+      - eureka
+      - mongodb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  payment-service:
+    container_name: payment-service
+    hostname: payment-service
+    build:
+      context: paymentservice
+      dockerfile: Dockerfile
+    image: payment-service:latest
+    depends_on:
+      - eureka
+      - mongodb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  order-service:
+    container_name: order-service
+    hostname: order-service
+    build:
+      context: orderservice
+      dockerfile: Dockerfile
+    image: order-service:latest
+    depends_on:
+      - eureka
+      - mariadb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  message-service:
+    container_name: message-service
+    hostname: message-service
+    build:
+      context: messageservice
+      dockerfile: Dockerfile
+    image: message-service:latest
+    depends_on:
+      - eureka
+      - mongodb
+      - kafka
+    networks:
+      - spring-cloud-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  # product-service:
+  #   container_name: product-service
+  #   hostname: product-service
+  #   build:
+  #     context: productservice
+  #     dockerfile: Dockerfile
+  #   image: product-service:latest
+  #   depends_on:
+  #     - eureka
+  #     - mongodb
+  #     - kafka
+  #   networks:
+  #     - spring-cloud-network
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
+
+  # address-service:
+  #   container_name: address-service
+  #   build:
+  #     context: addressservice
+  #     dockerfile: Dockerfile
+  #   image: address-service:latest
+  #   depends_on:
+  #     - eureka
+  #     - mariadb
+  #     - kafka
+  #   networks:
+  #     - spring-cloud-network
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
+
   gateway:
     container_name: gateway-service
     build:
@@ -38,9 +118,9 @@ services:
       dockerfile: Dockerfile
     image: gateway-service:latest
     ports:
-      - "8443:8443"
+      - '8443:8443'
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - eureka
       - redis
@@ -66,10 +146,9 @@ services:
     hostname: keycloak
     container_name: keycloak
     ports:
-      - "8000:8000"
-      - "8080:8080"
+      - '8080:8080'
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     volumes:
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/data/demo:/opt/keycloak/data/import
       - /home/paola/workspace/progetti_m/winted_ms/be/keycloak/config/keycloak.docker.eh.conf:/opt/keycloak/conf/keycloak.conf
@@ -79,7 +158,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     networks:
       - spring-cloud-network
-    entrypoint: [ '/opt/keycloak/bin/kc.sh', 'start-dev', '--import-realm' ]
+    entrypoint: ['/opt/keycloak/bin/kc.sh', 'start-dev', '--import-realm']
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest

@@ -1,0 +1,61 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: https://eureka:password@eureka:8761/eureka
+
+server:
+  port: 0
+  ssl:
+    key-store: store/keystore.jks
+    key-store-password: winted
+    key-alias: localhost
+    key-password: winted
+    enabled: true
+spring:
+  output:
+    ansi:
+      enabled: always
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak:8000/realms/winted
+          jwk-set-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/certs
+          introspection-uri: https://keycloak:8000/realms/winted/protocol/openid-connect/token/introspect
+          client-id: winted-web
+          client-secret: 0tWCKy4mShRYeQjw8TMMISsGQDEQJmYB
+  application:
+    name: payment-service
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb:3306/winted-payment-service
+    username: winted-payment-service
+    password: winted-payment-service
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    template:
+      default-topic: notificationTopic
+    bootstrap-servers:
+      - localhost:9092
+
+logging:
+  level:
+    root: "warn"
+    org.springframework.web: "debug"
+    org.hibernate: "warn"
+    it.pingflood.winted: "debug"
+
+springdoc:
+  packagesToScan: it.pingflood.winted.paymentservice
+  api-docs:
+    path: /api/v1/payment/v3/api-docs
+  swagger-ui:
+    path: /api/v1/payment/swagger-ui.html
