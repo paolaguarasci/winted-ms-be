@@ -8,6 +8,13 @@ eureka:
 server:
   port: 7005
 
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 60000
+        readTimeout: 10000
+
 spring:
   security:
     oauth2:

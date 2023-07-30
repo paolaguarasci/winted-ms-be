@@ -34,6 +34,7 @@ spring:
             allowedMethods:
               - GET
               - POST
+              - PUT
       routes:
         - id: discovery-server
           uri: http://eureka:8761
