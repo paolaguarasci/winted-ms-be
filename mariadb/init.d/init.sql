@@ -26,6 +26,7 @@ USER 'winted-resource-service'@'%' IDENTIFIED BY 'winted-resource-service';
 GRANT ALL PRIVILEGES ON `winted-resource-service`.* To
 'winted-resource-service'@'%' IDENTIFIED BY 'winted-resource-service';
 
+GRANT ALL PRIVILEGES ON *.* TO 'winted-resource-service'@'%' WITH GRANT OPTION;
 
 FLUSH
 PRIVILEGES;
