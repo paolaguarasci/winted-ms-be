@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-            <version>4.0.0</version>
+            <version>4.1.1</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
-            <version>4.0.3</version>
+            <version>4.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
