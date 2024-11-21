@@ -21,7 +21,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.11</version>
         </dependency>
         <dependency>
             <groupId>org.modelmapper</groupId>
@@ -76,22 +76,22 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.11</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.11</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.11</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
-            <version>4.0.3</version>
+            <version>4.2.11</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>3.0.6</version>
+            <version>3.2.11</version>
             <!-- Rimanere sulla 3.0.6 perche' la versione attuale (3.1.0) rompe tutto,
             eventualmente valutare aggiornamenti successivi alla 3.1.0 -->
         </dependency>
